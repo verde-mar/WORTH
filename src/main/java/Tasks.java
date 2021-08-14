@@ -32,6 +32,10 @@ public class Tasks {
     private String listaDestinazione;
 
 
+    /***
+     * Restituisce la richiesta effettuata
+     * @return String la richiesta effettuata
+     */
     public String getRequest(){
         switch(request){
             case readChat -> {
@@ -86,34 +90,50 @@ public class Tasks {
         return null;
     }
 
+    /***
+     * Restituisce il nome del progetto
+     * @return String il nome del progetto
+     */
     public String getProjectName(){
         return projectName;
     }
 
+    /***
+     * Restituisce il nome della card
+     * @return String il nome della card
+     */
     public String getCardName(){
         return cardName;
     }
 
+    /***
+     * Restituisce il nickname dell'utente
+     * @return String il nickname dell'utente
+     */
     public String getNickUtente(){
         return nickUtente;
     }
 
-    public String getPassword(){
-        return password;
-    }
-
+    /***
+     * Restituisce la descrizione da associare ad una card
+     * @return String la descrizione da associare ad una card
+     */
     public String getDescription(){
         return description;
     }
 
-    public String getText(){
-        return text;
-    }
-
+    /***
+     * Restituisce la lista di partenza per spostare una card
+     * @return String la lista di partenza necessaria a spostare una card
+     */
     public String getListaPartenza(){
         return listaPartenza;
     }
 
+    /***
+     * Restituisce la lista di destinazione per spostare una card
+     * @return String la lista di destinazione necessaria a spostare una card
+     */
     public String getListaDestinazione(){
         return listaDestinazione;
     }
