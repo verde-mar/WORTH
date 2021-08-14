@@ -14,6 +14,11 @@ public class Project {
     /* Lista di membri del progetto */
     private List<User> members_sync;
 
+    /***
+     * Costruttore della classe
+     *
+     * @param nameProject, nome univoco del progetto da creare
+     */
     public Project(String nameProject){
         this.nameProject = nameProject;
         toDo = Collections.synchronizedList(new LinkedList<>());
@@ -23,26 +28,54 @@ public class Project {
         members_sync = Collections.synchronizedList(new LinkedList<>());
     }
 
+    /***
+     * Restituisce la lista dei membri del progetto
+     *
+     * @return List<User> lista dei membri del progetto
+     */
     private List<User> showMembers(){
         return members_sync;
     }
 
+    /***
+     * Restituisce la lista che contiene le card all'interno della lista DONE
+     *
+     * @return List<Card>, lista che contiene le card all'interno della lista DONE
+     */
     private List<Card> getDone(){
         return done;
     }
 
+    /***
+     * Restituisce la lista che contiene le card all'interno della lista TOBEREVISED
+     * @return List<Card>, lista che contiene le card all'interno della lista TOBEREVISED
+     */
     private List<Card> getToBeRevised(){
         return toBeRevised;
     }
 
+    /***
+     * Restituisce la lista che contiene le card all'interno della lista TODO
+     * @return List<Card>, lista che contiene le card all'interno della lista TODO
+     */
     private List<Card> getToDo(){
         return toDo;
     }
 
+    /***
+     * Restituisce la lista che contiene le card all'interno della lista INPROGRESS
+     * @return List<Card>, lista che contiene le card all'interno della lista INPROGRESS
+     */
     private List<Card> getInProgress(){
         return inProgress;
     }
 
+    /***
+     * Aggiunge una card alla lista listaToAdd
+     *
+     * @param listaToAdd lista a cui aggiungere card
+     * @param card card da aggiungere a listaToAdd
+     */
     public void addCard(String listaToAdd, Card card){
         if(listaToAdd.equals("toDo")){
             card.addHistory("toDo");
