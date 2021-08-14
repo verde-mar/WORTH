@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static java.lang.Thread.sleep;
 
-//TODO: prima fase testing - la stringa JSON viene inviata correttamente?
 
 public class SocketServices implements AutoCloseable{
     /* Selettore */
@@ -24,6 +23,11 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private ThreadPoolExecutor threadPool;
 
+    /***
+     * Costruttore della classe
+     * @param portNumber numero di porta del servizio offerto dal server
+     * @throws IOException se avviene un errore nell' I/O
+     */
     public SocketServices(int portNumber) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -40,6 +44,11 @@ public class SocketServices implements AutoCloseable{
         channel.register(selector, SelectionKey.OP_ACCEPT);
     }
 
+    /***
+     * La funzione associa ad ogni richiesta di un client un thread del threadPool
+     * @param buffer contenente la richiesta in JSON
+     * @return Future<Tasks> un thread del threadpool
+     */
     private Future<Tasks> elaborateRequest(ByteBuffer buffer) {
         Future<Tasks> future = threadPool.submit(new Dispatcher(buffer));
         return future;
