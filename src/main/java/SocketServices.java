@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static java.lang.Thread.sleep;
 
-
 public class SocketServices implements AutoCloseable{
     /* Selettore */
     private Selector selector;
@@ -50,8 +49,7 @@ public class SocketServices implements AutoCloseable{
      * @return Future<Tasks> un thread del threadpool
      */
     private Future<Tasks> elaborateRequest(ByteBuffer buffer) {
-        Future<Tasks> future = threadPool.submit(new Dispatcher(buffer));
-        return future;
+        return threadPool.submit(new Dispatcher(buffer));
     }
 
     /***
@@ -88,7 +86,7 @@ public class SocketServices implements AutoCloseable{
 
     /***
      * Registra quel client per operazioni in lettura
-     * @param key chiave associata al channel corrente
+     * @param key chiave associata al channel
      * @throws IOException se avviene un errore nell'I/O
      */
     private void registerClient(SelectionKey key) throws IOException {
@@ -105,7 +103,7 @@ public class SocketServices implements AutoCloseable{
 
     /***
      * Legge il messaggio inviato dal client
-     * @param key chiave associata al channel corrente
+     * @param key chiave associata al
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se il thread viene interrotto durante la sleep()
      */
@@ -164,12 +162,12 @@ public class SocketServices implements AutoCloseable{
     }
 
     /***
-     * Funzione che prevede la chiusura del selector
+     * Funzione che prevede la chiusura del selector e il server socket
      * @throws IOException se avviene un errore nell'I/O
      */
     @Override
     public void close() throws IOException {
         selector.close();
-        channel.close(); //ma qui non dovrei chiudere tutti i canali?
+        channel.close();
     }
 }
