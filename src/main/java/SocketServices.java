@@ -54,6 +54,11 @@ public class SocketServices implements AutoCloseable{
         return future;
     }
 
+    /***
+     * La funzione fa girare il selector finche' il thread main non viene interrotto
+     * @throws IOException se avviene un errore nell'I/O
+     * @throws InterruptedException se avviene un errore nella lettura del messaggio in readMessage(key)
+     */
     public void start() throws IOException, InterruptedException {
         System.out.printf("TCP Server started on local address %s\n", channel.getLocalAddress());
         while (!Thread.interrupted()){
@@ -81,6 +86,11 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
+    /***
+     * Registra quel client per operazioni in lettura
+     * @param key chiave associata al channel corrente
+     * @throws IOException se avviene un errore nell'I/O
+     */
     private void registerClient(SelectionKey key) throws IOException {
         ServerSocketChannel server = (ServerSocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
@@ -93,6 +103,12 @@ public class SocketServices implements AutoCloseable{
         System.out.println("Accepted connection from " + client);
     }
 
+    /***
+     * Legge il messaggio inviato dal client
+     * @param key chiave associata al channel corrente
+     * @throws IOException se avviene un errore nell'I/O
+     * @throws InterruptedException se il thread viene interrotto durante la sleep()
+     */
     private void readMessage(SelectionKey key) throws IOException, InterruptedException {
         /* Contiene i dati */
         ByteBuffer buffer = (ByteBuffer) key.attachment();
@@ -147,11 +163,13 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
-    //private void writeMessage(SelectionKey key)
-
+    /***
+     * Funzione che prevede la chiusura del selector
+     * @throws IOException se avviene un errore nell'I/O
+     */
     @Override
     public void close() throws IOException {
         selector.close();
-        channel.close();
+        channel.close(); //ma qui non dovrei chiudere tutti i canali?
     }
 }
