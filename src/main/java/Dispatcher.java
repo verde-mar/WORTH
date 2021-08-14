@@ -9,14 +9,21 @@ import java.util.concurrent.Callable;
 public class Dispatcher implements Callable<Tasks> {
     /* Buffer contenente i dati letti */
     private ByteBuffer buffer;
-
     /* Oggetto che rappresenta una richiesta/risposta del client */
     private Tasks task;
 
+    /***
+     * Costruttore dell'oggetto
+     * @param buffer contenente la richiesta
+     */
     public Dispatcher(ByteBuffer buffer) {
         this.buffer = buffer;
     }
 
+    /***
+     * Effettua il parsing della richiesta
+     * @throws IOException se ci sono errori nell' I/O
+     */
     private void parser() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -25,11 +32,13 @@ public class Dispatcher implements Callable<Tasks> {
         task = objectMapper.readValue(buffer_toString, Tasks.class);
     }
 
-
+    /***
+     * Override della chiamata call,
+     * @return Tasks cioe' la risposta in formato JSON
+     */
     @Override
     public Tasks call() throws Exception {
         parser();
-        Project project = new Project("cane");
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;
         return task;
