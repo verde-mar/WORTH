@@ -1,0 +1,29 @@
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
+
+import static java.lang.Thread.sleep;
+
+public class Cliente_1 {
+    public static void main(String[] args) {
+        int port = 8080;
+        try { SocketAddress address = new InetSocketAddress(args[0], port);
+            SocketChannel client  = SocketChannel.open(address);
+            String request ="{\"request\": \"createProject\", \"projectName\": \"cancello\"}";
+            byte[] byte_request = request.getBytes(StandardCharsets.UTF_8);
+            // Buffer contenente il messaggio
+            System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
+            ByteBuffer buffer = ByteBuffer.allocate(byte_request.length + Integer.BYTES);
+            buffer.putInt(byte_request.length);
+            buffer.put(byte_request);
+            buffer.flip();
+            sleep(100000);
+            while (buffer.hasRemaining())
+                client.write(buffer);
+            //client.read(buffer);
+        } catch(IOException | InterruptedException ex) { ex.printStackTrace(); }
+    }
+}
