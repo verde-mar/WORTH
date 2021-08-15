@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class Card {
     /* Nome univoco della card */
     private final String nameCard;
@@ -25,20 +23,19 @@ public class Card {
      * Aggiorna la history di una card
      * @param toConcat nuova azione effettuata sulla card
      */
-    public void addHistory(String toConcat) {
+    public synchronized void addHistory(String toConcat) {
         if(history == null){
             history = toConcat;
         } else {
-            history = history.concat(toConcat); //TODO: devi vedere come concatena le stringhe, sono tutte attacate? ==> meglio un array?
+            history = history.concat(toConcat + ";");
         }
-        System.out.println(history + " all'interno di addHistory."); //da sistemare
     }
 
     /***
      * Aggiunge la descrizione ad una card
      * @param descript descrizione della card
      */
-    public void addDescription(String descript) {
+    public synchronized void addDescription(String descript) {
         this.description = descript;
     }
 }

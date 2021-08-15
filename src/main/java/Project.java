@@ -81,7 +81,7 @@ public class Project {
      * @param listaToAdd lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
      */
-    public void addCard(String listaToAdd, Card card){
+    public synchronized void addCard(String listaToAdd, Card card){
         if(showCard(card.getNameCard()) == null) {
             if (listaToAdd.equals("toDo")) {
                 card.addHistory("toDo");
@@ -101,7 +101,7 @@ public class Project {
         }
     }
 
-    public Card showCard(String cardName){
+    public synchronized Card showCard(String cardName){
         concat = cardsToShow.addAll(toDo);
         concat = cardsToShow.addAll(toBeRevised);
         concat = cardsToShow.addAll(inProgress);
@@ -114,11 +114,11 @@ public class Project {
         return null;
     }
 
-    public void addMember(User user){
+    public synchronized void addMember(User user){
         members_sync.add(user);
     }
 
-    public void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
+    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
         listaDiPartenza.remove(card);
         listaDiDestinazione.add(card);
     }
