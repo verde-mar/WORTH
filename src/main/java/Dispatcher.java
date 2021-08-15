@@ -43,7 +43,6 @@ public class Dispatcher implements Callable<Tasks> {
             Project project = new Project(task.getProjectName(), new User());
             Card card = new Card(task.getCardName());
             project.addCard("toDo", card);
-            card.addHistory("toDo");
         }
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;

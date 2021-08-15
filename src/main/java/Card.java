@@ -14,7 +14,6 @@ public class Card {
      */
     public Card(String nameCard){
         this.nameCard = nameCard;
-        System.out.println(nameCard + "creating the card");
         history=null;
     }
 
@@ -23,8 +22,12 @@ public class Card {
      * @param toConcat nuova azione effettuata sulla card
      */
     public void addHistory(String toConcat) {
-        history = history.concat(toConcat); //TODO: devi vedere come concatena le stringhe, sono tutte attacate? ==> meglio un array?
-        System.out.println(history); //da sistemare
+        if(history == null){
+            history = toConcat;
+        } else {
+            history = history.concat(toConcat); //TODO: devi vedere come concatena le stringhe, sono tutte attacate? ==> meglio un array?
+        }
+        System.out.println(history + " all'interno di addHistory."); //da sistemare
     }
 
     /***
