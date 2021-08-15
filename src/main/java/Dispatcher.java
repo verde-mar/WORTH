@@ -33,7 +33,7 @@ public class Dispatcher implements Callable<Tasks> {
     }
 
     /***
-     * Override della chiamata call,
+     * Override della chiamata call
      * @return Tasks cioe' la risposta in formato JSON
      */
     @Override
