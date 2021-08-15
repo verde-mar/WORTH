@@ -13,7 +13,9 @@ public class Card {
      * @param nameCard nome della card
      */
     public Card(String nameCard){
-        this.nameCard = nameCard; history=null;
+        this.nameCard = nameCard;
+        System.out.println(nameCard + "creating the card");
+        history=null;
     }
 
     /***
