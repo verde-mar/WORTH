@@ -19,13 +19,14 @@ public class Project {
      *
      * @param nameProject, nome univoco del progetto da creare
      */
-    public Project(String nameProject){
+    public Project(String nameProject, User user){
         this.nameProject = nameProject;
         toDo = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
+        members_sync.add(user);
     }
 
     /***
@@ -77,18 +78,24 @@ public class Project {
      * @param card card da aggiungere a listaToAdd
      */
     public void addCard(String listaToAdd, Card card){
-        if(listaToAdd.equals("toDo")){
-            card.addHistory("toDo");
-            toDo.add(card);
-        } else if(listaToAdd.equals("toBeRevised")){
-            card.addHistory("toBeRevised");
-            toBeRevised.add(card);
-        } else if(listaToAdd.equals("inProgress")){
-            card.addHistory("inProgress");
-            inProgress.add(card);
-        } else {
-            card.addHistory("done");
-            done.add(card);
+        //manca la ricerca della card, per vedere se c'e' gia'
+        switch (listaToAdd) {
+            case "toDo" -> {
+                card.addHistory("toDo");
+                toDo.add(card);
+            }
+            case "toBeRevised" -> {
+                card.addHistory("toBeRevised");
+                toBeRevised.add(card);
+            }
+            case "inProgress" -> {
+                card.addHistory("inProgress");
+                inProgress.add(card);
+            }
+            default -> {
+                card.addHistory("done");
+                done.add(card);
+            }
         }
     }
 

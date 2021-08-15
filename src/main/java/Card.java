@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Card {
     /* Nome univoco della card */
     private final String nameCard;
