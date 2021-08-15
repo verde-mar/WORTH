@@ -13,7 +13,7 @@ public class Card {
      * @param nameCard nome della card
      */
     public Card(String nameCard){
-        this.nameCard = nameCard;
+        this.nameCard = nameCard; history=null;
     }
 
     /***
@@ -22,7 +22,7 @@ public class Card {
      */
     public void addHistory(String toConcat) {
         history = history.concat(toConcat); //TODO: devi vedere come concatena le stringhe, sono tutte attacate? ==> meglio un array?
-        System.out.println(history);
+        System.out.println(history); //da sistemare
     }
 
     /***
