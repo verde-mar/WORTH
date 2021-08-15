@@ -82,23 +82,27 @@ public class Project {
      * @param card card da aggiungere a listaToAdd
      */
     public void addCard(String listaToAdd, Card card){
-        if(listaToAdd.equals("toDo")){
-            card.addHistory("toDo");
-            toDo.add(card);
-        } else if(listaToAdd.equals("toBeRevised")){
-            card.addHistory("toBeRevised");
-            toBeRevised.add(card);
-        } else if(listaToAdd.equals("inProgress")){
-            card.addHistory("inProgress");
-            inProgress.add(card);
+        if(showCard(card.getNameCard()) == null) {
+            if (listaToAdd.equals("toDo")) {
+                card.addHistory("toDo");
+                toDo.add(card);
+            } else if (listaToAdd.equals("toBeRevised")) {
+                card.addHistory("toBeRevised");
+                toBeRevised.add(card);
+            } else if (listaToAdd.equals("inProgress")) {
+                card.addHistory("inProgress");
+                inProgress.add(card);
+            } else {
+                card.addHistory("done");
+                done.add(card);
+            }
         } else {
-            card.addHistory("done");
-            done.add(card);
+            System.out.println("The card already exists");
         }
     }
 
     public Card showCard(String cardName){
-        concat = cardsToShow.addAll(toDo); //da testare questo concatenamento, ha successo?
+        concat = cardsToShow.addAll(toDo);
         concat = cardsToShow.addAll(toBeRevised);
         concat = cardsToShow.addAll(inProgress);
         concat = cardsToShow.addAll(done);
@@ -110,5 +114,13 @@ public class Project {
         return null;
     }
 
+    public void addMember(User user){
+        members_sync.add(user);
+    }
+
+    public void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
+        listaDiPartenza.remove(card);
+        listaDiDestinazione.add(card);
+    }
 }
 
