@@ -14,6 +14,9 @@ public class Project {
     /* Lista di membri del progetto */
     private List<User> members_sync;
 
+    private Vector<Card> cardsToShow;
+    private boolean concat;
+
     /***
      * Costruttore della classe
      *
@@ -27,6 +30,7 @@ public class Project {
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
         members_sync.add(user);
+        cardsToShow = new Vector<>();
     }
 
     /***
@@ -93,6 +97,18 @@ public class Project {
         }
     }
 
+    public Card showCard(String cardName){
+        concat = cardsToShow.addAll(toDo); //da testare questo concatenamento, ha successo?
+        concat = cardsToShow.addAll(toBeRevised);
+        concat = cardsToShow.addAll(inProgress);
+        concat = cardsToShow.addAll(done);
+        for (Card value : cardsToShow) {
+            if (value.getNameCard().equals(cardName)){
+                return value;
+            }
+        }
+        return null;
+    }
 
 }
 

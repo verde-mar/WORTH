@@ -17,6 +17,10 @@ public class Card {
         history=null;
     }
 
+    public String getNameCard(){
+        return nameCard;
+    }
+
     /***
      * Aggiorna la history di una card
      * @param toConcat nuova azione effettuata sulla card
