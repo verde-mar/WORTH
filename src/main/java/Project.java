@@ -78,7 +78,7 @@ public class Project {
      * @param card card da aggiungere a listaToAdd
      */
     public void addCard(String listaToAdd, Card card){
-        //manca la ricerca della card, per vedere se c'e' gia'
+        //verifica se la carta es
         if(listaToAdd.equals("toDo")){
             card.addHistory("toDo");
             toDo.add(card);

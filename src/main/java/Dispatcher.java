@@ -39,6 +39,9 @@ public class Dispatcher implements Callable<Tasks> {
     @Override
     public Tasks call() throws Exception {
         parser();
+        if(task.getRequest().equals("createProject")){
+            Project project = new Project(task.getProjectName(), new User());
+        }
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;
         return task;
