@@ -22,6 +22,7 @@ public class Card {
      */
     public void addHistory(String toConcat) {
         history = history.concat(toConcat); //TODO: devi vedere come concatena le stringhe, sono tutte attacate? ==> meglio un array?
+        System.out.println(history);
     }
 
     /***
