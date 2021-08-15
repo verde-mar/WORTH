@@ -40,6 +40,7 @@ public class Dispatcher implements Callable<Tasks> {
     public Tasks call() throws Exception {
         parser();
         if(task.getRequest().equals("createProject")){
+            System.out.println("Si crea il progetto.");
             Project project = new Project(task.getProjectName(), new User());
             Card card = new Card(task.getCardName());
             project.addCard("toDo", card);

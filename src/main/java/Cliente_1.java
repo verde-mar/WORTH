@@ -20,9 +20,10 @@ public class Cliente_1 {
             buffer.putInt(byte_request.length);
             buffer.put(byte_request);
             buffer.flip();
+            sleep(10000);
             while (buffer.hasRemaining())
                 client.write(buffer);
             //client.read(buffer);
-        } catch(IOException ex) { ex.printStackTrace(); }
+        } catch(IOException | InterruptedException ex) { ex.printStackTrace(); }
     }
 }
