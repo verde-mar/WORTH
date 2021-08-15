@@ -27,7 +27,6 @@ public class Project {
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
         members_sync.add(user);
-        System.out.println("Dopo creazione progetto.");
     }
 
     /***

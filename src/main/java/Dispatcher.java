@@ -41,6 +41,8 @@ public class Dispatcher implements Callable<Tasks> {
         parser();
         if(task.getRequest().equals("createProject")){
             Project project = new Project(task.getProjectName(), new User());
+            Card card = new Card(task.getCardName());
+            project.addCard("toDo", card);
         }
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;
