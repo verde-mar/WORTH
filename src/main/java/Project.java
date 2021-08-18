@@ -139,8 +139,10 @@ public class Project {
      * @param user utente da inserire
      */
     public synchronized void addMember(User user){
-        members_sync.add(user);
-    } //si controlli che l'utente non ci sia gia'
+        if(!members_sync.contains(user)) {
+            members_sync.add(user);
+        }
+    }
 
     /***
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
@@ -149,10 +151,10 @@ public class Project {
      * @param card da spostare
      */
     public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
-        listaDiPartenza.remove(card); //si faccia il controllo che queste sono dello stesso progetto
-        card.addHistory("removed from " + ); //mi restituisce solo il nome o di piu'? Da testare
+        listaDiPartenza.remove(card); //si faccia il controllo che queste siano dello stesso progetto
+        card.addHistory("removed from " + listaDiPartenza); //mi restituisce solo il nome o di piu'? Da testare
         listaDiDestinazione.add(card);
-        card.addHistory("added to " + ); //mi restituisce solo il nome o di piu'? Da testare
+        card.addHistory("added to " + listaDiDestinazione); //mi restituisce solo il nome o di piu'? Da testare
     }
 
     /***

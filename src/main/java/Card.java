@@ -33,6 +33,7 @@ public class Card {
         } else {
             history = history.concat(toConcat + ";");
         }
+        System.out.println(history);
     }
 
     /***
