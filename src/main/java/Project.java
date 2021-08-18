@@ -4,18 +4,17 @@ public class Project {
     /* Nome del progetto, univoco */
     private final String nameProject;
     /* Lista delle card che devono ancora essere prese in carico da un membro del progetto */
-    private List<Card> toDo;
+    private final List<Card> toDo;
     /* Lista delle card che sono state prese in carico da un membro del progetto */
-    private List<Card> inProgress;
+    private final List<Card> inProgress;
     /* Lista delle card le cui operazioni sono da revisionare da un membro del progetto */
-    private List<Card> toBeRevised;
+    private final List<Card> toBeRevised;
     /* Lista delle card le cui operazioni associate sono portate a termine da un membro del progetto */
-    private List<Card> done;
+    private final List<Card> done;
     /* Lista di membri del progetto */
-    private List<User> members_sync;
+    private final List<User> members_sync;
 
-    private Vector<Card> cardsToShow;
-    private boolean concat;
+    private final Vector<Card> cardsToShow;
 
     /***
      * Costruttore della classe
@@ -31,6 +30,10 @@ public class Project {
         members_sync = Collections.synchronizedList(new LinkedList<>());
         members_sync.add(user);
         cardsToShow = new Vector<>();
+    }
+
+    public String getNameProject() {
+        return nameProject;
     }
 
     /***
@@ -102,16 +105,24 @@ public class Project {
     }
 
     public synchronized Card showCard(String cardName){
-        concat = cardsToShow.addAll(toDo);
-        concat = cardsToShow.addAll(toBeRevised);
-        concat = cardsToShow.addAll(inProgress);
-        concat = cardsToShow.addAll(done);
+        cardsToShow.addAll(toDo);
+        cardsToShow.addAll(toBeRevised);
+        cardsToShow.addAll(inProgress);
+        cardsToShow.addAll(done);
         for (Card value : cardsToShow) {
             if (value.getNameCard().equals(cardName)){
                 return value;
             }
         }
         return null;
+    }
+
+    public synchronized Vector<Card> showCards(){
+        cardsToShow.addAll(toDo);
+        cardsToShow.addAll(toBeRevised);
+        cardsToShow.addAll(inProgress);
+        cardsToShow.addAll(done);
+        return cardsToShow;
     }
 
     public synchronized void addMember(User user){
