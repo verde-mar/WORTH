@@ -159,8 +159,8 @@ public class Project {
 
     /***
      * Restituisce la history di una card
-     * @param cardname
-     * @return
+     * @param cardname nome della Card
+     * @return String la history della card
      */
     public String getCardHistory(String cardname){
         Card card = showCard(cardname);
