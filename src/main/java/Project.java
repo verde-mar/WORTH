@@ -104,6 +104,11 @@ public class Project {
         }
     }
 
+    /***
+     * Restituisce la copia della card cercata
+     * @param cardName, nome della card
+     * @return Card la copia della card
+     */
     public synchronized Card showCard(String cardName){
         cardsToShow.addAll(toDo);
         cardsToShow.addAll(toBeRevised);
@@ -117,6 +122,10 @@ public class Project {
         return null;
     }
 
+    /***
+     * Restituisce tutte le card del progetto
+     * @return Vector<Card> contenente tutte le card del progetto
+     */
     public synchronized Vector<Card> showCards(){
         cardsToShow.addAll(toDo);
         cardsToShow.addAll(toBeRevised);
@@ -125,13 +134,39 @@ public class Project {
         return cardsToShow;
     }
 
+    /***
+     * Aggiunge l'utente user alla lista dei membri del progetto
+     * @param user utente da inserire
+     */
     public synchronized void addMember(User user){
         members_sync.add(user);
+    } //si controlli che l'utente non ci sia gia'
+
+    /***
+     * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
+     * @param listaDiPartenza lista in cui si trova attualmente la card
+     * @param listaDiDestinazione lista in cui si trovera' la card
+     * @param card da spostare
+     */
+    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
+        listaDiPartenza.remove(card); //si faccia il controllo che queste sono dello stesso progetto
+        card.addHistory("removed from " + ); //mi restituisce solo il nome o di piu'? Da testare
+        listaDiDestinazione.add(card);
+        card.addHistory("added to " + ); //mi restituisce solo il nome o di piu'? Da testare
     }
 
-    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
-        listaDiPartenza.remove(card);
-        listaDiDestinazione.add(card);
+    /***
+     * Restituisce la history di una card
+     * @param cardname
+     * @return
+     */
+    public String getCardHistory(String cardname){
+        Card card = showCard(cardname);
+        if(card!=null) {
+            String history = card.getHistory();
+            return history;
+        }
+        return null;
     }
 }
 

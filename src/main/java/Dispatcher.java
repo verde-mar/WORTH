@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -8,7 +7,7 @@ import java.util.concurrent.Callable;
 
 public class Dispatcher implements Callable<Tasks> {
     /* Buffer contenente i dati letti */
-    private ByteBuffer buffer;
+    private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta/risposta del client */
     private Tasks task;
 
@@ -39,14 +38,8 @@ public class Dispatcher implements Callable<Tasks> {
     @Override
     public Tasks call() throws Exception {
         parser();
-        if(task.getRequest().equals("createProject")){
-            System.out.println("Si crea il progetto.");
-            Project project = new Project(task.getProjectName(), new User());
-            Card card = new Card(task.getCardName());
-            project.addCard("toDo", card);
-            Card card1 = project.showCard(card.getNameCard());
-        }
-        //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
+
+        //analizza le varie richieste, in base a quello chiama l'operazione giusta
         //task = response;
         return task;
     }

@@ -15,6 +15,10 @@ public class Card {
         history=null;
     }
 
+    /***
+     * Restituisce il nome della card
+     * @return String il nome della card
+     */
     public String getNameCard(){
         return nameCard;
     }
@@ -29,6 +33,14 @@ public class Card {
         } else {
             history = history.concat(toConcat + ";");
         }
+    }
+
+    /***
+     * Restituisce la history di una card
+     * @return String la history di una card
+     */
+    public String getHistory(){
+        return history;
     }
 
     /***
