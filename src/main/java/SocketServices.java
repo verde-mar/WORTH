@@ -80,6 +80,10 @@ public class SocketServices implements AutoCloseable{
                 if(key.isReadable()){
                     readMessage(key);
                 }
+                /* La chiave e' pronta in scrittura */
+                if(key.isWritable()){
+                    writeMessage(key);
+                }
             }
         }
     }
@@ -159,6 +163,29 @@ public class SocketServices implements AutoCloseable{
 
             System.out.printf("Just read message from %s\n", client_read.getRemoteAddress());
         }
+    }
+
+    private void writeMessage(SelectionKey key) throws IOException {
+        /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
+        @SuppressWarnings("unchecked")
+        Future<Tasks> future = (Future<Tasks>) key.attachment();
+        /* Active socket associato al client */
+        SocketChannel client = (SocketChannel) key.channel();
+
+        /* Buffer contenente la risposta da inviare al client */
+        ByteBuffer response; //todo: ma da dove lo prende il bytebuffer?
+        /* Scrive sul canale */
+        client.write(response);
+        /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
+        if (response.hasRemaining())
+            return;
+        System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
+        /* Altrimenti registra di nuovo il client per la lettura */
+        key.interestOps(SelectionKey.OP_READ);
+        /* Buffer necessario a leggere la dimensione del messaggio */
+        ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+        /* Usa il buffer per la lettura */
+        key.attach(lengthBuffer);
     }
 
     /***
