@@ -41,7 +41,7 @@ public class Project {
      *
      * @return List<User> lista dei membri del progetto
      */
-    private List<User> showMembers(){
+    public List<User> showMembers(){
         return members_sync;
     }
 
@@ -50,7 +50,7 @@ public class Project {
      *
      * @return List<Card>, lista che contiene le card all'interno della lista DONE
      */
-    private List<Card> getDone(){
+    public List<Card> getDone(){
         return done;
     }
 
@@ -58,7 +58,7 @@ public class Project {
      * Restituisce la lista che contiene le card all'interno della lista TOBEREVISED
      * @return List<Card>, lista che contiene le card all'interno della lista TOBEREVISED
      */
-    private List<Card> getToBeRevised(){
+    public List<Card> getToBeRevised(){
         return toBeRevised;
     }
 
@@ -66,7 +66,7 @@ public class Project {
      * Restituisce la lista che contiene le card all'interno della lista TODO
      * @return List<Card>, lista che contiene le card all'interno della lista TODO
      */
-    private List<Card> getToDo(){
+    public List<Card> getToDo(){
         return toDo;
     }
 
@@ -74,7 +74,7 @@ public class Project {
      * Restituisce la lista che contiene le card all'interno della lista INPROGRESS
      * @return List<Card>, lista che contiene le card all'interno della lista INPROGRESS
      */
-    private List<Card> getInProgress(){
+    public List<Card> getInProgress(){
         return inProgress;
     }
 
@@ -87,16 +87,16 @@ public class Project {
     public synchronized void addCard(String listaToAdd, Card card){
         if(showCard(card.getNameCard()) == null) {
             if (listaToAdd.equals("toDo")) {
-                card.addHistory("toDo");
+                card.addHistory("added to toDo; ");
                 toDo.add(card);
             } else if (listaToAdd.equals("toBeRevised")) {
-                card.addHistory("toBeRevised");
+                card.addHistory("added to toBeRevised; ");
                 toBeRevised.add(card);
             } else if (listaToAdd.equals("inProgress")) {
-                card.addHistory("inProgress");
+                card.addHistory("added to inProgress; ");
                 inProgress.add(card);
             } else {
-                card.addHistory("done");
+                card.addHistory("added to done; ");
                 done.add(card);
             }
         } else {
@@ -150,11 +150,11 @@ public class Project {
      * @param listaDiDestinazione lista in cui si trovera' la card
      * @param card da spostare
      */
-    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, Card card){
-        listaDiPartenza.remove(card); //si faccia il controllo che queste siano dello stesso progetto
-        card.addHistory("removed from " + listaDiPartenza); //mi restituisce solo il nome o di piu'? Da testare
+    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, String listaDiPart, String listadiDest, Card card){
+        listaDiPartenza.remove(card);
+        card.addHistory("removed from " + listaDiPart + "; ");
         listaDiDestinazione.add(card);
-        card.addHistory("added to " + listaDiDestinazione); //mi restituisce solo il nome o di piu'? Da testare
+        card.addHistory("added to " + listadiDest + "; ");
     }
 
     /***
@@ -166,6 +166,7 @@ public class Project {
         Card card = showCard(cardname);
         if(card!=null) {
             String history = card.getHistory();
+            System.out.println("History in getCardHistory: "+ history);
             return history;
         }
         return null;

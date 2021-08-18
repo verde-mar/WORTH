@@ -38,8 +38,14 @@ public class Dispatcher implements Callable<Tasks> {
     @Override
     public Tasks call() throws Exception {
         parser();
-
-        //analizza le varie richieste, in base a quello chiama l'operazione giusta
+        if(task.getRequest().equals("createProject")){
+            Project project = new Project(task.getProjectName(), new User());
+            Card card = new Card(task.getCardName());
+            project.addCard("toDo", card);
+            project.moveCard(project.getToDo(), project.getToBeRevised(), "toDo", "toBeRevised", card);
+            String story = project.getCardHistory(card.getNameCard());
+        }
+        //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;
         return task;
     }

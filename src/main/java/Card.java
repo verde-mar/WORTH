@@ -31,9 +31,9 @@ public class Card {
         if(history == null){
             history = toConcat;
         } else {
-            history = history.concat(toConcat + ";");
+            history = history.concat(toConcat);
+
         }
-        System.out.println(history);
     }
 
     /***
