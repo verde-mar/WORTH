@@ -6,6 +6,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -14,13 +15,15 @@ import static java.lang.Thread.sleep;
 
 public class SocketServices implements AutoCloseable{
     /* Selettore */
-    private Selector selector;
+    private final Selector selector;
 
     /* Welcoming socket */
-    private ServerSocketChannel channel;
+    private final ServerSocketChannel channel;
 
     /* Threadpool a cui assegnare i task */
     private ThreadPoolExecutor threadPool;
+
+    private ConcurrentHashMap<Integer, Project> projects;
 
     /***
      * Costruttore della classe
@@ -41,6 +44,9 @@ public class SocketServices implements AutoCloseable{
 
         /* Registra il channel */
         channel.register(selector, SelectionKey.OP_ACCEPT);
+
+        /* Crea la struttura dati per i progetti */
+        projects = new ConcurrentHashMap<>();
     }
 
     /***
@@ -49,7 +55,7 @@ public class SocketServices implements AutoCloseable{
      * @return Future<Tasks> un thread del threadpool
      */
     private Future<Tasks> elaborateRequest(ByteBuffer buffer) {
-        return threadPool.submit(new Dispatcher(buffer));
+        return threadPool.submit(new Dispatcher(buffer, projects));
     }
 
     /***
@@ -81,9 +87,9 @@ public class SocketServices implements AutoCloseable{
                     readMessage(key);
                 }
                 /* La chiave e' pronta in scrittura */
-                if(key.isWritable()){
-                    writeMessage(key);
-                }
+                // if(key.isWritable()){
+                //    writeMessage(key);
+                //}
             }
         }
     }
@@ -165,28 +171,28 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
-    private void writeMessage(SelectionKey key) throws IOException {
+    /*private void writeMessage(SelectionKey key) throws IOException {
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
-        @SuppressWarnings("unchecked")
-        Future<Tasks> future = (Future<Tasks>) key.attachment();
+    //    @SuppressWarnings("unchecked")
+    //    Future<Tasks> future = (Future<Tasks>) key.attachment();
         /* Active socket associato al client */
-        SocketChannel client = (SocketChannel) key.channel();
+    //    SocketChannel client = (SocketChannel) key.channel();
 
         /* Buffer contenente la risposta da inviare al client */
-        ByteBuffer response; //todo: ma da dove lo prende il bytebuffer?
+    //    ByteBuffer response; //todo: ma da dove lo prende il bytebuffer?
         /* Scrive sul canale */
-        client.write(response);
+    //    client.write(response);
         /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
-        if (response.hasRemaining())
-            return;
-        System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
+    //    if (response.hasRemaining())
+    //        return;
+    //    System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
         /* Altrimenti registra di nuovo il client per la lettura */
-        key.interestOps(SelectionKey.OP_READ);
+    //    key.interestOps(SelectionKey.OP_READ);
         /* Buffer necessario a leggere la dimensione del messaggio */
-        ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+    //    ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
         /* Usa il buffer per la lettura */
-        key.attach(lengthBuffer);
-    }
+    /*    key.attach(lengthBuffer);
+    }*/
 
     /***
      * Funzione che prevede la chiusura del selector e il server socket
