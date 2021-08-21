@@ -34,6 +34,14 @@ public class Dispatcher implements Callable<Tasks> {
         task = objectMapper.readValue(buffer_toString, Tasks.class);
     }
 
+    private void createProject(Project project){
+        projects.putIfAbsent(Integer.valueOf(project.getNameProject()), project);
+    }
+
+    private void cancelProject(Project project){
+        projects.remove(Integer.valueOf(project.getNameProject()), project);
+    }
+
     /***
      * Override della chiamata call
      * @return Tasks cioe' la risposta in formato JSON
@@ -43,7 +51,7 @@ public class Dispatcher implements Callable<Tasks> {
         parser();
         if(task.getRequest().equals("createProject")){
             Project project = new Project(task.getProjectName(), new User());
-            projects.putIfAbsent(Integer.valueOf(task.getProjectName()), project);
+            createProject(project);
         }
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
         //task = response;
