@@ -5,11 +5,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
 
@@ -63,7 +61,7 @@ public class SocketServices implements AutoCloseable{
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se avviene un errore nella lettura del messaggio in readMessage(key)
      */
-    public void start() throws IOException, InterruptedException {
+    public void start() throws IOException, InterruptedException, ExecutionException {
         System.out.printf("TCP Server started on local address %s\n", channel.getLocalAddress());
         while (!Thread.interrupted()){
             selector.select();
@@ -87,9 +85,9 @@ public class SocketServices implements AutoCloseable{
                     readMessage(key);
                 }
                 /* La chiave e' pronta in scrittura */
-                // if(key.isWritable()){
-                //    writeMessage(key);
-                //}
+                if(key.isWritable()){
+                    writeMessage(key);
+                }
             }
         }
     }
@@ -171,28 +169,45 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
-    /*private void writeMessage(SelectionKey key) throws IOException {
+    /***
+     * Attende che il messaggio sia pronto e poi lo scrive a blocchi
+     *
+     * @param key Chiave che rappresenta il client pronto per la scrittura
+     * @throws IOException Se c'è un problema a scrivere il messaggio
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    private void writeMessage(SelectionKey key) throws IOException, ExecutionException, InterruptedException {
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
-    //    @SuppressWarnings("unchecked")
-    //    Future<Tasks> future = (Future<Tasks>) key.attachment();
+        @SuppressWarnings("unchecked")
+        Future<Tasks> future = (Future<Tasks>) key.attachment();
         /* Active socket associato al client */
-    //    SocketChannel client = (SocketChannel) key.channel();
+        SocketChannel client = (SocketChannel) key.channel();
 
         /* Buffer contenente la risposta da inviare al client */
-    //    ByteBuffer response; //todo: ma da dove lo prende il bytebuffer?
+        Tasks response_t = future.get();
+        String response_s = response_t.toString();
+        byte[] byte_request = response_s.getBytes(StandardCharsets.UTF_8);
+        ByteBuffer response = ByteBuffer.allocate(response_s.length());
+        response.put(byte_request);
+
         /* Scrive sul canale */
-    //    client.write(response);
+        client.write(response);
+
         /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
-    //    if (response.hasRemaining())
-    //        return;
-    //    System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
+        if (response.hasRemaining())
+            return;
+        System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
+
         /* Altrimenti registra di nuovo il client per la lettura */
-    //    key.interestOps(SelectionKey.OP_READ);
+        key.interestOps(SelectionKey.OP_READ);
+
         /* Buffer necessario a leggere la dimensione del messaggio */
-    //    ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+        ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+
         /* Usa il buffer per la lettura */
-    /*    key.attach(lengthBuffer);
-    }*/
+        key.attach(lengthBuffer);
+    }
 
     /***
      * Funzione che prevede la chiusura del selector e il server socket
