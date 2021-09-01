@@ -20,6 +20,7 @@ public class Cliente_2 {
             buffer.flip();
             while (buffer.hasRemaining())
                 client.write(buffer);
+
             //client.read(buffer);
         } catch(IOException ex) { ex.printStackTrace(); }
     }

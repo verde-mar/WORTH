@@ -23,7 +23,7 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private ThreadPoolExecutor threadPool;
 
-    private ConcurrentHashMap<Integer, Project> projects;
+    private ConcurrentHashMap<String, Project> projects;
 
     /***
      * Costruttore della classe

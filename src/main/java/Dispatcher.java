@@ -6,18 +6,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.lang.Integer.parseInt;
+
 public class Dispatcher implements Callable<Tasks> {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta/risposta del client */
     private Tasks task;
-    private ConcurrentHashMap<Integer, Project> projects;
+    private ConcurrentHashMap<String, Project> projects;
 
     /***
      * Costruttore dell'oggetto
      * @param buffer contenente la richiesta
      */
-    public Dispatcher(ByteBuffer buffer, ConcurrentHashMap<Integer, Project> projects) {
+    public Dispatcher(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
         this.buffer = buffer;
         this.projects = projects;
     }
@@ -35,11 +37,13 @@ public class Dispatcher implements Callable<Tasks> {
     }
 
     private void createProject(Project project){
-        projects.putIfAbsent(Integer.valueOf(project.getNameProject()), project);
+        Project result = projects.putIfAbsent(project.getNameProject(), project);
+        if(result!=null) System.out.println("C'era gia'");
+        else System.out.println("Appena inserito un progetto");
     }
 
     private void cancelProject(Project project){
-        projects.remove(Integer.valueOf(project.getNameProject()), project);
+        projects.remove(project.getNameProject(), project);
     }
 
     /***
@@ -50,7 +54,7 @@ public class Dispatcher implements Callable<Tasks> {
     public Tasks call() throws Exception {
         parser();
         if(task.getRequest().equals("createProject")){
-            Project project = new Project(task.getProjectName(), new User());
+            Project project = new Project(task.getProjectName(), new User()); //Questo utente deve essere definito nella registrazione
             createProject(project);
         }
         //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
