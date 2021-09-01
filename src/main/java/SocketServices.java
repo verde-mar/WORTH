@@ -174,8 +174,8 @@ public class SocketServices implements AutoCloseable{
      *
      * @param key Chiave che rappresenta il client pronto per la scrittura
      * @throws IOException Se c'è un problema a scrivere il messaggio
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * @throws ExecutionException Se c'e' stato un errore nella computazione
+     * @throws InterruptedException Se il thread e' stato interrotto
      */
     private void writeMessage(SelectionKey key) throws IOException, ExecutionException, InterruptedException {
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
