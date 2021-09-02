@@ -13,6 +13,7 @@ public class Dispatcher implements Callable<Tasks> {
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta/risposta del client */
     private Tasks task;
+    /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private ConcurrentHashMap<String, Project> projects;
 
     /***
@@ -36,16 +37,6 @@ public class Dispatcher implements Callable<Tasks> {
         task = objectMapper.readValue(buffer_toString, Tasks.class);
     }
 
-    private void createProject(Project project){
-        Project result = projects.putIfAbsent(project.getNameProject(), project);
-        if(result!=null) System.out.println("C'era gia'");
-        else System.out.println("Appena inserito un progetto");
-    }
-
-    private void cancelProject(Project project){
-        projects.remove(project.getNameProject(), project);
-    }
-
     /***
      * Override della chiamata call
      * @return Tasks cioe' la risposta in formato JSON
@@ -55,9 +46,9 @@ public class Dispatcher implements Callable<Tasks> {
         parser();
         if(task.getRequest().equals("createProject")){
             Project project = new Project(task.getProjectName(), new User()); //Questo utente deve essere definito nella registrazione
-            createProject(project);
+            Worker w1 = new Worker(project);
         }
-        //esecuzione --> prevede di prendere l'istanza task e di fare l'esecuzione richiesta
+
         return task;
     }
 }

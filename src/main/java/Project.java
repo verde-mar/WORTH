@@ -13,7 +13,7 @@ public class Project {
     private final List<Card> done;
     /* Lista di membri del progetto */
     private final List<User> members_sync;
-
+    /* Vettore di tutte le carte totali */
     private final Vector<Card> cardsToShow;
 
     /***
@@ -32,13 +32,16 @@ public class Project {
         cardsToShow = new Vector<>();
     }
 
+    /***
+     * Restituisce il nome del progetto
+     * @return String Il nome del progetto
+     */
     public String getNameProject() {
         return nameProject;
     }
 
     /***
      * Restituisce la lista dei membri del progetto
-     *
      * @return List<User> lista dei membri del progetto
      */
     public List<User> showMembers(){
@@ -47,7 +50,6 @@ public class Project {
 
     /***
      * Restituisce la lista che contiene le card all'interno della lista DONE
-     *
      * @return List<Card>, lista che contiene le card all'interno della lista DONE
      */
     public List<Card> getDone(){
@@ -80,7 +82,6 @@ public class Project {
 
     /***
      * Aggiunge una card alla lista listaToAdd
-     *
      * @param listaToAdd lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
      */
@@ -172,4 +173,3 @@ public class Project {
         return null;
     }
 }
-
