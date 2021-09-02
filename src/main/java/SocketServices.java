@@ -20,9 +20,9 @@ public class SocketServices implements AutoCloseable{
     private final ServerSocketChannel channel;
 
     /* Threadpool a cui assegnare i task */
-    private ThreadPoolExecutor threadPool;
+    private final ThreadPoolExecutor threadPool;
 
-    private ConcurrentHashMap<String, Project> projects;
+    private final ConcurrentHashMap<String, Project> projects;
 
     /***
      * Costruttore della classe
@@ -212,7 +212,7 @@ public class SocketServices implements AutoCloseable{
 
         /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
         if (response.hasRemaining())
-            client.write(response);;
+            client.write(response);
         System.out.printf("Just sent message to %s\n", client.getRemoteAddress());
 
         /* Buffer necessario a leggere la dimensione del messaggio */
