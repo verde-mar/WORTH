@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import static java.lang.Thread.sleep;
 
 public class Cliente_1 {
+
     public static void main(String[] args) {
         int port = 8080;
         try { SocketAddress address = new InetSocketAddress(args[0], port);
@@ -20,10 +21,27 @@ public class Cliente_1 {
             buffer.putInt(byte_request.length);
             buffer.put(byte_request);
             buffer.flip();
-            sleep(10000);
             while (buffer.hasRemaining())
                 client.write(buffer);
-            //client.read(buffer);
-        } catch(IOException | InterruptedException ex) { ex.printStackTrace(); }
+            // Buffer contenente la lunghezza
+            ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+
+            while(lengthBuffer.hasRemaining())
+                client.read(lengthBuffer);
+            System.out.println("dopo read size");
+            lengthBuffer.flip();
+            System.out.println(lengthBuffer);
+
+            // Buffer contenente i dati
+            ByteBuffer buffer_response = ByteBuffer.allocate(lengthBuffer.getInt());
+            while(buffer_response.hasRemaining())
+                client.read(buffer_response);
+            buffer_response.flip();
+            System.out.println(buffer_response);
+            // Stringa estratta dal buffer
+            String message = new String(buffer_response.array(), StandardCharsets.UTF_8);
+            System.out.printf("[TCP] Received string:\n%s\n", message);
+        } catch(IOException ex) { ex.printStackTrace(); }
+
     }
 }

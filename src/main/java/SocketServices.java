@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -5,7 +7,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
@@ -56,6 +57,7 @@ public class SocketServices implements AutoCloseable{
         return threadPool.submit(new Dispatcher(buffer, projects));
     }
 
+
     /***
      * La funzione fa girare il selector finche' il thread main non viene interrotto
      * @throws IOException se avviene un errore nell'I/O
@@ -81,11 +83,12 @@ public class SocketServices implements AutoCloseable{
                     registerClient(key);
                 }
                 /* La chiave e' pronta in lettura */
-                if(key.isReadable()){
+                else if(key.isReadable()){
                     readMessage(key);
                 }
+
                 /* La chiave e' pronta in scrittura */
-                if(key.isWritable()){
+                else if(key.isWritable()){
                     writeMessage(key);
                 }
             }
@@ -162,8 +165,8 @@ public class SocketServices implements AutoCloseable{
             Future<Tasks> future = elaborateRequest(buffer);
 
             /* Registra la chiave per la scrittura */
-            SelectionKey writekey = client_read.register(selector, SelectionKey.OP_WRITE);
-            writekey.attach(future);
+            SelectionKey reg_key = client_read.register(selector, SelectionKey.OP_WRITE);
+            reg_key.attach(future);
 
             System.out.printf("Just read message from %s\n", client_read.getRemoteAddress());
         }
@@ -181,32 +184,43 @@ public class SocketServices implements AutoCloseable{
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
         @SuppressWarnings("unchecked")
         Future<Tasks> future = (Future<Tasks>) key.attachment();
+        if (!future.isDone())
+            return;
         /* Active socket associato al client */
         SocketChannel client = (SocketChannel) key.channel();
 
-        /* Buffer contenente la risposta da inviare al client */
+        /* Si fa restituire la risposta in formato Tasks, e crea il file JSON da inviare al client */
         Tasks response_t = future.get();
-        String response_s = response_t.toString();
-        byte[] byte_request = response_s.getBytes(StandardCharsets.UTF_8);
-        ByteBuffer response = ByteBuffer.allocate(response_s.length());
-        response.put(byte_request);
+        ObjectMapper mapper = new ObjectMapper();
+        byte[] byteResponse = mapper.writeValueAsBytes(response_t);
+        ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Scrive sul canale */
+        /* Invia la size della risposta al client */
+        response.putInt(byteResponse.length);
+        response.flip();
+        client.write(response);
+
+        /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
+        if(response.hasRemaining())
+            return;
+
+        /* Inserisce la risposta e la invia */
+        response = ByteBuffer.allocate(byteResponse.length);
+        response.put(byteResponse);
+        response.flip();
         client.write(response);
 
         /* Se non ha ancora finito esce (rientrerà nella funzione per scrivere ancora) */
         if (response.hasRemaining())
-            return;
-        System.out.printf("[SERVER] Just sent message to %s\n", client.getRemoteAddress());
-
-        /* Altrimenti registra di nuovo il client per la lettura */
-        key.interestOps(SelectionKey.OP_READ);
+            client.write(response);;
+        System.out.printf("Just sent message to %s\n", client.getRemoteAddress());
 
         /* Buffer necessario a leggere la dimensione del messaggio */
         ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Usa il buffer per la lettura */
-        key.attach(lengthBuffer);
+        /* Altrimenti registra di nuovo il client per la lettura */
+        SelectionKey wr_key = client.register(selector, SelectionKey.OP_READ);
+        wr_key.attach(lengthBuffer);
     }
 
     /***
