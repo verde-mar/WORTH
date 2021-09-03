@@ -22,6 +22,7 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
+    /* Struttura dati rappresentante l'insieme dei progetti all'interno del server */
     private final ConcurrentHashMap<String, Project> projects;
 
     /***

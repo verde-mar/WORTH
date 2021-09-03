@@ -6,8 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.Integer.parseInt;
-
 public class Dispatcher implements Callable<Tasks> {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;

@@ -48,6 +48,21 @@ public class Project {
         return members_sync;
     }
 
+
+    /***
+     * Restituisce la lista dei membri del progetto e che sono online
+     * @return List<User> lista dei membri online del progetto
+     */
+    public List<User> showOnlineMembers(){
+        Vector<User> onlineMembers = new Vector<>();
+        for(User user : members_sync){
+            if(user.isOnline()){
+                onlineMembers.add(user);
+            }
+        }
+        return onlineMembers;
+    }
+
     /***
      * Restituisce la lista che contiene le card all'interno della lista DONE
      * @return List<Card>, lista che contiene le card all'interno della lista DONE
