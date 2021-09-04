@@ -49,7 +49,61 @@ public class Tasks {
      * Restituisce la richiesta effettuata
      * @return String la richiesta effettuata
      */
-    public String getRequest(){
+    public RequestType getRequest(){
+        switch(request){
+            case readChat -> {
+                return RequestType.readChat;
+            }
+            case login -> {
+                return RequestType.login;
+            }
+            case createProject -> {
+                return RequestType.createProject;
+            }
+            case logout -> {
+                return RequestType.logout;
+            }
+            case addCard -> {
+                return RequestType.addCard;
+            }
+            case moveCard -> {
+                return RequestType.moveCard;
+            }
+            case showCard -> {
+                return RequestType.showCard;
+            }
+            case addMember -> {
+                return RequestType.addMember;
+            }
+            case listUsers -> {
+                return RequestType.listUsers;
+            }
+            case showCards -> {
+                return RequestType.showCards;
+            }
+            case sendChatMsg -> {
+                return RequestType.sendChatMsg;
+            }
+            case showMembers -> {
+                return RequestType.showMembers;
+            }
+            case listProjects -> {
+                return RequestType.listProjects;
+            }
+            case cancelProjects -> {
+                return RequestType.cancelProjects;
+            }
+            case getCardHistory -> {
+                return RequestType.getCardHistory;
+            }
+            case listOnlineUsers -> {
+                return RequestType.listOnlineUsers;
+            }
+        }
+        return null;
+    }
+
+    public String getNameRequest(){
         switch(request){
             case readChat -> {
                 return RequestType.readChat.name();
@@ -195,6 +249,10 @@ public class Tasks {
         for(Project project : projs){
             projects.add(project.getNameProject());
         }
+    }
+
+    public void setRequest(RequestType request){
+        this.request = request;
     }
 
     /***

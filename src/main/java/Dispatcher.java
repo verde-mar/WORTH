@@ -53,6 +53,8 @@ public class Dispatcher implements Callable<Tasks> {
     @Override
     public Tasks call() throws Exception {
         parser();
+
+
         return task_response;
     }
 }
