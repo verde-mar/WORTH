@@ -4,4 +4,8 @@ public class User {
     public boolean isOnline() {
         return true;
     }
+
+    public String getName() {
+        return null;
+    }
 }

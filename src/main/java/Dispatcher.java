@@ -9,10 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Dispatcher implements Callable<Tasks> {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
-    /* Oggetto che rappresenta una richiesta/risposta del client */
-    private Tasks task;
+    /* Oggetto che rappresenta una richiesta del client */
+    private Tasks task_request;
+    /* Oggetto che rappresenta una risposta del client */
+    private Tasks task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private ConcurrentHashMap<String, Project> projects;
+    /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
+    ObjectMapper objectMapper;
 
     /***
      * Costruttore dell'oggetto
@@ -21,6 +25,7 @@ public class Dispatcher implements Callable<Tasks> {
     public Dispatcher(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
         this.buffer = buffer;
         this.projects = projects;
+        objectMapper = new ObjectMapper();
     }
 
     /***
@@ -28,11 +33,17 @@ public class Dispatcher implements Callable<Tasks> {
      * @throws IOException se ci sono errori nell' I/O
      */
     private void parser() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo Tasks */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
-        task = objectMapper.readValue(buffer_toString, Tasks.class);
+        task_request = objectMapper.readValue(buffer_toString, Tasks.class);
+    }
+
+    private void response(boolean outcome_b, String outcome_s){
+        if(outcome_b){
+            task_response.setSuccess();
+        } else {
+            task_response.setFailure(outcome_s);
+        }
     }
 
     /***
@@ -42,11 +53,6 @@ public class Dispatcher implements Callable<Tasks> {
     @Override
     public Tasks call() throws Exception {
         parser();
-        if(task.getRequest().equals("createProject")){
-            Project project = new Project(task.getProjectName(), new User()); //Questo utente deve essere definito nella registrazione
-            Worker w1 = new Worker(project);
-        }
-
-        return task;
+        return task_response;
     }
 }

@@ -1,5 +1,8 @@
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Tasks {
     private enum RequestType{
@@ -21,6 +24,7 @@ public class Tasks {
         cancelProjects
     }
 
+    /* Parametri necessari per la richiesta */
     private String projectName;
     private String cardName;
     private String nickUtente;
@@ -31,6 +35,15 @@ public class Tasks {
     private String listaPartenza;
     private String listaDestinazione;
 
+    /* Parametri necessari per la risposta */
+    private String explanation;
+    private boolean done;
+    private List<String> cardsName;
+    private List<String> members;
+    private List<String> projects;
+    private List<String> users;
+    private List<String> onlineUsers;
+    private String cardHistory;
 
     /***
      * Restituisce la richiesta effettuata
@@ -136,5 +149,101 @@ public class Tasks {
      */
     public String getListaDestinazione(){
         return listaDestinazione;
+    }
+
+    /***
+     * Setta la variabile a true, quindi la richiesta e' stata eseguita con successo
+     */
+    public void setSuccess(){
+        done = true;
+        explanation = "success";
+    }
+
+    /***
+     * Assegna al campo projectName la stringa passata per parametro
+     * @param projectName Nome da assegnare a projectName
+     */
+    public void setProjectName(String projectName){
+        this.projectName = projectName;
+    }
+
+    /***
+     * Assegna al campo cardName la stringa passata per parametro
+     * @param card Card il cui nome e' da assegnare a cardName
+     */
+    public void setCardName(Card card){
+        this.cardName = card.getNameCard();
+    }
+
+    /***
+     * Assegna a ciascun campo di cards i nomi delle card richieste
+     * @param cards List<Card> rappresentante le card di un determinato progetto, precedentemente restituite
+     */
+    public void setCardsName(List<Card> cards){
+        cardsName = new LinkedList<>();
+        for(Card card : cards){
+            cardsName.add(card.getNameCard());
+        }
+    }
+
+    /***
+     * Assegna a ciascun campo di projects i nomi dei peoject richiesti
+     * @param projs Lista dei progetti
+     */
+    public void setProjects(List<Project> projs){
+        projects = new LinkedList<>();
+        for(Project project : projs){
+            projects.add(project.getNameProject());
+        }
+    }
+
+    /***
+     * Setta la variabile a false, quindi la richiesta non e' stata eseguita con successo
+     * @param expl Stringa che identifica il motivo per cui la richiesta non e' terminata con successo
+     */
+    public void setFailure(String expl){
+        done = false;
+        explanation = expl;
+    }
+
+    /***
+     * Setta i nomi dei membri del progetto
+     * @param members Lista rappresentante i membri del progetto corrente
+     */
+    public void setMembers(List<User> members){
+        this.members = new LinkedList<>();
+        for(User user : members){
+            this.members.add(user.getName());
+        }
+    }
+
+    /***
+     * Setta i nomi degli utenti del progetto
+     * @param users Lista rappresentante gli utenti
+     */
+    public void setUsers(List<User> users){
+        this.users = new LinkedList<>();
+        for(User user : users){
+            this.members.add(user.getName());
+        }
+    }
+
+    /***
+     * Setta i nomi degli utenti online del progetto
+     * @param onlineUsers Lista rappresentante gli utenti online
+     */
+    public void setOnlineUsers(List<User> onlineUsers){
+        this.onlineUsers = new LinkedList<>();
+        for(User user : onlineUsers){
+            this.onlineUsers.add(user.getName());
+        }
+    }
+
+    /***
+     * Setta l' history della card corrente
+     * @param card Card corrente
+     */
+    public void setHistory(Card card){
+        cardHistory = card.getHistory();
     }
 }
