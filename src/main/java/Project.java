@@ -102,6 +102,7 @@ public class Project {
     public synchronized boolean addCardToDo(Card card){
         boolean outcome = false;
         if(card != null) {
+            outcome = true;
             card.addHistory("added to toDo; ");
             toDo.add(card);
         }
@@ -116,6 +117,7 @@ public class Project {
     public synchronized boolean addCardDoing(Card card){
         boolean outcome = false;
         if(card != null) {
+            outcome = true;
             card.addHistory("added to inProgress; ");
             inProgress.add(card);
         }
@@ -130,6 +132,7 @@ public class Project {
     public synchronized boolean addCardRevised(Card card){
         boolean outcome = false;
         if(card != null) {
+            outcome = true;
             card.addHistory("added to toBeRevised; ");
             toBeRevised.add(card);
         }
