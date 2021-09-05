@@ -53,7 +53,7 @@ public class Project {
      * Restituisce la lista dei membri del progetto e che sono online
      * @return List<User> lista dei membri online del progetto
      */
-    public List<User> showOnlineMembers(){
+    public synchronized List<User> showOnlineMembers(){
         Vector<User> onlineMembers = new Vector<>();
         for(User user : members_sync){
             if(user.isOnline()){
@@ -100,7 +100,7 @@ public class Project {
      * @param lista lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
      */
-    public synchronized void addCardTo(String lista, Card card){
+    public synchronized void addCardToDo(String lista, Card card){
         card.addHistory("added to toDo; ");
         toDo.add(card);
     }
@@ -140,16 +140,66 @@ public class Project {
      * @param cardName, nome della card
      * @return Card la copia della card
      */
-    public synchronized Card showCard(String cardName){
+    public synchronized Card showCardToDo(String cardName){
+        cardsToShow.removeAllElements();
         cardsToShow.addAll(toDo);
-        cardsToShow.addAll(toBeRevised);
+        for (Card value : cardsToShow) {
+            if (value.getNameCard().equals(cardName)){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    /***
+     * Restituisce la copia della card cercata
+     * @param cardName, nome della card
+     * @return Card la copia della card
+     */
+    public synchronized Card showCardDoing(String cardName){
+        cardsToShow.removeAllElements();
         cardsToShow.addAll(inProgress);
+        for (Card value : cardsToShow) {
+            if (value.getNameCard().equals(cardName)){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    /***
+     * Restituisce la copia della card cercata
+     * @param cardName, nome della card
+     * @return Card la copia della card
+     */
+    public synchronized Card showCardToBeRevised(String cardName){
+        cardsToShow.removeAllElements();
+        cardsToShow.addAll(toBeRevised);
+        for (Card value : cardsToShow) {
+            if (value.getNameCard().equals(cardName)){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    /***
+     * Restituisce la copia della card cercata
+     * @param cardName, nome della card
+     * @return Card la copia della card
+     */
+    public synchronized Card showCardDone(String cardName){
+        cardsToShow.removeAllElements();
         cardsToShow.addAll(done);
         for (Card value : cardsToShow) {
             if (value.getNameCard().equals(cardName)){
                 return value;
             }
         }
+
         return null;
     }
 
@@ -158,6 +208,7 @@ public class Project {
      * @return Vector<Card> contenente tutte le card del progetto
      */
     public synchronized Vector<Card> showCards(){
+        cardsToShow.removeAllElements();
         cardsToShow.addAll(toDo);
         cardsToShow.addAll(toBeRevised);
         cardsToShow.addAll(inProgress);
@@ -195,7 +246,6 @@ public class Project {
      * @return String la history della card
      */
     public synchronized String getCardHistory(Card card){
-        String history = card.getHistory();
-        return history;
+        return card.getHistory();
     }
 }
