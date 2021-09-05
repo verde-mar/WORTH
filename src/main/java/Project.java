@@ -4,7 +4,7 @@ public class Project {
     /* Nome del progetto, univoco */
     private final String nameProject;
     /* Lista delle card che devono ancora essere prese in carico da un membro del progetto */
-    private final List<Card> toDo;
+    private final List<Card> to_Do;
     /* Lista delle card che sono state prese in carico da un membro del progetto */
     private final List<Card> inProgress;
     /* Lista delle card le cui operazioni sono da revisionare da un membro del progetto */
@@ -23,7 +23,7 @@ public class Project {
      */
     public Project(String nameProject, User user){
         this.nameProject = nameProject;
-        toDo = Collections.synchronizedList(new LinkedList<>());
+        to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
@@ -49,32 +49,32 @@ public class Project {
     }
 
     /***
-     * Restituisce la lista che contiene le card all'interno della lista DONE
-     * @return List<Card>, lista che contiene le card all'interno della lista DONE
+     * Restituisce la lista che contiene le card all'interno della lista done
+     * @return List<Card>, lista che contiene le card all'interno della lista done
      */
     public List<Card> getDone(){
         return done;
     }
 
     /***
-     * Restituisce la lista che contiene le card all'interno della lista TOBEREVISED
-     * @return List<Card>, lista che contiene le card all'interno della lista TOBEREVISED
+     * Restituisce la lista che contiene le card all'interno della lista toBeRevised
+     * @return List<Card>, lista che contiene le card all'interno della lista toBeRevised
      */
     public List<Card> getToBeRevised(){
         return toBeRevised;
     }
 
     /***
-     * Restituisce la lista che contiene le card all'interno della lista TODO
-     * @return List<Card>, lista che contiene le card all'interno della lista TODO
+     * Restituisce la lista che contiene le card all'interno della lista to_Do
+     * @return List<Card>, lista che contiene le card all'interno della lista to_Do
      */
     public List<Card> getToDo(){
-        return toDo;
+        return to_Do;
     }
 
     /***
-     * Restituisce la lista che contiene le card all'interno della lista INPROGRESS
-     * @return List<Card>, lista che contiene le card all'interno della lista INPROGRESS
+     * Restituisce la lista che contiene le card all'interno della lista inProgress
+     * @return List<Card>, lista che contiene le card all'interno della lista inProgress
      */
     public List<Card> getInProgress(){
         return inProgress;
@@ -95,7 +95,7 @@ public class Project {
     }
 
     /***
-     * Aggiunge una card alla lista passata per parametro
+     * Aggiunge una card alla lista to_Do
      * @param card card da aggiungere a listaToAdd
      * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
@@ -103,14 +103,14 @@ public class Project {
         boolean outcome = false;
         if(card != null) {
             outcome = true;
-            card.addHistory("added to toDo; ");
-            toDo.add(card);
+            card.addHistory("added to to_Do; ");
+            to_Do.add(card);
         }
         return outcome;
     }
 
     /***
-     * Aggiunge una card alla lista passata per parametro
+     * Aggiunge una card alla lista inProgress
      * @param card card da aggiungere a listaToAdd
      * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
@@ -125,7 +125,7 @@ public class Project {
     }
 
     /***
-     * Aggiunge una card alla lista passata per parametro
+     * Aggiunge una card alla lista toBeRevised
      * @param card card da aggiungere a listaToAdd
      * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
@@ -140,7 +140,7 @@ public class Project {
     }
 
     /***
-     * Aggiunge una card alla lista passata per parametro
+     * Aggiunge una card alla lista done
      * @param card card da aggiungere a listaToAdd
      * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
@@ -155,14 +155,14 @@ public class Project {
     }
 
     /***
-     * Restituisce la copia della card cercata
+     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista to_Do)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
-    public synchronized Card showCardToDo(String cardName){
+    public synchronized Card showCardTo_Do(String cardName){
         if(cardName!=null) {
             cardsToShow.removeAllElements();
-            cardsToShow.addAll(toDo);
+            cardsToShow.addAll(to_Do);
             for (Card value : cardsToShow) {
                 if (value.getNameCard().equals(cardName)) {
                     return value;
@@ -174,7 +174,7 @@ public class Project {
     }
 
     /***
-     * Restituisce la copia della card cercata
+     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProress
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
@@ -193,7 +193,7 @@ public class Project {
     }
 
     /***
-     * Restituisce la copia della card cercata
+     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista toBeRevised)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
@@ -236,7 +236,7 @@ public class Project {
      */
     public synchronized Vector<Card> showCards(){
         cardsToShow.removeAllElements();
-        cardsToShow.addAll(toDo);
+        cardsToShow.addAll(to_Do);
         cardsToShow.addAll(toBeRevised);
         cardsToShow.addAll(inProgress);
         cardsToShow.addAll(done);
