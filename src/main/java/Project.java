@@ -48,21 +48,6 @@ public class Project {
         return members_sync;
     }
 
-
-    /***
-     * Restituisce la lista dei membri del progetto e che sono online
-     * @return List<User> lista dei membri online del progetto
-     */
-    public synchronized List<User> showOnlineMembers(){
-        Vector<User> onlineMembers = new Vector<>();
-        for(User user : members_sync){
-            if(user.isOnline()){
-                onlineMembers.add(user);
-            }
-        }
-        return onlineMembers;
-    }
-
     /***
      * Restituisce la lista che contiene le card all'interno della lista DONE
      * @return List<Card>, lista che contiene le card all'interno della lista DONE
@@ -96,56 +81,89 @@ public class Project {
     }
 
     /***
-     * Aggiunge una card alla lista passata per parametro
-     * @param lista lista a cui aggiungere card
-     * @param card card da aggiungere a listaToAdd
+     * Restituisce la lista dei membri del progetto e che sono online
+     * @return List<User> lista dei membri online del progetto
      */
-    public synchronized void addCardToDo(String lista, Card card){
-        card.addHistory("added to toDo; ");
-        toDo.add(card);
+    public synchronized List<User> showOnlineMembers(){
+        Vector<User> onlineMembers = new Vector<>();
+        for(User user : members_sync){
+            if(user.isOnline()){
+                onlineMembers.add(user);
+            }
+        }
+        return onlineMembers;
     }
 
     /***
      * Aggiunge una card alla lista passata per parametro
-     * @param lista lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
+     * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
-    public synchronized void addCardDoing(String lista, Card card){
-        card.addHistory("added to inProgress; ");
-        inProgress.add(card);
+    public synchronized boolean addCardToDo(Card card){
+        boolean outcome = false;
+        if(card != null) {
+            card.addHistory("added to toDo; ");
+            toDo.add(card);
+        }
+        return outcome;
     }
 
     /***
      * Aggiunge una card alla lista passata per parametro
-     * @param lista lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
+     * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
-    public synchronized void addCardRevised(String lista, Card card){
-        card.addHistory("added to toBeRevised; ");
-        toBeRevised.add(card);
+    public synchronized boolean addCardDoing(Card card){
+        boolean outcome = false;
+        if(card != null) {
+            card.addHistory("added to inProgress; ");
+            inProgress.add(card);
+        }
+        return outcome;
     }
 
     /***
      * Aggiunge una card alla lista passata per parametro
-     * @param lista lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
+     * @return boolean Restituisce true se e' stato possibile aggiungere la card
      */
-    public synchronized void addCardDone(String lista, Card card){
-        card.addHistory("added to done; ");
-        done.add(card);
+    public synchronized boolean addCardRevised(Card card){
+        boolean outcome = false;
+        if(card != null) {
+            card.addHistory("added to toBeRevised; ");
+            toBeRevised.add(card);
+        }
+        return outcome;
+    }
+
+    /***
+     * Aggiunge una card alla lista passata per parametro
+     * @param card card da aggiungere a listaToAdd
+     * @return boolean Restituisce true se e' stato possibile aggiungere la card
+     */
+    public synchronized boolean addCardDone(Card card){
+        boolean outcome = false;
+        if(card != null) {
+            outcome = true;
+            card.addHistory("added to done; ");
+            done.add(card);
+        }
+        return outcome;
     }
 
     /***
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
-     * @return Card la copia della card
+     * @return Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardToDo(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(toDo);
-        for (Card value : cardsToShow) {
-            if (value.getNameCard().equals(cardName)){
-                return value;
+        if(cardName!=null) {
+            cardsToShow.removeAllElements();
+            cardsToShow.addAll(toDo);
+            for (Card value : cardsToShow) {
+                if (value.getNameCard().equals(cardName)) {
+                    return value;
+                }
             }
         }
 
@@ -155,14 +173,16 @@ public class Project {
     /***
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
-     * @return Card la copia della card
+     * @return Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardDoing(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(inProgress);
-        for (Card value : cardsToShow) {
-            if (value.getNameCard().equals(cardName)){
-                return value;
+        if(cardName!=null) {
+            cardsToShow.removeAllElements();
+            cardsToShow.addAll(inProgress);
+            for (Card value : cardsToShow) {
+                if (value.getNameCard().equals(cardName)) {
+                    return value;
+                }
             }
         }
 
@@ -172,14 +192,16 @@ public class Project {
     /***
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
-     * @return Card la copia della card
+     * @return Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardToBeRevised(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(toBeRevised);
-        for (Card value : cardsToShow) {
-            if (value.getNameCard().equals(cardName)){
-                return value;
+        if(cardName!=null) {
+            cardsToShow.removeAllElements();
+            cardsToShow.addAll(toBeRevised);
+            for (Card value : cardsToShow) {
+                if (value.getNameCard().equals(cardName)) {
+                    return value;
+                }
             }
         }
 
@@ -189,14 +211,16 @@ public class Project {
     /***
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
-     * @return Card la copia della card
+     * @return Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardDone(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(done);
-        for (Card value : cardsToShow) {
-            if (value.getNameCard().equals(cardName)){
-                return value;
+        if(cardName!=null) {
+            cardsToShow.removeAllElements();
+            cardsToShow.addAll(done);
+            for (Card value : cardsToShow) {
+                if (value.getNameCard().equals(cardName)) {
+                    return value;
+                }
             }
         }
 
@@ -219,11 +243,14 @@ public class Project {
     /***
      * Aggiunge l'utente user alla lista dei membri del progetto
      * @param user utente da inserire
+     * @return boolean Restituisce true se e' stato possibile aggiungere un utente come membro del progetto
      */
-    public synchronized void addMember(User user){
-        if(!members_sync.contains(user)) {
-            members_sync.add(user);
+    public synchronized boolean addMember(User user){
+        boolean outcome = false;
+        if(!members_sync.contains(user) || user == null) { //oppure user non e' registrato
+            outcome = members_sync.add(user);
         }
+        return outcome;
     }
 
     /***
@@ -231,13 +258,18 @@ public class Project {
      * @param listaDiPartenza lista in cui si trova attualmente la card
      * @param listaDiDestinazione lista in cui si trovera' la card
      * @param card Carta da spostare
+     * @return boolean Restituisce true se e' stato possibile muovere la card
      */
-    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, String listaDiPart, String listadiDest, Card card){
-        listaDiPartenza.remove(card);
-        card.addHistory("removed from " + listaDiPart + "; ");
-        listaDiDestinazione.add(card);
-        card.addHistory("added to " + listadiDest + "; ");
-
+    public synchronized boolean moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, String listaDiPart, String listadiDest, Card card){
+        boolean outcome = false;
+        if(listadiDest != null || listaDiPart != null || card != null) { //oppure listaDiPartenza e listaDiDestinazione non sono ne' todo, ne' inprogress, ne' toberevised ne' done
+            outcome = true;
+            listaDiPartenza.remove(card);
+            card.addHistory("removed from " + listaDiPart + "; ");
+            listaDiDestinazione.add(card);
+            card.addHistory("added to " + listadiDest + "; ");
+        }
+        return outcome;
     }
 
     /***
@@ -246,6 +278,9 @@ public class Project {
      * @return String la history della card
      */
     public synchronized String getCardHistory(Card card){
-        return card.getHistory();
+        if(card!=null)
+            return card.getHistory();
+        else
+            return null;
     }
 }
