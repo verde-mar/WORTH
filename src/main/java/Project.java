@@ -96,28 +96,43 @@ public class Project {
     }
 
     /***
-     * Aggiunge una card alla lista listaToAdd
-     * @param listaToAdd lista a cui aggiungere card
+     * Aggiunge una card alla lista passata per parametro
+     * @param lista lista a cui aggiungere card
      * @param card card da aggiungere a listaToAdd
      */
-    public synchronized void addCard(String listaToAdd, Card card){
-        if(showCard(card.getNameCard()) == null) {
-            if (listaToAdd.equals("toDo")) {
-                card.addHistory("added to toDo; ");
-                toDo.add(card);
-            } else if (listaToAdd.equals("toBeRevised")) {
-                card.addHistory("added to toBeRevised; ");
-                toBeRevised.add(card);
-            } else if (listaToAdd.equals("inProgress")) {
-                card.addHistory("added to inProgress; ");
-                inProgress.add(card);
-            } else {
-                card.addHistory("added to done; ");
-                done.add(card);
-            }
-        } else {
-            System.out.println("The card already exists");
-        }
+    public synchronized void addCardTo(String lista, Card card){
+        card.addHistory("added to toDo; ");
+        toDo.add(card);
+    }
+
+    /***
+     * Aggiunge una card alla lista passata per parametro
+     * @param lista lista a cui aggiungere card
+     * @param card card da aggiungere a listaToAdd
+     */
+    public synchronized void addCardDoing(String lista, Card card){
+        card.addHistory("added to inProgress; ");
+        inProgress.add(card);
+    }
+
+    /***
+     * Aggiunge una card alla lista passata per parametro
+     * @param lista lista a cui aggiungere card
+     * @param card card da aggiungere a listaToAdd
+     */
+    public synchronized void addCardRevised(String lista, Card card){
+        card.addHistory("added to toBeRevised; ");
+        toBeRevised.add(card);
+    }
+
+    /***
+     * Aggiunge una card alla lista passata per parametro
+     * @param lista lista a cui aggiungere card
+     * @param card card da aggiungere a listaToAdd
+     */
+    public synchronized void addCardDone(String lista, Card card){
+        card.addHistory("added to done; ");
+        done.add(card);
     }
 
     /***
@@ -164,27 +179,23 @@ public class Project {
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPartenza lista in cui si trova attualmente la card
      * @param listaDiDestinazione lista in cui si trovera' la card
-     * @param card da spostare
+     * @param card Carta da spostare
      */
     public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, String listaDiPart, String listadiDest, Card card){
         listaDiPartenza.remove(card);
         card.addHistory("removed from " + listaDiPart + "; ");
         listaDiDestinazione.add(card);
         card.addHistory("added to " + listadiDest + "; ");
+
     }
 
     /***
      * Restituisce la history di una card
-     * @param cardname nome della Card
+     * @param card Card di cui prelevare la history
      * @return String la history della card
      */
-    public String getCardHistory(String cardname){
-        Card card = showCard(cardname);
-        if(card!=null) {
-            String history = card.getHistory();
-            System.out.println("History in getCardHistory: "+ history);
-            return history;
-        }
-        return null;
+    public synchronized String getCardHistory(Card card){
+        String history = card.getHistory();
+        return history;
     }
 }

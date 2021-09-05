@@ -1,3 +1,4 @@
+
 public class Card {
     /* Nome univoco della card */
     private final String nameCard;
@@ -27,7 +28,7 @@ public class Card {
      * Aggiorna la history di una card
      * @param toConcat nuova azione effettuata sulla card
      */
-    public synchronized void addHistory(String toConcat) {
+    public void addHistory(String toConcat) {
         if(history == null){
             history = toConcat;
         } else {
@@ -48,7 +49,7 @@ public class Card {
      * Aggiunge la descrizione ad una card
      * @param descript descrizione della card
      */
-    public synchronized void addDescription(String descript) {
+    public void addDescription(String descript) {
         this.description = descript;
     }
 }
