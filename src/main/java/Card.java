@@ -1,4 +1,3 @@
-
 public class Card {
     /* Nome univoco della card */
     private final String nameCard;
@@ -27,21 +26,14 @@ public class Card {
     /***
      * Aggiorna la history di una card
      * @param toConcat nuova azione effettuata sulla card
-     * @return boolean Restituisce se l'operazione e' terminata con successo oppure no
      */
-    public boolean addHistory(String toConcat) {
-        boolean outcome;
-        if(toConcat != null) {
-            if (history == null) {
-                history = toConcat;
-            } else {
-                history = history.concat(toConcat);
-            }
-            outcome = true;
+    public void addHistory(String toConcat) {
+        if(history == null){
+            history = toConcat;
         } else {
-            outcome = false;
+            history = history.concat(toConcat);
+
         }
-        return outcome;
     }
 
     /***
@@ -55,14 +47,8 @@ public class Card {
     /***
      * Aggiunge la descrizione ad una card
      * @param descript descrizione della card
-     * @return boolean Restituisce se l'operazione e' terminata con successo oppure no
      */
-    public boolean addDescription(String descript) {
-        boolean outcome = false;
-        if(descript != null) {
-            this.description = descript;
-            outcome = true;
-        }
-        return outcome;
+    public void addDescription(String descript) {
+        this.description = descript;
     }
 }

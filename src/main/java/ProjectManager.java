@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Dispatcher implements Callable<Tasks> {
+public class ProjectManager implements Callable<Tasks>  {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta del client */
@@ -17,12 +17,13 @@ public class Dispatcher implements Callable<Tasks> {
     private ConcurrentHashMap<String, Project> projects;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
     ObjectMapper objectMapper;
+    private ProjectWorker worker;
 
     /***
      * Costruttore dell'oggetto
      * @param buffer contenente la richiesta
      */
-    public Dispatcher(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
+    public ProjectManager(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
         this.buffer = buffer;
         this.projects = projects;
         objectMapper = new ObjectMapper();
@@ -51,10 +52,12 @@ public class Dispatcher implements Callable<Tasks> {
      * @return Tasks cioe' la risposta in formato JSON
      */
     @Override
-    public Tasks call() throws Exception {
-        parser();
-
-
+    public Tasks call() {
+        try{
+            response(true, "success");
+        } catch(Exception e){
+            response(false, e.getLocalizedMessage());
+        }
         return task_response;
     }
 }
