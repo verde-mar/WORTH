@@ -3,7 +3,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +32,7 @@ public class ProjectManager implements Callable<Tasks>  {
         this.projects = projects;
         objectMapper = new ObjectMapper();
         task_response = new Tasks();
+        worker = new ProjectWorker();
     }
 
     /***
@@ -50,6 +53,8 @@ public class ProjectManager implements Callable<Tasks>  {
      */
     private void response(boolean outcome_b, String outcome_s){
         task_response.setRequest(task_request.getRequest());
+        System.out.println(outcome_b);
+        System.out.println(outcome_s);
         if(outcome_b){
             task_response.setSuccess();
         } else {
@@ -65,16 +70,25 @@ public class ProjectManager implements Callable<Tasks>  {
     public Tasks call() {
         try{
             parser();
-            if(task_request.getNameRequest().equals("createProject"))
+            if(task_request.getNameRequest().equals("createProject")) {
                 worker.createProject(projects, task_request.getProjectName());
-            else if(task_request.getNameRequest().equals("cancelProject"))
+            }
+            else if(task_request.getNameRequest().equals("cancelProject")) {
                 worker.cancelProject(projects, task_request.getProjectName());
-            else if(task_request.getNameRequest().equals("listUsers"))
-                worker.listUsers(projects);
-            else if(task_request.getNameRequest().equals("listOnlineUsers"))
-                worker.listOnlineUsers(projects);
-            else if(task_request.getNameRequest().equals("listProjects"))
-                worker.listProjects(projects);
+                task_response.setProjectName(task_response.getProjectName());
+            }
+            else if(task_request.getNameRequest().equals("listUsers")) {
+                Vector<User> users = worker.listUsers(projects);
+                task_response.setUsers(users);
+            }
+            else if(task_request.getNameRequest().equals("listOnlineUsers")) {
+                Vector<User> users = worker.listOnlineUsers(projects);
+                task_response.setOnlineUsers(users);
+            }
+            else if(task_request.getNameRequest().equals("listProjects")) {
+                worker.listProjects(projects); //non e' corretto
+
+            }
             else if(task_request.getNameRequest().equals("addMember")){
                 if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())){
                     projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
@@ -87,14 +101,14 @@ public class ProjectManager implements Callable<Tasks>  {
             } else if(task_request.getNameRequest().equals("showCards")){
                 if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
                     List<Card> cards = projects.get(task_request.getProjectName()).showCards();
-                    task_response.setCardsName(cards);
+                    task_response.setCardsName(cards); //TODO: CORREGGERE LA FUNZIONE
                 }
             } else if(task_request.getNameRequest().equals("showCard") && task_request.getCardName() != null){
                 if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
                     Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
                     task_response.setCardName(card);
                     task_response.setHistory(card);
-                    task_response.setDescription(card); //da aggiungere
+                    task_response.setDescription(card);
                 }
             } else if(task_request.getNameRequest().equals("addCard") && task_request.getCardName() != null){
                 if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
@@ -111,6 +125,7 @@ public class ProjectManager implements Callable<Tasks>  {
                     Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
                     Project project = projects.get(task_request.getProjectName());
                     project.getCardHistory(card);
+                    task_response.setHistory(card);
                 }
             }
             response(true, "success");

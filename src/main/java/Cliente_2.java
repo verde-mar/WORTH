@@ -12,7 +12,7 @@ public class Cliente_2 {
         int port = 8080;
         try { SocketAddress address = new InetSocketAddress(args[0], port);
             SocketChannel client  = SocketChannel.open(address);
-            String request ="{\"request\": \"createProject\", \"projectName\": \"cancello\", \"cardName\": \"astadelcazzo\"}";
+            String request ="{\"request\": \"createProject\", \"projectName\": \"cancello\"}";
             byte[] byte_request = request.getBytes(StandardCharsets.UTF_8);
             // Buffer contenente il messaggio
             System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
