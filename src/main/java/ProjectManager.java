@@ -54,6 +54,7 @@ public class ProjectManager implements Callable<Tasks>  {
     @Override
     public Tasks call() {
         try{
+            worker.createProject(projects, task_request.getProjectName());
             response(true, "success");
         } catch(Exception e){
             response(false, e.getLocalizedMessage());

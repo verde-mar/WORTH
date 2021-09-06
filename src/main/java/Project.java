@@ -193,7 +193,7 @@ public class Project {
      * Aggiunge l'utente user alla lista dei membri del progetto
      * @param user utente da inserire
      */
-    public synchronized void addMember(User user){
+    public void addMember(User user){
         members_sync.add(user);
     }
 
