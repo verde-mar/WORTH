@@ -13,7 +13,7 @@ public class ProjectManager implements Callable<Tasks>  {
     /* Oggetto che rappresenta una richiesta del client */
     private Tasks task_request;
     /* Oggetto che rappresenta una risposta del client */
-    private Tasks task_response;
+    private final Tasks task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private final ConcurrentHashMap<String, Project> projects;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
