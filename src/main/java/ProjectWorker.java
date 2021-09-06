@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProjectWorker {
 
-    /***TODO: come diavolo inserisco l'utente che ha creato il progetto?
+    /***todo: new User() non va bene, bisogna inserire quell'utente al progetto
      * Crea un progetto e lo aggiunge all'insieme dei progetti
      * @param projects Struttura dati rappresentante l'insieme dei progetti all'interno del server
      */
@@ -14,18 +14,21 @@ public class ProjectWorker {
     }
 
     /***
-     * TODO: non va bene neanche questa
-     * Cancella un progetto
-     * @param projects Struttura dati rappresentante l'insieme dei progetti all'interno del server
+     * Cancella un progetto solo se tutte le card sono nella lista done
+     * @param projects Struttura dati rappresentante l' insieme dei progetti all' interno del server
      */
     public void cancelProject(ConcurrentHashMap<String, Project> projects, String projectName){
-        projects.remove(projectName, projects.get(projectName));
+        Project project = projects.get(projectName);
+        if(project.getToDo().size() == 0 && project.getInProgress().size() == 0 && project.getToBeRevised().size() == 0 && project.getDone().size()!=0)
+            projects.remove(projectName, projects.get(projectName));
+        else
+            System.out.println("There are two possibilities: each card isn't in 'done' or the project has just been created.");
     }
 
     /***
-     * TODO: CORREGGERLA
+     * TODO: CORREGGERLA, serve il nome dell'utente
      * Restituisce la lista dei progetti presenti nel server
-     * @param projects Struttura dati rappresentante l'insieme dei progetti all'interno del server
+     * @param projects Struttura dati rappresentante l' insieme dei progetti all' interno del server
      * @return Collection<Project> Insieme dei progetti presenti nel server
      */
     public Collection<Project> listProjects(ConcurrentHashMap<String, Project> projects){
@@ -62,7 +65,13 @@ public class ProjectWorker {
         return utenti;
     }
 
-    //todo: non c'e la lista di appartenenza
+    /***
+     * Restituisce la card di nome cardName
+     * @param projects Insieme totale dei progetti
+     * @param projectName Nome del progetto a cui appartiene la card
+     * @param cardname Nome della card
+     * @return Card Restituisce la card di nome cardName
+     */
     public synchronized Card showCard(ConcurrentHashMap<String, Project> projects, String projectName, String cardname){
         Project project = projects.get(projectName);
         Card card = project.showCardTo_Do(cardname);
@@ -88,5 +97,17 @@ public class ProjectWorker {
     public synchronized void addCard(ConcurrentHashMap<String, Project> projects, String projectName, String cardname, String description){
         Project project = projects.get(projectName);
         project.addCardToDo(cardname, description);
+    }
+
+    /***
+     * Richiede la history della card
+     * @param projects Insieme totali dei progetti
+     * @param projectName Nome del progetto a cui appartiene la card
+     * @param cardName Nome della card
+     * @return String La history della card
+     */
+    public synchronized String getCardHistory(ConcurrentHashMap<String, Project> projects, String projectName, String cardName){
+        Card card = showCard(projects, projectName, cardName);
+        return card.getHistory();
     }
 }

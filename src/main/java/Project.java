@@ -102,6 +102,7 @@ public class Project {
         Card card = new Card(cardname);
         card.addHistory("added to to_Do; ");
         card.addDescription(description);
+        card.addCurrentList("to_Do");
         to_Do.add(card);
     }
 
@@ -189,7 +190,7 @@ public class Project {
         return cardsToShow;
     }
 
-    /***
+    /*** todo: da verificare, la questione dell'utente non va bene
      * Aggiunge l'utente user alla lista dei membri del progetto
      * @param user utente da inserire
      */
@@ -204,6 +205,7 @@ public class Project {
      * @param card Carta da spostare
      */
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card){
+        card.eraseCurrentList();
         switch (listaDiPart) {
             case "to_Do" -> {
                 to_Do.remove(card);
@@ -227,18 +229,22 @@ public class Project {
             case "to_Do" -> {
                 to_Do.add(card);
                 card.addHistory("added to to_Do; ");
+                card.addCurrentList("to_Do");
             }
             case "inProgress" -> {
                 inProgress.add(card);
                 card.addHistory("added to inProgress; ");
+                card.addCurrentList("inProgress");
             }
             case "done" -> {
                 done.add(card);
                 card.addHistory("added to done; ");
+                card.addCurrentList("done");
             }
             case "toBeRevised" -> {
                 toBeRevised.add(card);
                 card.addHistory("added to toBeRevised; ");
+                card.addCurrentList("toBeRevised");
             }
         }
     }
@@ -248,7 +254,7 @@ public class Project {
      * @param card Card di cui prelevare la history
      * @return String la history della card
      */
-    public synchronized String getCardHistory(Card card){
+    public String getCardHistory(Card card){
         return card.getHistory();
     }
 }

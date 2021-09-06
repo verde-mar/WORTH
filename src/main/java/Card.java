@@ -5,6 +5,8 @@ public class Card {
     private String description;
     /* Storia associata alla card */
     private String history;
+    /* Lista corrente a cui appartiene la card*/
+    private String currentList;
 
     /***
      * Costruttore della classe
@@ -21,6 +23,25 @@ public class Card {
      */
     public String getNameCard(){
         return nameCard;
+    }
+
+    /***
+     * Setta la variabile che indica la lista corrente in cui si trova la card
+     * @param list Nome della lista corrente a cui appartiene la lista
+     */
+    public void addCurrentList(String list){ currentList = list; }
+
+    /***
+     * Restituisce la lista corrente
+     * @return String La lista corrente
+     */
+    public String getCurrentList(){ return currentList; }
+
+    /***
+     * Resetta la lista corrente
+     */
+    public void eraseCurrentList(){
+        currentList = null;
     }
 
     /***
@@ -52,6 +73,10 @@ public class Card {
         this.description = descript;
     }
 
+    /***
+     * Restituisce la descrizione associata alla card
+     * @return String La descrizione della card
+     */
     public String getDescription() {
         return description;
     }
