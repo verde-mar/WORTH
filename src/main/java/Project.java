@@ -199,15 +199,48 @@ public class Project {
 
     /***
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
-     * @param listaDiPartenza lista in cui si trova attualmente la card
-     * @param listaDiDestinazione lista in cui si trovera' la card
+     * @param listaDiPart Nome della lista in cui si trova attualmente la card
+     * @param listadiDest Nome della lista in cui si trovera' la card
      * @param card Carta da spostare
      */
-    public synchronized void moveCard(List<Card> listaDiPartenza, List<Card> listaDiDestinazione, String listaDiPart, String listadiDest, Card card){
-        listaDiPartenza.remove(card);
-        card.addHistory("removed from " + listaDiPart + "; ");
-        listaDiDestinazione.add(card);
-        card.addHistory("added to " + listadiDest + "; ");
+    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card){
+        switch (listaDiPart) {
+            case "to_Do" -> {
+                to_Do.remove(card);
+                card.addHistory("removed from to_Do; ");
+            }
+            case "inProgress" -> {
+                inProgress.remove(card);
+                card.addHistory("removed from inProgress; ");
+            }
+            case "done" -> {
+                done.remove(card);
+                card.addHistory("removed from done; ");
+            }
+            case "toBeRevised" -> {
+                toBeRevised.remove(card);
+                card.addHistory("removed from toBeRevised; ");
+            }
+        }
+
+        switch (listadiDest) {
+            case "to_Do" -> {
+                to_Do.add(card);
+                card.addHistory("added to to_Do; ");
+            }
+            case "inProgress" -> {
+                inProgress.add(card);
+                card.addHistory("added to inProgress; ");
+            }
+            case "done" -> {
+                done.add(card);
+                card.addHistory("added to done; ");
+            }
+            case "toBeRevised" -> {
+                toBeRevised.add(card);
+                card.addHistory("added to toBeRevised; ");
+            }
+        }
     }
 
     /***

@@ -51,4 +51,8 @@ public class Card {
     public void addDescription(String descript) {
         this.description = descript;
     }
+
+    public String getDescription() {
+        return description;
+    }
 }

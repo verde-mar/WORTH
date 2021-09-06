@@ -5,7 +5,7 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Tasks {
-    private enum RequestType{
+    protected enum RequestType{
         login,
         logout,
         listUsers,
@@ -34,6 +34,7 @@ public class Tasks {
     private RequestType request;
     private String listaPartenza;
     private String listaDestinazione;
+    private String nameUser;
 
     /* Parametri necessari per la risposta */
     private String explanation;
@@ -157,12 +158,20 @@ public class Tasks {
         return null;
     }
 
+    public String getNameUser(){
+        return nameUser;
+    }
+
     /***
      * Restituisce il nome del progetto
      * @return String il nome del progetto
      */
     public String getProjectName(){
         return projectName;
+    }
+
+    public void setDescription(Card card) {
+        description = card.getDescription();
     }
 
     /***

@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,9 +15,10 @@ public class ProjectManager implements Callable<Tasks>  {
     /* Oggetto che rappresenta una risposta del client */
     private Tasks task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
-    private ConcurrentHashMap<String, Project> projects;
+    private final ConcurrentHashMap<String, Project> projects;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
     ObjectMapper objectMapper;
+    /* Composizione della classe ProjectWorker. La classe contiene metodi ausiliari per la classe corrente */
     private ProjectWorker worker;
 
     /***
@@ -27,6 +29,7 @@ public class ProjectManager implements Callable<Tasks>  {
         this.buffer = buffer;
         this.projects = projects;
         objectMapper = new ObjectMapper();
+        task_response = new Tasks();
     }
 
     /***
@@ -39,7 +42,14 @@ public class ProjectManager implements Callable<Tasks>  {
         task_request = objectMapper.readValue(buffer_toString, Tasks.class);
     }
 
+    /***
+     * Realizza la risposta base da inviare al client
+     * @param outcome_b Booleano che indica se l'operazione e' avvenuta con successo
+     * @param outcome_s Stringa da inviare al client che spiega a cosa e' dovuto un eventuale fallimento della richiesta.
+     *                  Se l'operazione e' avvenuta con successo, sara' semplicemente "success"
+     */
     private void response(boolean outcome_b, String outcome_s){
+        task_response.setRequest(task_request.getRequest());
         if(outcome_b){
             task_response.setSuccess();
         } else {
@@ -54,7 +64,55 @@ public class ProjectManager implements Callable<Tasks>  {
     @Override
     public Tasks call() {
         try{
-            worker.createProject(projects, task_request.getProjectName());
+            parser();
+            if(task_request.getNameRequest().equals("createProject"))
+                worker.createProject(projects, task_request.getProjectName());
+            else if(task_request.getNameRequest().equals("cancelProject"))
+                worker.cancelProject(projects, task_request.getProjectName());
+            else if(task_request.getNameRequest().equals("listUsers"))
+                worker.listUsers(projects);
+            else if(task_request.getNameRequest().equals("listOnlineUsers"))
+                worker.listOnlineUsers(projects);
+            else if(task_request.getNameRequest().equals("listProjects"))
+                worker.listProjects(projects);
+            else if(task_request.getNameRequest().equals("addMember")){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())){
+                    projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
+                }
+            } else if(task_request.getNameRequest().equals("showMembers")){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())){
+                    List<User> users = projects.get(task_request.getProjectName()).showMembers(); // new User() non va bene, devo sistemarlo in fase di registrazione
+                    task_response.setMembers(users);
+                }
+            } else if(task_request.getNameRequest().equals("showCards")){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
+                    List<Card> cards = projects.get(task_request.getProjectName()).showCards();
+                    task_response.setCardsName(cards);
+                }
+            } else if(task_request.getNameRequest().equals("showCard") && task_request.getCardName() != null){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
+                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
+                    task_response.setCardName(card);
+                    task_response.setHistory(card);
+                    task_response.setDescription(card); //da aggiungere
+                }
+            } else if(task_request.getNameRequest().equals("addCard") && task_request.getCardName() != null){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
+                    projects.get(task_request.getProjectName()).addCardToDo(task_request.getProjectName(), task_request.getCardName());
+                }
+            } else if(task_request.getNameRequest().equals("moveCard") && task_request.getCardName() != null){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
+                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
+                    Project project = projects.get(task_request.getProjectName());
+                    project.moveCard(task_request.getListaPartenza(), task_request.getListaDestinazione(), card);
+                }
+            } else if(task_request.getNameRequest().equals("getCardHistory") && task_request.getCardName() != null){
+                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
+                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
+                    Project project = projects.get(task_request.getProjectName());
+                    project.getCardHistory(card);
+                }
+            }
             response(true, "success");
         } catch(Exception e){
             response(false, e.getLocalizedMessage());
