@@ -9,7 +9,7 @@ import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ProjectManager implements Callable<Tasks>  {
+public class PManager implements Callable<Tasks>  {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta del client */
@@ -21,18 +21,18 @@ public class ProjectManager implements Callable<Tasks>  {
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
     ObjectMapper objectMapper;
     /* Composizione della classe ProjectWorker. La classe contiene metodi ausiliari per la classe corrente */
-    private ProjectWorker worker;
+    private final PWorker worker;
 
     /***
      * Costruttore dell'oggetto
      * @param buffer contenente la richiesta
      */
-    public ProjectManager(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
+    public PManager(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
         this.buffer = buffer;
         this.projects = projects;
         objectMapper = new ObjectMapper();
         task_response = new Tasks();
-        worker = new ProjectWorker();
+        worker = new PWorker();
     }
 
     /***
