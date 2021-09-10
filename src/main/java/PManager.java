@@ -91,56 +91,52 @@ public class PManager implements Callable<Message>  {
                 //case createProject -> worker.createProject(projects, task_request.getProjectName());
 
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case showCards -> {
-                    if(projects.containsKey(task_request.getProjectName())) {
-                        List<Card> cards = projects.get(task_request.getProjectName()).showCards();
-                        task_response.setCardsName(cards);
-                        task_response.setProjectName(task_request.getProjectName());
-                    }
+                    List<Card> cards = projects.get(task_request.getProjectName()).showCards();
+                    task_response.setCardsName(cards);
+                    task_response.setProjectName(task_request.getProjectName());
+
                 }
 
                 /* Restituisce una card e i parametri associati(history, nome, desscription, lista corrente in cui si trova */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case showCard -> {
-                    if(projects.containsKey(task_request.getProjectName())) {
-                        Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName());
-                        task_response.setProjectName(task_request.getProjectName());
-                        task_response.setCardName(card.getNameCard());
-                        task_response.setHistory(card.getHistory());
-                        task_response.setDescription(card.getDescription());
-                        task_response.setCardCurrentList(card.getCurrentList());
-                    }
+                    Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName());
+                    task_response.setProjectName(task_request.getProjectName());
+                    task_response.setCardName(card.getNameCard());
+                    task_response.setHistory(card.getHistory());
+                    task_response.setDescription(card.getDescription());
+                    task_response.setCardCurrentList(card.getCurrentList());
                 }
 
                 /* Aggiunge una card al progetto specificato nella richiesta */
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case addCard -> {
-                    if(projects.containsKey(task_request.getProjectName())) {
-                        worker.addCard(task_request.getProjectName(), task_request.getCardName(), task_request.getDescription());
-                        task_response.setProjectName(task_request.getProjectName());
-                        task_response.setCardName(task_request.getCardName());
-                    }
+                    worker.addCard(task_request.getProjectName(), task_request.getCardName(), task_request.getDescription());
+                    task_response.setProjectName(task_request.getProjectName());
+                    task_response.setCardName(task_request.getCardName());
                 }
 
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case moveCard -> {
-                    if(projects.containsKey(task_request.getProjectName())) {
-                        worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione());
-                        task_response.setProjectName(task_request.getProjectName());
-                        task_response.setCardName(task_request.getCardName());
-                    }
+                    worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione());
+                    task_response.setProjectName(task_request.getProjectName());
+                    task_response.setCardName(task_request.getCardName());
                 }
 
                 /* Restituisce l'history della card specificata nella richiesta */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case getCardHistory -> {
-                    if(projects.containsKey(task_request.getProjectName())) {
-                        List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName());
-                        task_response.setHistory(history);
-                        task_response.setCardName(task_request.getCardName());
-                    }
+                    List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName());
+                    task_response.setHistory(history);
+                    task_response.setCardName(task_request.getCardName());
                 }
-
+                //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 /* Cancella un progetto */
                 case cancelProject -> {
                     worker.cancelProject(task_request.getProjectName());
