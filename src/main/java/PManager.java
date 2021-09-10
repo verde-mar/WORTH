@@ -3,19 +3,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PManager implements Callable<Tasks>  {
+public class PManager implements Callable<Message>  {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta del client */
-    private Tasks task_request;
+    private Message task_request;
     /* Oggetto che rappresenta una risposta del client */
-    private final Tasks task_response;
+    private final Message task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private final ConcurrentHashMap<String, Project> projects;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
@@ -31,8 +29,8 @@ public class PManager implements Callable<Tasks>  {
         this.buffer = buffer;
         this.projects = projects;
         objectMapper = new ObjectMapper();
-        task_response = new Tasks();
-        worker = new PWorker();
+        task_response = new Message();
+        worker = new PWorker(projects);
     }
 
     /***
@@ -40,9 +38,9 @@ public class PManager implements Callable<Tasks>  {
      * @throws IOException se ci sono errori nell' I/O
      */
     private void parser() throws IOException {
-        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo Tasks */
+        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
-        task_request = objectMapper.readValue(buffer_toString, Tasks.class);
+        task_request = objectMapper.readValue(buffer_toString, Message.class);
     }
 
     /***
@@ -53,8 +51,6 @@ public class PManager implements Callable<Tasks>  {
      */
     private void response(boolean outcome_b, String outcome_s){
         task_response.setRequest(task_request.getRequest());
-        System.out.println(outcome_b);
-        System.out.println(outcome_s);
         if(outcome_b){
             task_response.setSuccess();
         } else {
@@ -64,72 +60,98 @@ public class PManager implements Callable<Tasks>  {
 
     /***
      * Override della chiamata call
-     * @return Tasks cioe' la risposta in formato JSON
+     * @return Message cioe' la risposta in formato JSON
      */
     @Override
-    public Tasks call() {
+    public Message call() {
         try{
             parser();
-            if(task_request.getNameRequest().equals("createProject")) {
-                worker.createProject(projects, task_request.getProjectName());
-            }
-            else if(task_request.getNameRequest().equals("cancelProject")) {
-                worker.cancelProject(projects, task_request.getProjectName());
-                task_response.setProjectName(task_response.getProjectName());
-            }
-            else if(task_request.getNameRequest().equals("listUsers")) {
-                Vector<User> users = worker.listUsers(projects);
-                task_response.setUsers(users);
-            }
-            else if(task_request.getNameRequest().equals("listOnlineUsers")) {
-                Vector<User> users = worker.listOnlineUsers(projects);
-                task_response.setOnlineUsers(users);
-            }
-            else if(task_request.getNameRequest().equals("listProjects")) {
-                worker.listProjects(projects); //non e' corretto
+            switch(task_request.getRequest()) {
+                /*case login -> {
+                }
+                case logout -> {
+                }
+                case listUsers -> {
+                }
+                case listOnlineUsers -> {
+                }
+                case listProjects -> {
+                }
 
+                case addMember -> {
+                    if(projects.containsKey(task_request.getProjectName())){
+                        projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
+                        task_response.setMembers();
+                    }
+                }
+                case readChat -> {
+                }
+                case sendChatMsg -> {
+                }*/
+                //case createProject -> worker.createProject(projects, task_request.getProjectName());
+
+                /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
+                case showCards -> {
+                    if(projects.containsKey(task_request.getProjectName())) {
+                        List<Card> cards = projects.get(task_request.getProjectName()).showCards();
+                        task_response.setCardsName(cards);
+                        task_response.setProjectName(task_request.getProjectName());
+                    }
+                }
+
+                /* Restituisce una card e i parametri associati(history, nome, desscription, lista corrente in cui si trova */
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                case showCard -> {
+                    if(projects.containsKey(task_request.getProjectName())) {
+                        Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName());
+                        task_response.setProjectName(task_request.getProjectName());
+                        task_response.setCardName(card.getNameCard());
+                        task_response.setHistory(card.getHistory());
+                        task_response.setDescription(card.getDescription());
+                        task_response.setCardCurrentList(card.getCurrentList());
+                    }
+                }
+
+                /* Aggiunge una card al progetto specificato nella richiesta */
+                case addCard -> {
+                    if(projects.containsKey(task_request.getProjectName())) {
+                        worker.addCard(task_request.getProjectName(), task_request.getCardName(), task_request.getDescription());
+                        task_response.setProjectName(task_request.getProjectName());
+                        task_response.setCardName(task_request.getCardName());
+                    }
+                }
+
+                /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                case moveCard -> {
+                    if(projects.containsKey(task_request.getProjectName())) {
+                        worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione());
+                        task_response.setProjectName(task_request.getProjectName());
+                        task_response.setCardName(task_request.getCardName());
+                    }
+                }
+
+                /* Restituisce l'history della card specificata nella richiesta */
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                case getCardHistory -> {
+                    if(projects.containsKey(task_request.getProjectName())) {
+                        List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName());
+                        task_response.setHistory(history);
+                        task_response.setCardName(task_request.getCardName());
+                    }
+                }
+
+                /* Cancella un progetto */
+                case cancelProject -> {
+                    worker.cancelProject(task_request.getProjectName());
+                    task_response.setProjectName(task_request.getProjectName());
+                }
             }
-            else if(task_request.getNameRequest().equals("addMember")){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())){
-                    projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
-                }
-            } else if(task_request.getNameRequest().equals("showMembers")){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())){
-                    List<User> users = projects.get(task_request.getProjectName()).showMembers(); // new User() non va bene, devo sistemarlo in fase di registrazione
-                    task_response.setMembers(users);
-                }
-            } else if(task_request.getNameRequest().equals("showCards")){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
-                    List<Card> cards = projects.get(task_request.getProjectName()).showCards();
-                    task_response.setCardsName(cards); //TODO: CORREGGERE LA FUNZIONE
-                }
-            } else if(task_request.getNameRequest().equals("showCard") && task_request.getCardName() != null){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
-                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
-                    task_response.setCardName(card);
-                    task_response.setHistory(card);
-                    task_response.setDescription(card);
-                }
-            } else if(task_request.getNameRequest().equals("addCard") && task_request.getCardName() != null){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
-                    projects.get(task_request.getProjectName()).addCardToDo(task_request.getProjectName(), task_request.getCardName());
-                }
-            } else if(task_request.getNameRequest().equals("moveCard") && task_request.getCardName() != null){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
-                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
-                    Project project = projects.get(task_request.getProjectName());
-                    project.moveCard(task_request.getListaPartenza(), task_request.getListaDestinazione(), card);
-                }
-            } else if(task_request.getNameRequest().equals("getCardHistory") && task_request.getCardName() != null){
-                if(task_request.getNameRequest()!=null && projects.containsKey(task_request.getProjectName())) {
-                    Card card = worker.showCard(projects, task_request.getProjectName(), task_request.getCardName());
-                    Project project = projects.get(task_request.getProjectName());
-                    project.getCardHistory(card);
-                    task_response.setHistory(card);
-                }
-            }
+
+            /* Definizione della risposta base: indica che l'operazione e' terminata con successo */
             response(true, "success");
         } catch(Exception e){
+            /* Definizione della risposta base: indica che l'operazione e' fallita */
             response(false, e.getLocalizedMessage());
         }
         return task_response;

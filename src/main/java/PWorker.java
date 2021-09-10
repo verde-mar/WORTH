@@ -1,62 +1,72 @@
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PWorker {
+    /* Insieme totale dei progetti sul server */
+    ConcurrentHashMap<String,Project> projects;
 
-    /***
-     * Cancella un progetto solo se tutte le card sono nella lista done
-     * @param projects Struttura dati rappresentante l' insieme dei progetti all' interno del server
+    /**
+     * Costruttore della classe
+     * @param projects Insieme totale dei progetti sul server
      */
-    public void cancelProject(ConcurrentHashMap<String, Project> projects, String projectName){
-        Project project = projects.get(projectName);
-        if(project.getToDo().size() == 0 && project.getInProgress().size() == 0 && project.getToBeRevised().size() == 0 && project.getDone().size()!=0)
-            projects.remove(projectName, projects.get(projectName));
-        else
-            System.out.println("There are two possibilities: each card isn't in 'done' or the project has just been created.");
+    public PWorker(ConcurrentHashMap<String,Project> projects) {
+        this.projects = projects;
     }
 
-    /***
+    /**
+     * Aggiunge una card al progetto se questa non esiste gia'
+     * @param projectName Nome del progetto in cui inserire la card
+     * @param cardname Nome della card da inserire
+     * @param descr Descrizione della card da inserire
+     */
+    public void addCard(String projectName, String cardname, String descr){
+        Project project = projects.get(projectName);
+        if(project.showCardProject(cardname)==null)
+            project.addCardProject(cardname, descr);
+    }
+
+    /**
      * Restituisce la card di nome cardName
-     * @param projects Insieme totale dei progetti
-     * @param projectName Nome del progetto a cui appartiene la card
+     * @param projectName Nome del progetto in cui si trova probabilmente la card
+     * @param cardname Nome della card desiderata
+     * @return Card La card desiderata
+     */
+    public Card showCard(String projectName, String cardname){
+        Project project = projects.get(projectName);
+        return project.showCardProject(cardname);
+    }
+
+    /**
+     * Muove una card da una lista ad un'altra
+     * @param projectName Nome del progetto in cui si trova la card
      * @param cardname Nome della card
-     * @return Card Restituisce la card di nome cardName
+     * @param listaPartenza Lista in cui si trova la card
+     * @param listaDestinazione Lista in cui si vuole spostare la card
      */
-    public synchronized Card showCard(ConcurrentHashMap<String, Project> projects, String projectName, String cardname){
+    public void moveCard(String projectName, String cardname, String listaPartenza, String listaDestinazione){
         Project project = projects.get(projectName);
-        Card card = project.showCardTo_Do(cardname);
-        if(card==null){
-            card = project.showCardDoing(cardname);
-            if(card==null) {
-                card = project.showCardToBeRevised(cardname);
-                if(card==null){
-                    card = project.showCardDone(cardname);
-                }
-            }
-        }
-        return card;
+        Card card = project.showCardProject(cardname);
+        project.moveCard(listaPartenza, listaDestinazione, card);
     }
 
-    /***
-     * Aggiunge una carta alla lista to_Do
-     * @param projects Insieme totale dei progetti
-     * @param projectName Nome del progetto a cui aggiungere la carta
-     * @param cardname Nome della carta
-     * @param description Descrizione della carta
-     */
-    public synchronized void addCard(ConcurrentHashMap<String, Project> projects, String projectName, String cardname, String description){
-        Project project = projects.get(projectName);
-        project.addCardToDo(cardname, description);
-    }
-
-    /***
+    /**
      * Restituisce la history della card
-     * @param projects Insieme totali dei progetti
-     * @param projectName Nome del progetto a cui appartiene la card
-     * @param cardName Nome della card
-     * @return String La history della card
+     * @param projectName Nome del progetto in cui si trova la card
+     * @param cardname Nome della card
+     * @return List<String> History della card
      */
-    public synchronized String getCardHistory(ConcurrentHashMap<String, Project> projects, String projectName, String cardName){
-        Card card = showCard(projects, projectName, cardName);
-        return card.getHistory();
+    public List<String> getCardHistory(String projectName, String cardname){
+        Project project = projects.get(projectName);
+        Card card = project.showCardProject(cardname);
+        return project.getHistory(card);
+    }
+
+    /**
+     * Cancella un progetto
+     * @param projectName Nome del progetto da cancellare
+     */
+    public void cancelProject(String projectName) {
+        Project project = projects.get(projectName);
+        project.cancelProject(projectName);
     }
 }

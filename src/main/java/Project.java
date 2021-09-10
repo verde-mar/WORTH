@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Project {
     /* Nome del progetto, univoco */
@@ -13,26 +14,24 @@ public class Project {
     private final List<Card> done;
     /* Lista di membri del progetto */
     private final List<User> members_sync;
-    /* Vettore di tutte le carte totali */
-    private final Vector<Card> cardsToShow;
+    /* Insieme dei progetti totali */
+    ConcurrentHashMap<String, Project> projects;
 
-    /***
+    /**
      * Costruttore della classe
-     *
      * @param nameProject, nome univoco del progetto da creare
      */
-    public Project(String nameProject, User user){
+    public Project(String nameProject, ConcurrentHashMap<String, Project> projects){
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
-        members_sync.add(user);
-        cardsToShow = new Vector<>();
+        this.projects = projects;
     }
 
-    /***
+    /**
      * Restituisce il nome del progetto
      * @return String Il nome del progetto
      */
@@ -40,15 +39,7 @@ public class Project {
         return nameProject;
     }
 
-    /***
-     * Restituisce la lista dei membri del progetto
-     * @return List<User> lista dei membri del progetto
-     */
-    public List<User> showMembers(){
-        return members_sync;
-    }
-
-    /***
+    /**
      * Restituisce la lista che contiene le card all'interno della lista done
      * @return List<Card>, lista che contiene le card all'interno della lista done
      */
@@ -56,7 +47,7 @@ public class Project {
         return done;
     }
 
-    /***
+    /**
      * Restituisce la lista che contiene le card all'interno della lista toBeRevised
      * @return List<Card>, lista che contiene le card all'interno della lista toBeRevised
      */
@@ -64,7 +55,7 @@ public class Project {
         return toBeRevised;
     }
 
-    /***
+    /**
      * Restituisce la lista che contiene le card all'interno della lista to_Do
      * @return List<Card>, lista che contiene le card all'interno della lista to_Do
      */
@@ -72,7 +63,7 @@ public class Project {
         return to_Do;
     }
 
-    /***
+    /**
      * Restituisce la lista che contiene le card all'interno della lista inProgress
      * @return List<Card>, lista che contiene le card all'interno della lista inProgress
      */
@@ -80,7 +71,15 @@ public class Project {
         return inProgress;
     }
 
-    /***
+    /**
+     * Restituisce la lista dei membri del progetto
+     * @return List<User> lista dei membri del progetto
+     */
+    public List<User> showMembers(){
+        return members_sync;
+    }
+
+    /**
      * Restituisce la lista dei membri del progetto e che sono online
      * @return List<User> lista dei membri online del progetto
      */
@@ -94,11 +93,12 @@ public class Project {
         return onlineMembers;
     }
 
-    /***
-     * Aggiunge una card alla lista to_Do
-     * @param cardname Nome della card da aggiungere a listaToAdd
+    /**
+     * Aggiunge una card al progetto
+     * @param cardname Nome della card da aggiungere
+     * @param description Descrizione associata alla card
      */
-    public void addCardToDo(String cardname, String description){
+    public synchronized void addCardProject(String cardname, String description){
         Card card = new Card(cardname);
         card.addHistory("added to to_Do; ");
         card.addDescription(description);
@@ -106,39 +106,59 @@ public class Project {
         to_Do.add(card);
     }
 
+    /**
+     * Cancella un progetto
+     * @param projectName String Nome del progetto
+     */
+    public synchronized void cancelProject(String projectName){
+        if(getToDo().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
+            projects.remove(projectName, projects.get(projectName));
+    }
+
+    /***
+     * Restituisce la card di nome cardName
+     * @param cardname Nome della card
+     * @return Card Restituisce la card di nome cardName
+     */
+    public synchronized Card showCardProject(String cardname){
+        Card card = showCardTo_Do(cardname);
+        if(card==null){
+            card = showCardDoing(cardname);
+            if(card==null) {
+                card = showCardToBeRevised(cardname);
+                if(card==null){
+                    card = showCardDone(cardname);
+                }
+            }
+        }
+        return card;
+    }
+
     /***
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista to_Do)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
-    public Card showCardTo_Do(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(to_Do);
-        for (Card value : cardsToShow) {
+    public synchronized Card showCardTo_Do(String cardName){
+        for (Card value : to_Do) {
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
         }
-
-
         return null;
     }
 
     /***
-     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProress
+     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProgress)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
-    public Card showCardDoing(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(inProgress);
-        for (Card value : cardsToShow) {
+    public synchronized Card showCardDoing(String cardName){
+        for (Card value : inProgress) {
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
         }
-
-
         return null;
     }
 
@@ -147,14 +167,10 @@ public class Project {
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
-    public Card showCardToBeRevised(String cardName){
-        if(cardName!=null) {
-            cardsToShow.removeAllElements();
-            cardsToShow.addAll(toBeRevised);
-            for (Card value : cardsToShow) {
-                if (value.getNameCard().equals(cardName)) {
-                    return value;
-                }
+    public synchronized Card showCardToBeRevised(String cardName){
+        for (Card value : toBeRevised) {
+            if (value.getNameCard().equals(cardName)) {
+                return value;
             }
         }
 
@@ -166,10 +182,8 @@ public class Project {
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
      */
-    public Card showCardDone(String cardName){
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(done);
-        for (Card value : cardsToShow) {
+    public synchronized Card showCardDone(String cardName){
+        for (Card value : done) {
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
@@ -182,6 +196,7 @@ public class Project {
      * @return Vector<Card> contenente tutte le card del progetto
      */
     public synchronized Vector<Card> showCards(){
+        Vector<Card> cardsToShow = new Vector<>();
         cardsToShow.removeAllElements();
         cardsToShow.addAll(to_Do);
         cardsToShow.addAll(toBeRevised);
@@ -204,6 +219,7 @@ public class Project {
      * @param listadiDest Nome della lista in cui si trovera' la card
      * @param card Carta da spostare
      */
+    //todo: il messaggio di aggiornamento va nella chat
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card){
         card.eraseCurrentList();
         switch (listaDiPart) {
@@ -249,12 +265,12 @@ public class Project {
         }
     }
 
-    /***
-     * Restituisce la history di una card
-     * @param card Card di cui prelevare la history
-     * @return String la history della card
+    /**
+     * Restituisce la history della card che appartiene al progetto corrente
+     * @param card Card che si trova nel programma
+     * @return List<String> History di card
      */
-    public String getCardHistory(Card card){
+    public List<String> getHistory(Card card){
         return card.getHistory();
     }
 }

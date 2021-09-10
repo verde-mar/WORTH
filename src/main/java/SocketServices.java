@@ -52,9 +52,9 @@ public class SocketServices implements AutoCloseable{
     /***
      * La funzione associa ad ogni richiesta di un client un thread del threadPool
      * @param buffer contenente la richiesta in JSON
-     * @return Future<Tasks> un thread del threadpool
+     * @return Future<Message> un thread del threadpool
      */
-    private Future<Tasks> elaborateRequest(ByteBuffer buffer) {
+    private Future<Message> elaborateRequest(ByteBuffer buffer) {
         return threadPool.submit(new PManager(buffer, projects));
     }
 
@@ -70,7 +70,7 @@ public class SocketServices implements AutoCloseable{
             selector.select();
 
             /* Iteratore sulle chiavi pronte */
-            Iterator<SelectionKey> keysIterator = selector.selectedKeys().iterator(); 
+            Iterator<SelectionKey> keysIterator = selector.selectedKeys().iterator();
             while (keysIterator.hasNext()) {
                 /* Chiave corrente che viene rimossa dal selected set */
                 SelectionKey key = keysIterator.next();
@@ -163,7 +163,7 @@ public class SocketServices implements AutoCloseable{
             sleep(200);
 
             /* Elabora la richiesta */
-            Future<Tasks> future = elaborateRequest(buffer);
+            Future<Message> future = elaborateRequest(buffer);
 
             /* Registra la chiave per la scrittura */
             SelectionKey reg_key = client_read.register(selector, SelectionKey.OP_WRITE);
@@ -184,14 +184,14 @@ public class SocketServices implements AutoCloseable{
     private void writeMessage(SelectionKey key) throws IOException, ExecutionException, InterruptedException {
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
         @SuppressWarnings("unchecked")
-        Future<Tasks> future = (Future<Tasks>) key.attachment();
+        Future<Message> future = (Future<Message>) key.attachment();
         if (!future.isDone())
             return;
         /* Active socket associato al client */
         SocketChannel client = (SocketChannel) key.channel();
 
-        /* Si fa restituire la risposta in formato Tasks, e crea il file JSON da inviare al client */
-        Tasks response_t = future.get();
+        /* Si fa restituire la risposta in formato Message, e crea il file JSON da inviare al client */
+        Message response_t = future.get();
         ObjectMapper mapper = new ObjectMapper();
         byte[] byteResponse = mapper.writeValueAsBytes(response_t);
         ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
