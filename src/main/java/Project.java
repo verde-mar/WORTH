@@ -14,21 +14,18 @@ public class Project {
     private final List<Card> done;
     /* Lista di membri del progetto */
     private final List<User> members_sync;
-    /* Insieme dei progetti totali */
-    ConcurrentHashMap<String, Project> projects;
 
     /**
      * Costruttore della classe
-     * @param nameProject, nome univoco del progetto da creare
+     * @param nameProject Nome del progetto
      */
-    public Project(String nameProject, ConcurrentHashMap<String, Project> projects){
+    public Project(String nameProject){
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
-        this.projects = projects;
     }
 
     /**
@@ -108,9 +105,10 @@ public class Project {
 
     /**
      * Cancella un progetto
-     * @param projectName String Nome del progetto
+     * @param projectName Nome del progetto
+     * @param projects Insieme totale dei progetti
      */
-    public synchronized void cancelProject(String projectName){
+    public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
         if(getToDo().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
             projects.remove(projectName, projects.get(projectName));
     }
@@ -223,41 +221,41 @@ public class Project {
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card){
         card.eraseCurrentList();
         switch (listaDiPart) {
-            case "to_Do" -> {
+            case "to_Do" : {
                 to_Do.remove(card);
                 card.addHistory("removed from to_Do; ");
             }
-            case "inProgress" -> {
+            case "inProgress" : {
                 inProgress.remove(card);
                 card.addHistory("removed from inProgress; ");
             }
-            case "done" -> {
+            case "done" : {
                 done.remove(card);
                 card.addHistory("removed from done; ");
             }
-            case "toBeRevised" -> {
+            case "toBeRevised" : {
                 toBeRevised.remove(card);
                 card.addHistory("removed from toBeRevised; ");
             }
         }
 
         switch (listadiDest) {
-            case "to_Do" -> {
+            case "to_Do" : {
                 to_Do.add(card);
                 card.addHistory("added to to_Do; ");
                 card.addCurrentList("to_Do");
             }
-            case "inProgress" -> {
+            case "inProgress" : {
                 inProgress.add(card);
                 card.addHistory("added to inProgress; ");
                 card.addCurrentList("inProgress");
             }
-            case "done" -> {
+            case "done" : {
                 done.add(card);
                 card.addHistory("added to done; ");
                 card.addCurrentList("done");
             }
-            case "toBeRevised" -> {
+            case "toBeRevised" : {
                 toBeRevised.add(card);
                 card.addHistory("added to toBeRevised; ");
                 card.addCurrentList("toBeRevised");

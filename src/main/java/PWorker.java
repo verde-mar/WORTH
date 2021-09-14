@@ -67,6 +67,6 @@ public class PWorker {
      */
     public void cancelProject(String projectName) {
         Project project = projects.get(projectName);
-        project.cancelProject(projectName);
+        project.cancelProject(projectName, projects);
     }
 }

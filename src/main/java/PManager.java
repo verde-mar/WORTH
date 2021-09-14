@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -67,80 +68,85 @@ public class PManager implements Callable<Message>  {
         try{
             parser();
             switch(task_request.getRequest()) {
-                /*case login -> {
+                /*case login : {
                 }
-                case logout -> {
+                case logout : {
                 }
-                case listUsers -> {
+                case listUsers : {
                 }
-                case listOnlineUsers -> {
+                case listOnlineUsers : {
                 }
-                case listProjects -> {
+                case listProjects : {
                 }
 
-                case addMember -> {
+                case addMember : {
                     if(projects.containsKey(task_request.getProjectName())){
                         projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
                         task_response.setMembers();
                     }
                 }
-                case readChat -> {
+                case readChat : {
                 }
-                case sendChatMsg -> {
+                case sendChatMsg : {
                 }*/
-                //case createProject -> worker.createProject(projects, task_request.getProjectName());
+                case createProject : projects.putIfAbsent(task_request.getProjectName(), new Project(task_request.getProjectName())); File directory = new File("/home/" + task_request.getProjectName() + "/"); break;
 
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
-                case showCards -> {
+                case showCards : {
                     List<Card> cards = projects.get(task_request.getProjectName()).showCards();
                     task_response.setCardsName(cards);
                     task_response.setProjectName(task_request.getProjectName());
-
+                    break;
                 }
 
                 /* Restituisce una card e i parametri associati(history, nome, desscription, lista corrente in cui si trova */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
-                case showCard -> {
+                case showCard : {
                     Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName());
                     task_response.setProjectName(task_request.getProjectName());
                     task_response.setCardName(card.getNameCard());
                     task_response.setHistory(card.getHistory());
                     task_response.setDescription(card.getDescription());
                     task_response.setCardCurrentList(card.getCurrentList());
+                    break;
                 }
 
                 /* Aggiunge una card al progetto specificato nella richiesta */
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
-                case addCard -> {
+                case addCard : {
                     worker.addCard(task_request.getProjectName(), task_request.getCardName(), task_request.getDescription());
                     task_response.setProjectName(task_request.getProjectName());
                     task_response.setCardName(task_request.getCardName());
+                    break;
                 }
 
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
-                case moveCard -> {
+                case moveCard : {
                     worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione());
                     task_response.setProjectName(task_request.getProjectName());
                     task_response.setCardName(task_request.getCardName());
+                    break;
                 }
 
                 /* Restituisce l'history della card specificata nella richiesta */
                 //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
-                case getCardHistory -> {
+                case getCardHistory : {
                     List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName());
                     task_response.setHistory(history);
                     task_response.setCardName(task_request.getCardName());
+                    break;
                 }
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 /* Cancella un progetto */
-                case cancelProject -> {
+                case cancelProject : {
                     worker.cancelProject(task_request.getProjectName());
                     task_response.setProjectName(task_request.getProjectName());
+                    break;
                 }
             }
 
