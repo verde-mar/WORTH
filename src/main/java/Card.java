@@ -1,3 +1,10 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +17,8 @@ public class Card {
     private final List<String> history;
     /* Lista corrente a cui appartiene la card */
     private String currentList;
+    /* Oggetto necessario per creare un file all'interno della directory del progetto */
+    ObjectMapper card_mapper;
 
     /**
      * Costruttore della classe
@@ -18,6 +27,7 @@ public class Card {
     public Card(String nameCard){
         this.nameCard = nameCard;
         history = new LinkedList<>();
+        card_mapper = new ObjectMapper();
     }
 
     /**
@@ -56,6 +66,19 @@ public class Card {
     }
 
     /**
+     * Aggiorna il file su disco associato alla card corrente
+     * @throws IOException Nel caso ci siano errori I/O nella scrittura sul file
+     */
+    public void update() throws IOException {
+        File card_file = new File(nameCard);
+        if(card_file.exists()){
+            try(BufferedWriter out = new BufferedWriter(new FileWriter(card_file.getName()))) {
+                out.write(String.valueOf(getHistory()));
+            }
+        }
+    }
+
+    /**
      * Restituisce la history di una card
      * @return List<String> La history di una card
      */
@@ -77,5 +100,16 @@ public class Card {
      */
     public String getDescription() {
         return description;
+    }
+
+
+    public void writeOnDisk(String projectName) throws IOException {
+        CardFile cardFile = new CardFile();
+        cardFile.setNameCard(nameCard);
+        cardFile.setCurrentList(getCurrentList());
+        cardFile.setDescription(description);
+        cardFile.setHistory(getHistory());
+
+        card_mapper.writeValue(Paths.get(projectName + nameCard + ".json").toFile(), cardFile);
     }
 }

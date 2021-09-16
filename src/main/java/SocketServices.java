@@ -25,12 +25,14 @@ public class SocketServices implements AutoCloseable{
     /* Struttura dati rappresentante l'insieme dei progetti all'interno del server */
     private final ConcurrentHashMap<String, Project> projects;
 
+    private final ConfigurationFile config_file;
+
     /***
      * Costruttore della classe
      * @param portNumber numero di porta del servizio offerto dal server
      * @throws IOException se avviene un errore nell' I/O
      */
-    public SocketServices(int portNumber) throws IOException {
+    public SocketServices(int portNumber, ConfigurationFile config) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
@@ -46,7 +48,8 @@ public class SocketServices implements AutoCloseable{
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
         /* Crea la struttura dati per i progetti */
-        projects = new ConcurrentHashMap<>();
+        projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
+        config_file = config;
     }
 
     /***
@@ -232,5 +235,7 @@ public class SocketServices implements AutoCloseable{
     public void close() throws IOException {
         selector.close();
         channel.close();
+        config_file.setAll_projects(projects);
+        //todo: ci sono da settare le finormazioni di registrazione
     }
 }

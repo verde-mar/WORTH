@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +16,9 @@ public class Project {
     private final List<Card> done;
     /* Lista di membri del progetto */
     private final List<User> members_sync;
+    /* Il progetto corrente */
+    File project;
+
 
     /**
      * Costruttore della classe
@@ -26,6 +31,9 @@ public class Project {
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
+        project = new File("/home/verdemar/WORTH" + nameProject); //todo: non dovrei mettere un path piu' generico? Ma come?
+        project.mkdir();
+
     }
 
     /**
@@ -94,13 +102,18 @@ public class Project {
      * Aggiunge una card al progetto
      * @param cardname Nome della card da aggiungere
      * @param description Descrizione associata alla card
+     * @param projectName Nome del progetto
      */
-    public synchronized void addCardProject(String cardname, String description){
+    public synchronized void addCardProject(String cardname, String description, String projectName) throws IOException {
         Card card = new Card(cardname);
         card.addHistory("added to to_Do; ");
         card.addDescription(description);
         card.addCurrentList("to_Do");
         to_Do.add(card);
+
+        card.writeOnDisk(projectName);
+
+
     }
 
     /**
@@ -111,6 +124,12 @@ public class Project {
     public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
         if(getToDo().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
             projects.remove(projectName, projects.get(projectName));
+
+        boolean eliminate = project.delete();
+        if(eliminate)
+            System.out.println(projectName + " was eliminated");
+        else
+            System.out.println("Could'nt eliminate "+projectName);
     }
 
     /***
@@ -218,7 +237,7 @@ public class Project {
      * @param card Carta da spostare
      */
     //todo: il messaggio di aggiornamento va nella chat
-    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card){
+    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws IOException {
         card.eraseCurrentList();
         switch (listaDiPart) {
             case "to_Do" : {
@@ -261,6 +280,8 @@ public class Project {
                 card.addCurrentList("toBeRevised");
             }
         }
+
+        card.update();
     }
 
     /**

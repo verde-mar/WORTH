@@ -89,7 +89,7 @@ public class PManager implements Callable<Message>  {
                 }
                 case sendChatMsg : {
                 }*/
-                case createProject : projects.putIfAbsent(task_request.getProjectName(), new Project(task_request.getProjectName())); File directory = new File("/home/" + task_request.getProjectName()); break;
+                case createProject : projects.putIfAbsent(task_request.getProjectName(), new Project(task_request.getProjectName())); break;
 
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato

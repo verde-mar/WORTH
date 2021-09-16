@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,10 +20,11 @@ public class PWorker {
      * @param cardname Nome della card da inserire
      * @param descr Descrizione della card da inserire
      */
-    public void addCard(String projectName, String cardname, String descr){
+    public void addCard(String projectName, String cardname, String descr) throws IOException {
         Project project = projects.get(projectName);
         if(project.showCardProject(cardname)==null)
-            project.addCardProject(cardname, descr);
+            project.addCardProject(cardname, descr, projectName);
+
     }
 
     /**
@@ -43,10 +45,11 @@ public class PWorker {
      * @param listaPartenza Lista in cui si trova la card
      * @param listaDestinazione Lista in cui si vuole spostare la card
      */
-    public void moveCard(String projectName, String cardname, String listaPartenza, String listaDestinazione){
+    public void moveCard(String projectName, String cardname, String listaPartenza, String listaDestinazione) throws IOException {
         Project project = projects.get(projectName);
         Card card = project.showCardProject(cardname);
         project.moveCard(listaPartenza, listaDestinazione, card);
+
     }
 
     /**
