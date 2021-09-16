@@ -6,13 +6,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationFile {
+    /* Insieme totale dei progetti all'interno del server*/
     private Map<String, Project> all_projects;
+
     private Map<String, String> register_informations;
 
+    /**
+     * Inizializza la struttura locale che indica i progetti totali all'interno del server
+     * @param all_projects Struttura dati che indica tutti i progetti
+     */
     public void setAll_projects(Map<String, Project> all_projects) {
         this.all_projects = all_projects;
     }
 
+    /**
+     * Restituisce tutti i progetti all'interno del server in quel momento
+     * @return Map<String, Project> Struttura che indica l'insieme dei progetti nel server
+     */
     public Map<String, Project> getAll_projects(){
         return all_projects;
     }
@@ -25,8 +35,12 @@ public class ConfigurationFile {
         return register_informations;
     }
 
+    /**
+     * Crea o setta il file JSON di configurazione
+     * @throws JsonProcessingException Se si presentano errori nell'interazione con il file JSON
+     */
     public void createOrSet() throws JsonProcessingException {
-        File direct = new File("/home/verdemar");
+        File direct = new File("./");
         boolean found = false;
 
         File[] fil = direct.listFiles();
@@ -34,15 +48,15 @@ public class ConfigurationFile {
         for (File file_corr : fil) {
             String name = file_corr.getName();
             if (!found) {
-                if (file_corr.isDirectory() && name.equals("/home/verdemar/WORTH")) {
+                if (file_corr.isDirectory() && name.equals("./WORTH_config")) {
                     found = true;
                     ObjectMapper mapper = new ObjectMapper();
-                    mapper.readValue("/home/verdemar/WORTH/config.json", ConfigurationFile.class);
+                    mapper.readValue("./WORTH_config/config.json", ConfigurationFile.class);
                 }
             }
         }
         if (!found) {
-            File worth = new File("/home/verdemar/WORTH");
+            File worth = new File("./WORTH_config");
             boolean worth_dir = worth.mkdir();
         }
 

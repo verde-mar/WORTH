@@ -22,7 +22,7 @@ public class PManager implements Callable<Message>  {
     /* Composizione della classe ProjectWorker. La classe contiene metodi ausiliari per la classe corrente */
     private final PWorker worker;
 
-    /***
+    /**
      * Costruttore dell'oggetto
      * @param buffer contenente la richiesta
      */
@@ -34,7 +34,7 @@ public class PManager implements Callable<Message>  {
         worker = new PWorker(projects);
     }
 
-    /***
+    /**
      * Effettua il parsing della richiesta
      * @throws IOException se ci sono errori nell' I/O
      */
@@ -44,7 +44,7 @@ public class PManager implements Callable<Message>  {
         task_request = objectMapper.readValue(buffer_toString, Message.class);
     }
 
-    /***
+    /**
      * Realizza la risposta base da inviare al client
      * @param outcome_b Booleano che indica se l'operazione e' avvenuta con successo
      * @param outcome_s Stringa da inviare al client che spiega a cosa e' dovuto un eventuale fallimento della richiesta.
@@ -59,9 +59,9 @@ public class PManager implements Callable<Message>  {
         }
     }
 
-    /***
+    /**
      * Override della chiamata call
-     * @return Message cioe' la risposta in formato JSON
+     * @return Message Risposta in formato JSON
      */
     @Override
     public Message call() {
@@ -142,6 +142,7 @@ public class PManager implements Callable<Message>  {
                     break;
                 }
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
+
                 /* Cancella un progetto */
                 case cancelProject : {
                     worker.cancelProject(task_request.getProjectName());

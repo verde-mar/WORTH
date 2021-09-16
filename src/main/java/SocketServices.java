@@ -25,12 +25,14 @@ public class SocketServices implements AutoCloseable{
     /* Struttura dati rappresentante l'insieme dei progetti all'interno del server */
     private final ConcurrentHashMap<String, Project> projects;
 
+    /* File di configurazione */
     private final ConfigurationFile config_file;
 
-    /***
+    /**
      * Costruttore della classe
-     * @param portNumber numero di porta del servizio offerto dal server
-     * @throws IOException se avviene un errore nell' I/O
+     * @param portNumber Porta con cui il server si mette in ascolto
+     * @param config File di configurazione iniziale
+     * @throws IOException Nel caso ci sia un errore in IO
      */
     public SocketServices(int portNumber, ConfigurationFile config) throws IOException {
         /* Inizializzazione del threadpool */
@@ -49,10 +51,12 @@ public class SocketServices implements AutoCloseable{
 
         /* Crea la struttura dati per i progetti */
         projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
+
+        /* Inizializza il file di configurazione */
         config_file = config;
     }
 
-    /***
+    /**
      * La funzione associa ad ogni richiesta di un client un thread del threadPool
      * @param buffer contenente la richiesta in JSON
      * @return Future<Message> un thread del threadpool
@@ -62,7 +66,7 @@ public class SocketServices implements AutoCloseable{
     }
 
 
-    /***
+    /**
      * La funzione fa girare il selector finche' il thread main non viene interrotto
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se avviene un errore nella lettura del messaggio in readMessage(key)
@@ -99,7 +103,7 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
-    /***
+    /**
      * Registra quel client per operazioni in lettura
      * @param key chiave associata al channel
      * @throws IOException se avviene un errore nell'I/O
@@ -116,7 +120,7 @@ public class SocketServices implements AutoCloseable{
         System.out.println("Accepted connection from " + client);
     }
 
-    /***
+    /**
      * Legge il messaggio inviato dal client
      * @param key chiave associata al
      * @throws IOException se avviene un errore nell'I/O
@@ -176,9 +180,8 @@ public class SocketServices implements AutoCloseable{
         }
     }
 
-    /***
+    /**
      * Attende che il messaggio sia pronto e poi lo scrive a blocchi
-     *
      * @param key Chiave che rappresenta il client pronto per la scrittura
      * @throws IOException Se c'è un problema a scrivere il messaggio
      * @throws ExecutionException Se c'e' stato un errore nella computazione
@@ -227,7 +230,7 @@ public class SocketServices implements AutoCloseable{
         wr_key.attach(lengthBuffer);
     }
 
-    /***
+    /**
      * Funzione che prevede la chiusura del selector e il server socket
      * @throws IOException se avviene un errore nell'I/O
      */

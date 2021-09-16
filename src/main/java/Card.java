@@ -103,6 +103,11 @@ public class Card {
     }
 
 
+    /**
+     * Scrive la card corrente nella directory definita da projectName
+     * @param projectName Nome del progetto
+     * @throws IOException Se vi e' un errore nell'IO
+     */
     public void writeOnDisk(String projectName) throws IOException {
         CardFile cardFile = new CardFile();
         cardFile.setNameCard(nameCard);
@@ -110,6 +115,6 @@ public class Card {
         cardFile.setDescription(description);
         cardFile.setHistory(getHistory());
 
-        card_mapper.writeValue(Paths.get(projectName + nameCard + ".json").toFile(), cardFile);
+        card_mapper.writeValue(Paths.get("./" + projectName + nameCard + ".json").toFile(), cardFile);
     }
 }

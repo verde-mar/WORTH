@@ -31,7 +31,7 @@ public class Project {
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
-        project = new File("/home/verdemar/WORTH" + nameProject); //todo: non dovrei mettere un path piu' generico? Ma come?
+        project = new File("./" + nameProject);
         project.mkdir();
 
     }
@@ -105,15 +105,15 @@ public class Project {
      * @param projectName Nome del progetto
      */
     public synchronized void addCardProject(String cardname, String description, String projectName) throws IOException {
+        /* Aggiunge la card alla struttura dati locale */
         Card card = new Card(cardname);
         card.addHistory("added to to_Do; ");
         card.addDescription(description);
         card.addCurrentList("to_Do");
         to_Do.add(card);
 
+        /* Memorizza la card su disco */
         card.writeOnDisk(projectName);
-
-
     }
 
     /**
@@ -122,9 +122,11 @@ public class Project {
      * @param projects Insieme totale dei progetti
      */
     public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
+        /* Cancella il progetto dalla struttura dati locale */
         if(getToDo().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
             projects.remove(projectName, projects.get(projectName));
 
+        /* Cancella il progetto dal disco */
         boolean eliminate = project.delete();
         if(eliminate)
             System.out.println(projectName + " was eliminated");
@@ -132,7 +134,7 @@ public class Project {
             System.out.println("Could'nt eliminate "+projectName);
     }
 
-    /***
+    /**
      * Restituisce la card di nome cardName
      * @param cardname Nome della card
      * @return Card Restituisce la card di nome cardName
@@ -151,7 +153,7 @@ public class Project {
         return card;
     }
 
-    /***
+    /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista to_Do)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
@@ -165,7 +167,7 @@ public class Project {
         return null;
     }
 
-    /***
+    /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProgress)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
@@ -179,7 +181,7 @@ public class Project {
         return null;
     }
 
-    /***
+    /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista toBeRevised)
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
@@ -194,7 +196,7 @@ public class Project {
         return null;
     }
 
-    /***
+    /**
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
      * @return Card la copia della card se e' presente, altrimenti null
@@ -208,7 +210,7 @@ public class Project {
         return null;
     }
 
-    /***
+    /**
      * Restituisce tutte le card del progetto
      * @return Vector<Card> contenente tutte le card del progetto
      */
@@ -230,7 +232,7 @@ public class Project {
         members_sync.add(user);
     }
 
-    /***
+    /**
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
      * @param listadiDest Nome della lista in cui si trovera' la card
