@@ -115,6 +115,6 @@ public class Card {
         cardFile.setDescription(description);
         cardFile.setHistory(getHistory());
 
-        card_mapper.writeValue(Paths.get("./" + projectName + nameCard + ".json").toFile(), cardFile);
+        card_mapper.writeValue(Paths.get("./" + projectName + "/" + nameCard + ".json").toFile(), cardFile);
     }
 }

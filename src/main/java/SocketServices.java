@@ -50,8 +50,10 @@ public class SocketServices implements AutoCloseable{
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
         /* Crea la struttura dati per i progetti */
-        projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
-
+        if(config.getAll_projects() != null)
+            projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
+        else
+            projects = new ConcurrentHashMap<>();
         /* Inizializza il file di configurazione */
         config_file = config;
     }
@@ -239,6 +241,7 @@ public class SocketServices implements AutoCloseable{
         selector.close();
         channel.close();
         config_file.setAll_projects(projects);
+        System.out.println(config_file.getAll_projects());
         //todo: ci sono da settare le finormazioni di registrazione
     }
 }
