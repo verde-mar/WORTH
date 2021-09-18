@@ -18,7 +18,12 @@ public class Project {
     private List<User> members_sync;
     /* Il progetto corrente */
     File project;
+    /* Booleano che indica se e' stata creata una directory associata al progetto */
+    boolean mkdir_bool;
 
+    /**
+     * Costruttore vuoto della classe (necessario a jackson)
+     */
     public Project(){}
 
     /**
@@ -33,7 +38,7 @@ public class Project {
         done = Collections.synchronizedList(new LinkedList<>());
         members_sync = Collections.synchronizedList(new LinkedList<>());
         project = new File("./" + nameProject);
-        project.mkdir();
+        mkdir_bool = project.mkdir();
 
     }
 
@@ -77,30 +82,50 @@ public class Project {
         return inProgress;
     }
 
+    /**
+     * Inizializza il campo della lista done con il parametro
+     * @param done Parametro contenente la lista done
+     */
     public void setDone(List<Card> done) {
         this.done = done;
     }
 
+    /**
+     * Inizializza il campo della lista inProgress con il parametro
+     * @param inProgress Parametro contenente la lista inProgress
+     */
     public void setInProgress(List<Card> inProgress) {
         this.inProgress = inProgress;
     }
 
-    public void setMembers_sync(List<User> members_sync) {
-        this.members_sync = members_sync;
-    }
-
+    /**
+     * Inizializza il campo della lista to_Do con il parametro
+     * @param to_Do Parametro contenente la lista to_Do
+     */
     public void setTo_Do(List<Card> to_Do) {
         this.to_Do = to_Do;
     }
 
+    /**
+     * Inizializza il campo della lista nameProject con il parametro
+     * @param nameProject Parametro contenente la lista nameProject
+     */
     public void setNameProject(String nameProject) {
         this.nameProject = nameProject;
     }
 
+    /**
+     * Inizializza il campo project con il parametro
+     * @param project Parametro contenente project
+     */
     public void setProject(File project) {
         this.project = project;
     }
 
+    /**
+     * Inizializza il campo della lista toBeRevised con il parametro
+     * @param toBeRevised Parametro contenente la lista toBeRevised
+     */
     public void setToBeRevised(List<Card> toBeRevised) {
         this.toBeRevised = toBeRevised;
     }

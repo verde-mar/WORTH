@@ -9,6 +9,9 @@ public class ConfigurationFile {
     /* Insieme totale dei progetti all'interno del server*/
     private Map<String, Project> all_projects;
 
+    /**
+     * Costruttore vuoto della classe (necessario a jackson)
+     */
     public ConfigurationFile(){   }
 
     /**
@@ -27,13 +30,19 @@ public class ConfigurationFile {
         return all_projects;
     }
 
+    /**
+     * Se non esiste la directory contenente i file di configurazione la crea, e cosi' crea anche i file;
+     * altrimenti li legge per inzializzare le strutture dati locali
+     * @throws IOException Nel caso in cui ci sia un errore di IO
+     */
     public static void createOrSet() throws IOException {
         File direct = new File("./WORTH_config");
         if (!direct.exists()) {
             boolean worth_dir = direct.mkdir();
             File config_file = new File("./WORTH_config/config.json");
             if(worth_dir) {
-                config_file.createNewFile();
+                boolean new_file = config_file.createNewFile();
+                System.out.println(new_file + ": was created a new config file");
             }
         } else {
             ObjectMapper mapper = new ObjectMapper();

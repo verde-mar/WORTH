@@ -240,10 +240,13 @@ public class SocketServices implements AutoCloseable{
         wr_key.attach(lengthBuffer);
     }
 
+    /**
+     * Effettua la close() della classe
+     * @throws IOException Nel caso di un errore IO
+     */
     @Override
     public void close() throws IOException {
         selector.close();
         channel.close();
-        //todo: ci sono da settare le finormazioni di registrazione
     }
 }

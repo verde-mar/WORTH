@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutionException;
 public class MainClass {
     public static void main(String[] args) throws IOException {
         ConfigurationFile config = new ConfigurationFile();
-        config.createOrSet();
+        ConfigurationFile.createOrSet();
 
         try (SocketServices server = new SocketServices(8080, config)) {
             server.start();
