@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Card {
     /* Nome univoco della card */
-    private final String nameCard;
+    private String nameCard;
     /* Descrizione testuale della card */
     private String description;
     /* Storia associata alla card */
-    private final List<String> history;
+    private List<String> history;
     /* Lista corrente a cui appartiene la card */
     private String currentList;
     /* Oggetto necessario per creare un file all'interno della directory del progetto */
@@ -29,6 +29,8 @@ public class Card {
         history = new LinkedList<>();
         card_mapper = new ObjectMapper();
     }
+
+    public Card(){}
 
     /**
      * Restituisce il nome della card

@@ -1,5 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.DataOutput;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -7,6 +9,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
@@ -27,6 +30,8 @@ public class SocketServices implements AutoCloseable{
 
     /* File di configurazione */
     private final ConfigurationFile config_file;
+
+    ObjectMapper mapper;
 
     /**
      * Costruttore della classe
@@ -56,6 +61,7 @@ public class SocketServices implements AutoCloseable{
             projects = new ConcurrentHashMap<>();
         /* Inizializza il file di configurazione */
         config_file = config;
+        mapper = new ObjectMapper();
     }
 
     /**
@@ -102,7 +108,10 @@ public class SocketServices implements AutoCloseable{
                     writeMessage(key);
                 }
             }
+            config_file.setAll_projects(projects);
+            mapper.writeValue(Paths.get("./WORTH_config/config.json").toFile(), config_file);
         }
+
     }
 
     /**
@@ -200,7 +209,6 @@ public class SocketServices implements AutoCloseable{
 
         /* Si fa restituire la risposta in formato Message, e crea il file JSON da inviare al client */
         Message response_t = future.get();
-        ObjectMapper mapper = new ObjectMapper();
         byte[] byteResponse = mapper.writeValueAsBytes(response_t);
         ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
 
@@ -232,16 +240,10 @@ public class SocketServices implements AutoCloseable{
         wr_key.attach(lengthBuffer);
     }
 
-    /**
-     * Funzione che prevede la chiusura del selector e il server socket
-     * @throws IOException se avviene un errore nell'I/O
-     */
     @Override
     public void close() throws IOException {
         selector.close();
         channel.close();
-        config_file.setAll_projects(projects);
-        System.out.println(config_file.getAll_projects());
         //todo: ci sono da settare le finormazioni di registrazione
     }
 }

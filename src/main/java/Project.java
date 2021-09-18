@@ -5,20 +5,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Project {
     /* Nome del progetto, univoco */
-    private final String nameProject;
+    private String nameProject;
     /* Lista delle card che devono ancora essere prese in carico da un membro del progetto */
-    private final List<Card> to_Do;
+    private List<Card> to_Do;
     /* Lista delle card che sono state prese in carico da un membro del progetto */
-    private final List<Card> inProgress;
+    private List<Card> inProgress;
     /* Lista delle card le cui operazioni sono da revisionare da un membro del progetto */
-    private final List<Card> toBeRevised;
+    private List<Card> toBeRevised;
     /* Lista delle card le cui operazioni associate sono portate a termine da un membro del progetto */
-    private final List<Card> done;
+    private List<Card> done;
     /* Lista di membri del progetto */
-    private final List<User> members_sync;
+    private List<User> members_sync;
     /* Il progetto corrente */
     File project;
 
+    public Project(){}
 
     /**
      * Costruttore della classe
@@ -64,7 +65,7 @@ public class Project {
      * Restituisce la lista che contiene le card all'interno della lista to_Do
      * @return List<Card>, lista che contiene le card all'interno della lista to_Do
      */
-    public List<Card> getToDo(){
+    public List<Card> getTo_Do(){
         return to_Do;
     }
 
@@ -74,6 +75,34 @@ public class Project {
      */
     public List<Card> getInProgress(){
         return inProgress;
+    }
+
+    public void setDone(List<Card> done) {
+        this.done = done;
+    }
+
+    public void setInProgress(List<Card> inProgress) {
+        this.inProgress = inProgress;
+    }
+
+    public void setMembers_sync(List<User> members_sync) {
+        this.members_sync = members_sync;
+    }
+
+    public void setTo_Do(List<Card> to_Do) {
+        this.to_Do = to_Do;
+    }
+
+    public void setNameProject(String nameProject) {
+        this.nameProject = nameProject;
+    }
+
+    public void setProject(File project) {
+        this.project = project;
+    }
+
+    public void setToBeRevised(List<Card> toBeRevised) {
+        this.toBeRevised = toBeRevised;
     }
 
     /**
@@ -123,7 +152,7 @@ public class Project {
      */
     public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
         /* Cancella il progetto dalla struttura dati locale */
-        if(getToDo().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
+        if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
             projects.remove(projectName, projects.get(projectName));
 
         /* Cancella il progetto dal disco */
@@ -224,21 +253,13 @@ public class Project {
         return cardsToShow;
     }
 
-    /*** todo: da verificare, la questione dell'utente non va bene
-     * Aggiunge l'utente user alla lista dei membri del progetto
-     * @param user utente da inserire
-     */
-    public void addMember(User user){
-        members_sync.add(user);
-    }
-
     /**
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
      * @param listadiDest Nome della lista in cui si trovera' la card
      * @param card Carta da spostare
      */
-    //todo: il messaggio di aggiornamento va nella chat
+    //il messaggio di aggiornamento va nella chat
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws IOException {
         card.eraseCurrentList();
         switch (listaDiPart) {
