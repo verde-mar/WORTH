@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * WORTH.server.PWorker e' la classe ausiliaria a WORTH.server.PManager, e che
+ * PWorker e' la classe ausiliaria a PManager, e che
  * esegue tutte le operazioni necessarie a restituire una risposta
  */
 public class PWorker {

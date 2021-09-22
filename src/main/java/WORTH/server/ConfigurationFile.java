@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 
+/**
+ * ConfigurationFile e' la classe che rappresenta
+ * il file di configurazione usato per inizializzare le strutture dati locali del server all'inizio
+ */
 public class ConfigurationFile {
     /* Insieme totale dei progetti all'interno del WORTH.server*/
     private Map<String, Project> all_projects;

@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * WORTH.server.Project e' la classe che rappresenta un progetto,
+ * Project e' la classe che rappresenta un progetto,
  * e include come e' possibile interagirci
  */
 public class Project {

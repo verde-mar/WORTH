@@ -4,7 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * CardFile e' la classe che rappresenta una card
+ * su disco in formato JSON
  */
 public class CardFile {
     /* Nome univoco della card */

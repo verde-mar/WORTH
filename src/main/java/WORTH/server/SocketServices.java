@@ -16,7 +16,7 @@ import java.util.concurrent.*;
 import static java.lang.Thread.sleep;
 
 /**
- * WORTH.server.SocketServices e' il WORTH.server che tramite un selettore
+ * SocketServices e' il server che tramite un selettore
  * gestisce le nuove connessioni TCP
  */
 public class SocketServices implements AutoCloseable{
