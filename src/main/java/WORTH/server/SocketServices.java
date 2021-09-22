@@ -1,7 +1,7 @@
+package WORTH.server;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -15,8 +15,12 @@ import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * WORTH.server.SocketServices e' il WORTH.server che tramite un selettore
+ * gestisce le nuove connessioni TCP
+ */
 public class SocketServices implements AutoCloseable{
-    /* Selettore */
+    /* Selettore che legge i socket */
     private final Selector selector;
 
     /* Welcoming socket */
@@ -25,7 +29,7 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
-    /* Struttura dati rappresentante l'insieme dei progetti all'interno del server */
+    /* Struttura dati rappresentante l'insieme dei progetti all'interno del WORTH.server */
     private final ConcurrentHashMap<String, Project> projects;
 
     /* File di configurazione */
@@ -35,7 +39,7 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Costruttore della classe
-     * @param portNumber Porta con cui il server si mette in ascolto
+     * @param portNumber Porta con cui il WORTH.server si mette in ascolto
      * @param config File di configurazione iniziale
      * @throws IOException Nel caso ci sia un errore in IO
      */
@@ -65,9 +69,9 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * La funzione associa ad ogni richiesta di un client un thread del threadPool
+     * La funzione associa ad ogni richiesta di un WORTH.client un thread del threadPool
      * @param buffer contenente la richiesta in JSON
-     * @return Future<Message> un thread del threadpool
+     * @return Future<WORTH.server.Message> un thread del threadpool
      */
     private Future<Message> elaborateRequest(ByteBuffer buffer) {
         return threadPool.submit(new PManager(buffer, projects));
@@ -94,7 +98,7 @@ public class SocketServices implements AutoCloseable{
                 if(!key.isValid()){
                     return;
                 }
-                /* Registrazione del client */
+                /* Registrazione del WORTH.client */
                 if(key.isAcceptable()){
                     registerClient(key);
                 }
@@ -115,7 +119,7 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * Registra quel client per operazioni in lettura
+     * Registra quel WORTH.client per operazioni in lettura
      * @param key chiave associata al channel
      * @throws IOException se avviene un errore nell'I/O
      */
@@ -132,7 +136,7 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * Legge il messaggio inviato dal client
+     * Legge il messaggio inviato dal WORTH.client
      * @param key chiave associata al
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se il thread viene interrotto durante la sleep()
@@ -141,14 +145,14 @@ public class SocketServices implements AutoCloseable{
         /* Contiene i dati */
         ByteBuffer buffer = (ByteBuffer) key.attachment();
 
-        /* Active socket associato al client */
+        /* Active socket associato al WORTH.client */
         SocketChannel client_read = (SocketChannel) key.channel();
 
         /*Legge i dati */
         int bytesRead = client_read.read(buffer);
         System.out.printf("Read %d bytes from %s\n", bytesRead, client_read.getRemoteAddress());
 
-        /* Il client ha terminato */
+        /* Il WORTH.client ha terminato */
         if (bytesRead == -1) {
             /* Cancella la chiave dal selettore e chiude la connessione */
             key.cancel();
@@ -193,7 +197,7 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Attende che il messaggio sia pronto e poi lo scrive a blocchi
-     * @param key Chiave che rappresenta il client pronto per la scrittura
+     * @param key Chiave che rappresenta il WORTH.client pronto per la scrittura
      * @throws IOException Se c'è un problema a scrivere il messaggio
      * @throws ExecutionException Se c'e' stato un errore nella computazione
      * @throws InterruptedException Se il thread e' stato interrotto
@@ -204,15 +208,15 @@ public class SocketServices implements AutoCloseable{
         Future<Message> future = (Future<Message>) key.attachment();
         if (!future.isDone())
             return;
-        /* Active socket associato al client */
+        /* Active socket associato al WORTH.client */
         SocketChannel client = (SocketChannel) key.channel();
 
-        /* Si fa restituire la risposta in formato Message, e crea il file JSON da inviare al client */
+        /* Si fa restituire la risposta in formato WORTH.server.Message, e crea il file JSON da inviare al WORTH.client */
         Message response_t = future.get();
         byte[] byteResponse = mapper.writeValueAsBytes(response_t);
         ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Invia la size della risposta al client */
+        /* Invia la size della risposta al WORTH.client */
         response.putInt(byteResponse.length);
         response.flip();
         client.write(response);
@@ -235,7 +239,7 @@ public class SocketServices implements AutoCloseable{
         /* Buffer necessario a leggere la dimensione del messaggio */
         ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Altrimenti registra di nuovo il client per la lettura */
+        /* Altrimenti registra di nuovo il WORTH.client per la lettura */
         SelectionKey wr_key = client.register(selector, SelectionKey.OP_READ);
         wr_key.attach(lengthBuffer);
     }

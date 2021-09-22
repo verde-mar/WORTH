@@ -1,6 +1,11 @@
+package WORTH.server;
+
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *
+ */
 public class CardFile {
     /* Nome univoco della card */
     private String nameCard;

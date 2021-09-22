@@ -1,14 +1,20 @@
+package WORTH.server;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * WORTH.server.PWorker e' la classe ausiliaria a WORTH.server.PManager, e che
+ * esegue tutte le operazioni necessarie a restituire una risposta
+ */
 public class PWorker {
-    /* Insieme totale dei progetti sul server */
+    /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
 
     /**
      * Costruttore della classe
-     * @param projects Insieme totale dei progetti sul server
+     * @param projects Insieme totale dei progetti sul WORTH.server
      */
     public PWorker(ConcurrentHashMap<String,Project> projects) {
         this.projects = projects;
@@ -31,7 +37,7 @@ public class PWorker {
      * Restituisce la card di nome cardName
      * @param projectName Nome del progetto in cui si trova probabilmente la card
      * @param cardname Nome della card desiderata
-     * @return Card La card desiderata
+     * @return WORTH.server.Card La card desiderata
      */
     public Card showCard(String projectName, String cardname){
         Project project = projects.get(projectName);

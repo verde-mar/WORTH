@@ -1,3 +1,5 @@
+package WORTH.server;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedWriter;
@@ -8,6 +10,10 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * WORTH.server.Card e' la classe che rappresenta una card
+ * e come e' possibile interagirci
+ */
 public class Card {
     /* Nome univoco della card */
     private String nameCard;
@@ -71,7 +77,7 @@ public class Card {
      * Aggiorna il file su disco associato alla card corrente
      * @throws IOException Nel caso ci siano errori I/O nella scrittura sul file
      */
-    public void update() throws IOException {
+    public synchronized void update() throws IOException {
         File card_file = new File(nameCard);
         if(card_file.exists()){
             try(BufferedWriter out = new BufferedWriter(new FileWriter(card_file.getName()))) {
@@ -110,7 +116,7 @@ public class Card {
      * @param projectName Nome del progetto
      * @throws IOException Se vi e' un errore nell'IO
      */
-    public void writeOnDisk(String projectName) throws IOException {
+    public synchronized void writeOnDisk(String projectName) throws IOException {
         CardFile cardFile = new CardFile();
         cardFile.setNameCard(nameCard);
         cardFile.setCurrentList(getCurrentList());

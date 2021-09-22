@@ -1,3 +1,5 @@
+package WORTH.server;
+
 public class User {
     public User(){}
 

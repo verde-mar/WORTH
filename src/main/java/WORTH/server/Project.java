@@ -1,8 +1,14 @@
+package WORTH.server;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * WORTH.server.Project e' la classe che rappresenta un progetto,
+ * e include come e' possibile interagirci
+ */
 public class Project {
     /* Nome del progetto, univoco */
     private String nameProject;
@@ -52,7 +58,7 @@ public class Project {
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista done
-     * @return List<Card>, lista che contiene le card all'interno della lista done
+     * @return List<WORTH.server.Card>, lista che contiene le card all'interno della lista done
      */
     public List<Card> getDone(){
         return done;
@@ -60,7 +66,7 @@ public class Project {
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista toBeRevised
-     * @return List<Card>, lista che contiene le card all'interno della lista toBeRevised
+     * @return List<WORTH.server.Card>, lista che contiene le card all'interno della lista toBeRevised
      */
     public List<Card> getToBeRevised(){
         return toBeRevised;
@@ -68,7 +74,7 @@ public class Project {
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista to_Do
-     * @return List<Card>, lista che contiene le card all'interno della lista to_Do
+     * @return List<WORTH.server.Card>, lista che contiene le card all'interno della lista to_Do
      */
     public List<Card> getTo_Do(){
         return to_Do;
@@ -76,7 +82,7 @@ public class Project {
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista inProgress
-     * @return List<Card>, lista che contiene le card all'interno della lista inProgress
+     * @return List<WORTH.server.Card>, lista che contiene le card all'interno della lista inProgress
      */
     public List<Card> getInProgress(){
         return inProgress;
@@ -132,7 +138,7 @@ public class Project {
 
     /**
      * Restituisce la lista dei membri del progetto
-     * @return List<User> lista dei membri del progetto
+     * @return List<WORTH.server.User> lista dei membri del progetto
      */
     public List<User> showMembers(){
         return members_sync;
@@ -140,7 +146,7 @@ public class Project {
 
     /**
      * Restituisce la lista dei membri del progetto e che sono online
-     * @return List<User> lista dei membri online del progetto
+     * @return List<WORTH.server.User> lista dei membri online del progetto
      */
     public synchronized List<User> showOnlineMembers(){
         Vector<User> onlineMembers = new Vector<>();
@@ -191,7 +197,7 @@ public class Project {
     /**
      * Restituisce la card di nome cardName
      * @param cardname Nome della card
-     * @return Card Restituisce la card di nome cardName
+     * @return WORTH.server.Card Restituisce la card di nome cardName
      */
     public synchronized Card showCardProject(String cardname){
         Card card = showCardTo_Do(cardname);
@@ -210,7 +216,7 @@ public class Project {
     /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista to_Do)
      * @param cardName, nome della card
-     * @return Card la copia della card se e' presente, altrimenti null
+     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardTo_Do(String cardName){
         for (Card value : to_Do) {
@@ -224,7 +230,7 @@ public class Project {
     /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProgress)
      * @param cardName, nome della card
-     * @return Card la copia della card se e' presente, altrimenti null
+     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardDoing(String cardName){
         for (Card value : inProgress) {
@@ -238,7 +244,7 @@ public class Project {
     /**
      * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista toBeRevised)
      * @param cardName, nome della card
-     * @return Card la copia della card se e' presente, altrimenti null
+     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardToBeRevised(String cardName){
         for (Card value : toBeRevised) {
@@ -253,7 +259,7 @@ public class Project {
     /**
      * Restituisce la copia della card cercata
      * @param cardName, nome della card
-     * @return Card la copia della card se e' presente, altrimenti null
+     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
      */
     public synchronized Card showCardDone(String cardName){
         for (Card value : done) {
@@ -266,7 +272,7 @@ public class Project {
 
     /**
      * Restituisce tutte le card del progetto
-     * @return Vector<Card> contenente tutte le card del progetto
+     * @return Vector<WORTH.server.Card> contenente tutte le card del progetto
      */
     public synchronized Vector<Card> showCards(){
         Vector<Card> cardsToShow = new Vector<>();
@@ -334,7 +340,7 @@ public class Project {
 
     /**
      * Restituisce la history della card che appartiene al progetto corrente
-     * @param card Card che si trova nel programma
+     * @param card WORTH.server.Card che si trova nel programma
      * @return List<String> History di card
      */
     public List<String> getHistory(Card card){

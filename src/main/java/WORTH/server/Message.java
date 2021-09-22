@@ -1,9 +1,11 @@
+package WORTH.server;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.LinkedList;
 import java.util.List;
 
-//todo: posso fare una classe Message per risposta e richiesta separate
+//todo: posso fare una classe WORTH.server.Message per risposta e richiesta separate
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Message {
@@ -148,7 +150,7 @@ public class Message {
 
     /**
      * Assegna a ciascun campo di cards i nomi delle card richieste
-     * @param cards List<Card> rappresentante le card di un determinato progetto, precedentemente restituite
+     * @param cards List<WORTH.server.Card> rappresentante le card di un determinato progetto, precedentemente restituite
      */
     public void setCardsName(List<Card> cards){
         cardsName = new LinkedList<>();

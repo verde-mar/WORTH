@@ -1,6 +1,7 @@
+package WORTH.server;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -8,12 +9,16 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * WORTH.server.PManager e' la classe che si occupa di distinguere il messaggio
+ * e di eseguire la computazione
+ */
 public class PManager implements Callable<Message>  {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
-    /* Oggetto che rappresenta una richiesta del client */
+    /* Oggetto che rappresenta una richiesta del WORTH.client */
     private Message task_request;
-    /* Oggetto che rappresenta una risposta del client */
+    /* Oggetto che rappresenta una risposta del WORTH.client */
     private final Message task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private final ConcurrentHashMap<String, Project> projects;
@@ -39,15 +44,15 @@ public class PManager implements Callable<Message>  {
      * @throws IOException se ci sono errori nell' I/O
      */
     private void parser() throws IOException {
-        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo Message */
+        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
         task_request = objectMapper.readValue(buffer_toString, Message.class);
     }
 
     /**
-     * Realizza la risposta base da inviare al client
+     * Realizza la risposta base da inviare al WORTH.client
      * @param outcome_b Booleano che indica se l'operazione e' avvenuta con successo
-     * @param outcome_s Stringa da inviare al client che spiega a cosa e' dovuto un eventuale fallimento della richiesta.
+     * @param outcome_s Stringa da inviare al WORTH.client che spiega a cosa e' dovuto un eventuale fallimento della richiesta.
      *                  Se l'operazione e' avvenuta con successo, sara' semplicemente "success"
      */
     private void response(boolean outcome_b, String outcome_s){
@@ -61,7 +66,7 @@ public class PManager implements Callable<Message>  {
 
     /**
      * Override della chiamata call
-     * @return Message Risposta in formato JSON
+     * @return WORTH.server.Message Risposta in formato JSON per il WORTH.client
      */
     @Override
     public Message call() {
@@ -81,7 +86,7 @@ public class PManager implements Callable<Message>  {
 
                 case addMember : {
                     if(projects.containsKey(task_request.getProjectName())){
-                        projects.get(task_request.getProjectName()).addMember(new User()); // new User() non va bene, devo sistemarlo in fase di registrazione
+                        projects.get(task_request.getProjectName()).addMember(new WORTH.server.User()); // new WORTH.server.User() non va bene, devo sistemarlo in fase di registrazione
                         task_response.setMembers();
                     }
                 }
@@ -101,7 +106,7 @@ public class PManager implements Callable<Message>  {
                 }
 
                 /* Restituisce una card e i parametri associati(history, nome, desscription, lista corrente in cui si trova */
-                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del WORTH.client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case showCard : {
                     Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName());
@@ -123,7 +128,7 @@ public class PManager implements Callable<Message>  {
                 }
 
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
-                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del WORTH.client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case moveCard : {
                     worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione());
@@ -133,7 +138,7 @@ public class PManager implements Callable<Message>  {
                 }
 
                 /* Restituisce l'history della card specificata nella richiesta */
-                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del client
+                //todo: se restituisce null magari l'utente ha inserito il progetto sbagliato! Da inserire nell'interfaccia grafica del WORTH.client
                 //todo: stesso ragionamento per il progetto, se restituisce null magari e' stato inserito il nome del progetto sbagliato
                 case getCardHistory : {
                     List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName());
