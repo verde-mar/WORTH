@@ -9,6 +9,9 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
+    public void setCurrentList(String currentList) {
+    }
+
     protected enum RequestType{
         login,
         logout,

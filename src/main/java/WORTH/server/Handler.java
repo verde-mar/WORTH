@@ -119,7 +119,7 @@ public class Handler implements Callable<Response>  {
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
                 case moveCard : {
                     worker.moveCard(task_request.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione(), task_request.getNickUtente());
-                    //todo: l'aggiornamento di moveCard va nella chat
+                    Card card = new Card(task_request.getCardName());
                     break;
                 }
 
