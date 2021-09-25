@@ -5,16 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * ConfigurationFile e' la classe che rappresenta
  * il file di configurazione usato per inizializzare le strutture dati locali del server all'inizio
  */
-//todo: aggiungere i metodi apposta per gli utenti (restituzione la lista degli utenti)
+//todo: testing
 public class ConfigurationFile {
     /* Insieme totale dei progetti all'interno del WORTH.server*/
     private Map<String, Project> all_projects;
+    /* Insieme totale degli utenti registrati */
+    private HashMap<String, User> utenti_registrati;
 
     /**
      * Costruttore vuoto della classe (necessario a jackson)
@@ -25,8 +28,9 @@ public class ConfigurationFile {
      * Inizializza la struttura locale che indica i progetti totali all'interno del WORTH.server
      * @param all_projects Struttura dati che indica tutti i progetti
      */
-    public void setAll_projects(Map<String, Project> all_projects) {
+    public void setAll_projects(Map<String, Project> all_projects, HashMap<String, User> utenti_registrati) {
         this.all_projects = all_projects;
+        this.utenti_registrati = utenti_registrati;
     }
 
     /**
@@ -56,5 +60,20 @@ public class ConfigurationFile {
             mapper.readValue(Paths.get("./WORTH_config/config.json").toFile(), ConfigurationFile.class);
         }
 
+    }
+
+    /**
+     * Restituisce gli utenti registrati
+     * @return HashMap<String, User> Insieme degli utenti registrati
+     */
+    public HashMap<String, User> getUtenti_registrati() {
+        return utenti_registrati;
+    }
+
+    /**
+     * Inizializza l'insieme degli utenti registrati
+     */
+    public void setUtenti_registrati(HashMap<String, User> utenti_registrati) {
+        this.utenti_registrati = utenti_registrati;
     }
 }

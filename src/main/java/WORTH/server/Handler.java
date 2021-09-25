@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * WORTH.server.Handler e' la classe che si occupa di distinguere il messaggio
  * e di eseguire la computazione
  */
-public class Handler implements Callable<Message>  {
+public class Handler implements Callable<Response>  {
     /* Buffer contenente i dati letti */
     private final ByteBuffer buffer;
     /* Oggetto che rappresenta una richiesta del WORTH.client */
-    private Message task_request;
+    private Request task_request;
     /* Oggetto che rappresenta una risposta del WORTH.client */
-    private final Message task_response;
+    private final Response task_response;
     /* Oggetto che rappresenta l'insieme di progetti minchia*/
     private final ConcurrentHashMap<String, Project> projects;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
@@ -35,7 +35,7 @@ public class Handler implements Callable<Message>  {
         this.buffer = buffer;
         this.projects = projects;
         objectMapper = new ObjectMapper();
-        task_response = new Message();
+        task_response = new Response();
         worker = new Worker(projects);
     }
 
@@ -46,7 +46,7 @@ public class Handler implements Callable<Message>  {
     private void parser() throws IOException {
         /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
-        task_request = objectMapper.readValue(buffer_toString, Message.class);
+        task_request = objectMapper.readValue(buffer_toString, Request.class);
     }
 
     /**
@@ -69,7 +69,7 @@ public class Handler implements Callable<Message>  {
      * @return WORTH.server.Message Risposta in formato JSON per il WORTH.client
      */
     @Override
-    public Message call() {
+    public Response call() {
         try{
             parser();
             switch(task_request.getRequest()) {
@@ -99,19 +99,14 @@ public class Handler implements Callable<Message>  {
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 case showCards : {
                     Project project = projects.get(task_request.getProjectName()).showCards();
-                    //todo: nella task_response ci devo mettere un oggetto project (cosi' da visualizzare le liste, e rispettivamente le card)
+                    task_response.setProject(project);
                     break;
                 }
 
-                /* Restituisce una card e i parametri associati(history, nome, desscription, lista corrente in cui si trova */
+                /* Restituisce una card e i parametri associati(history, nome, description, lista corrente in cui si trova */
                 case showCard : {
                     Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName(), task_request.getNickUtente());
-                    //todo: 1- si puo' restituire la card, invece che settare ogni campo
-                    task_response.setProjectName(task_request.getProjectName());
-                    task_response.setCardName(card.getNameCard());
-                    task_response.setHistory(card.getHistory());
-                    task_response.setDescription(card.getDescription());
-                    task_response.setCardCurrentList(card.getCurrentList());
+                    task_response.setCard(card);
                     break;
                 }
 
@@ -123,7 +118,7 @@ public class Handler implements Callable<Message>  {
 
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
                 case moveCard : {
-                    worker.moveCard(task_response.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione(), task_request.getNickUtente());
+                    worker.moveCard(task_request.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione(), task_request.getNickUtente());
                     //todo: l'aggiornamento di moveCard va nella chat
                     break;
                 }
@@ -132,7 +127,6 @@ public class Handler implements Callable<Message>  {
                 case getCardHistory : {
                     List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName(), task_request.getNickUtente());
                     task_response.setHistory(history);
-                    task_response.setCardName(task_request.getCardName());
                     break;
                 }
 

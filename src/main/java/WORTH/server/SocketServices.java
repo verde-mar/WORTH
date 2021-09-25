@@ -10,6 +10,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
@@ -34,6 +35,9 @@ public class SocketServices implements AutoCloseable{
 
     /* File di configurazione */
     private final ConfigurationFile config_file;
+
+    /* Struttura dati rappresentante l'insieme degli utenti registrati */
+    private final HashMap<String, User> utenti_registrati;
 
     ObjectMapper mapper;
 
@@ -66,6 +70,11 @@ public class SocketServices implements AutoCloseable{
         /* Inizializza il file di configurazione */
         config_file = config;
         mapper = new ObjectMapper();
+        /* Crea la struttura dati per gli utenti registrati */
+        if(config.getUtenti_registrati() != null)
+            utenti_registrati =config.getUtenti_registrati();
+        else
+            utenti_registrati = new HashMap<>();
     }
 
     /**
@@ -73,7 +82,7 @@ public class SocketServices implements AutoCloseable{
      * @param buffer contenente la richiesta in JSON
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
-    private Future<Message> elaborateRequest(ByteBuffer buffer) {
+    private Future<Response> elaborateRequest(ByteBuffer buffer) {
         return threadPool.submit(new Handler(buffer, projects));
     }
 
@@ -112,7 +121,7 @@ public class SocketServices implements AutoCloseable{
                     writeMessage(key);
                 }
             }
-            config_file.setAll_projects(projects);
+            config_file.setAll_projects(projects, utenti_registrati);
             mapper.writeValue(Paths.get("./WORTH_config/config.json").toFile(), config_file);
         }
 
@@ -185,7 +194,7 @@ public class SocketServices implements AutoCloseable{
             sleep(200);
 
             /* Elabora la richiesta */
-            Future<Message> future = elaborateRequest(buffer);
+            Future<Response> future = elaborateRequest(buffer);
 
             /* Registra la chiave per la scrittura */
             SelectionKey reg_key = client_read.register(selector, SelectionKey.OP_WRITE);
@@ -205,14 +214,14 @@ public class SocketServices implements AutoCloseable{
     private void writeMessage(SelectionKey key) throws IOException, ExecutionException, InterruptedException {
         /* Oggetto che rappresenta i dati da scrivere (non è possibile evitare l'unchecked warning) */
         @SuppressWarnings("unchecked")
-        Future<Message> future = (Future<Message>) key.attachment();
+        Future<Response> future = (Future<Response>) key.attachment();
         if (!future.isDone())
             return;
         /* Active socket associato al WORTH.client */
         SocketChannel client = (SocketChannel) key.channel();
 
         /* Si fa restituire la risposta in formato WORTH.server.Message, e crea il file JSON da inviare al WORTH.client */
-        Message response_t = future.get();
+        Response response_t = future.get();
         byte[] byteResponse = mapper.writeValueAsBytes(response_t);
         ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
 
