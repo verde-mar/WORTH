@@ -74,7 +74,7 @@ public class SocketServices implements AutoCloseable{
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
     private Future<Message> elaborateRequest(ByteBuffer buffer) {
-        return threadPool.submit(new PManager(buffer, projects));
+        return threadPool.submit(new Handler(buffer, projects));
     }
 
 

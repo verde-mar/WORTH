@@ -11,6 +11,7 @@ import java.util.Map;
  * ConfigurationFile e' la classe che rappresenta
  * il file di configurazione usato per inizializzare le strutture dati locali del server all'inizio
  */
+//todo: aggiungere i metodi apposta per gli utenti (restituzione la lista degli utenti)
 public class ConfigurationFile {
     /* Insieme totale dei progetti all'interno del WORTH.server*/
     private Map<String, Project> all_projects;

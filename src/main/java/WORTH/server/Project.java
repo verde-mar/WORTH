@@ -1,5 +1,7 @@
 package WORTH.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -20,11 +22,11 @@ public class Project {
     private List<Card> toBeRevised;
     /* Lista delle card le cui operazioni associate sono portate a termine da un membro del progetto */
     private List<Card> done;
-    /* Lista di membri del progetto */
-    private List<User> members_sync;
-    /* Il progetto corrente */
+    @JsonIgnore /* Lista di membri del progetto */
+    private List<String> members;
+    @JsonIgnore /* Il progetto corrente */
     File project;
-    /* Booleano che indica se e' stata creata una directory associata al progetto */
+    @JsonIgnore /* Booleano che indica se e' stata creata una directory associata al progetto */
     boolean mkdir_bool;
 
     /**
@@ -42,7 +44,7 @@ public class Project {
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
-        members_sync = Collections.synchronizedList(new LinkedList<>());
+        members = Collections.synchronizedList(new LinkedList<>());
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
 
@@ -137,28 +139,6 @@ public class Project {
     }
 
     /**
-     * Restituisce la lista dei membri del progetto
-     * @return List<WORTH.server.User> lista dei membri del progetto
-     */
-    public List<User> showMembers(){
-        return members_sync;
-    }
-
-    /**
-     * Restituisce la lista dei membri del progetto e che sono online
-     * @return List<WORTH.server.User> lista dei membri online del progetto
-     */
-    public synchronized List<User> showOnlineMembers(){
-        Vector<User> onlineMembers = new Vector<>();
-        for(User user : members_sync){
-            if(user.isOnline()){
-                onlineMembers.add(user);
-            }
-        }
-        return onlineMembers;
-    }
-
-    /**
      * Aggiunge una card al progetto
      * @param cardname Nome della card da aggiungere
      * @param description Descrizione associata alla card
@@ -166,32 +146,39 @@ public class Project {
      */
     public synchronized void addCardProject(String cardname, String description, String projectName) throws IOException {
         /* Aggiunge la card alla struttura dati locale */
-        Card card = new Card(cardname);
-        card.addHistory("added to to_Do; ");
-        card.addDescription(description);
-        card.addCurrentList("to_Do");
-        to_Do.add(card);
+        if(showCardProject(cardname) == null) {
+            Card card = new Card(cardname);
+            card.addHistory("added to to_Do; ");
+            card.addDescription(description);
+            card.addCurrentList("to_Do");
+            to_Do.add(card);
 
-        /* Memorizza la card su disco */
-        card.writeOnDisk(projectName);
+            /* Memorizza la card su disco */
+            card.writeOnDisk(projectName);
+        }
     }
 
     /**
      * Cancella un progetto
      * @param projectName Nome del progetto
      * @param projects Insieme totale dei progetti
+     * @return boolean Restituisce false se il progetto non esiste, altrimenti true
      */
-    public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
+    //todo: da testare l'eliminazione su disco
+    public synchronized boolean cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
         /* Cancella il progetto dalla struttura dati locale */
+        boolean remove_prj = true;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
-            projects.remove(projectName, projects.get(projectName));
-
-        /* Cancella il progetto dal disco */
-        boolean eliminate = project.delete();
-        if(eliminate)
-            System.out.println(projectName + " was eliminated");
-        else
-            System.out.println("Could'nt eliminate "+projectName);
+            remove_prj = projects.remove(projectName, projects.get(projectName));
+        if(remove_prj) {
+            /* Cancella il progetto dal disco */
+            boolean eliminate = project.delete();
+            if (eliminate)
+                System.out.println(projectName + " was eliminated");
+            else
+                System.out.println("Could'nt eliminate " + projectName);
+        }
+        return  remove_prj;
     }
 
     /**
@@ -200,13 +187,13 @@ public class Project {
      * @return WORTH.server.Card Restituisce la card di nome cardName
      */
     public synchronized Card showCardProject(String cardname){
-        Card card = showCardTo_Do(cardname);
+        Card card = showCardList(to_Do, cardname);
         if(card==null){
-            card = showCardDoing(cardname);
+            card = showCardList(inProgress, cardname);
             if(card==null) {
-                card = showCardToBeRevised(cardname);
+                card = showCardList(toBeRevised, cardname);
                 if(card==null){
-                    card = showCardDone(cardname);
+                    card = showCardList(done, cardname);
                 }
             }
         }
@@ -214,12 +201,13 @@ public class Project {
     }
 
     /**
-     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista to_Do)
-     * @param cardName, nome della card
-     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
+     * Cerca nella lista passata come parametro la card di nome cardname
+     * @param lista Lista in cui cercare
+     * @param cardName Nome della card
+     * @return Card La card ricercata
      */
-    public synchronized Card showCardTo_Do(String cardName){
-        for (Card value : to_Do) {
+    public synchronized Card showCardList(List<Card> lista, String cardName){
+        for (Card value : lista) {
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
@@ -228,69 +216,19 @@ public class Project {
     }
 
     /**
-     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista inProgress)
-     * @param cardName, nome della card
-     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
+     * Restituisce il progetto corrente
+     * @return Project
      */
-    public synchronized Card showCardDoing(String cardName){
-        for (Card value : inProgress) {
-            if (value.getNameCard().equals(cardName)) {
-                return value;
-            }
-        }
-        return null;
+    public Project showCards(){
+        return this;
     }
 
-    /**
-     * Restituisce la copia della card con nome cardName (la ricerca viene effettuata nella lista toBeRevised)
-     * @param cardName, nome della card
-     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
-     */
-    public synchronized Card showCardToBeRevised(String cardName){
-        for (Card value : toBeRevised) {
-            if (value.getNameCard().equals(cardName)) {
-                return value;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Restituisce la copia della card cercata
-     * @param cardName, nome della card
-     * @return WORTH.server.Card la copia della card se e' presente, altrimenti null
-     */
-    public synchronized Card showCardDone(String cardName){
-        for (Card value : done) {
-            if (value.getNameCard().equals(cardName)) {
-                return value;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Restituisce tutte le card del progetto
-     * @return Vector<WORTH.server.Card> contenente tutte le card del progetto
-     */
-    public synchronized Vector<Card> showCards(){
-        Vector<Card> cardsToShow = new Vector<>();
-        cardsToShow.removeAllElements();
-        cardsToShow.addAll(to_Do);
-        cardsToShow.addAll(toBeRevised);
-        cardsToShow.addAll(inProgress);
-        cardsToShow.addAll(done);
-        return cardsToShow;
-    }
-
-    /**
+    /**IOException
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
      * @param listadiDest Nome della lista in cui si trovera' la card
      * @param card Carta da spostare
      */
-    //il messaggio di aggiornamento va nella chat
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws IOException {
         card.eraseCurrentList();
         switch (listaDiPart) {
@@ -345,5 +283,23 @@ public class Project {
      */
     public List<String> getHistory(Card card){
         return card.getHistory();
+    }
+
+    /**
+     * Aggiunge username alla lista degli utenti del progetto
+     * @param username Nome dell'utente
+     */
+    public void addMemberToSync(String username){
+        if(!(members.contains(username)))
+            members.add(username);
+    }
+
+    /**
+     * Indica se un utente e' membro del progetto corrente
+     * @param username Username dell'utente che ha effettuato la richiesta
+     * @return boolean
+     */
+    public boolean isMember(String username){
+        return members.contains(username);
     }
 }
