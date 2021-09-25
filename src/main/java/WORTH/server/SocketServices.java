@@ -30,12 +30,14 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
+    //todo: testare se funziona, altrimenti metti una lista
     /* Struttura dati rappresentante l'insieme dei progetti all'interno del WORTH.server */
     private final ConcurrentHashMap<String, Project> projects;
 
     /* File di configurazione */
     private final ConfigurationFile config_file;
 
+    //todo: testare se funziona, altrimenti metti una lista
     /* Struttura dati rappresentante l'insieme degli utenti registrati */
     private final HashMap<String, User> utenti_registrati;
 
