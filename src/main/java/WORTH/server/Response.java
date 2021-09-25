@@ -81,7 +81,6 @@ public class Response {
         }
     }
 
-
     /**
      * Setta la variabile a false, quindi la richiesta non e' stata eseguita con successo
      * @param expl Stringa che identifica il motivo per cui la richiesta non e' terminata con successo

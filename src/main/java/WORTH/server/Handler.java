@@ -94,6 +94,7 @@ public class Handler implements Callable<Response>  {
                 }
                 case sendChatMsg : {
                 }*/
+                //todo: dopo che implementi il login, fai anche questa funzione
                 case createProject : projects.putIfAbsent(task_request.getProjectName(), new Project(task_request.getProjectName())); System.out.println(task_request.getProjectName());break;
 
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
@@ -119,7 +120,6 @@ public class Handler implements Callable<Response>  {
                 /* Muove una card da una lista ad un'altra (specificate nella richiesta) */
                 case moveCard : {
                     worker.moveCard(task_request.getProjectName(), task_request.getCardName(), task_request.getListaPartenza(), task_request.getListaDestinazione(), task_request.getNickUtente());
-                    Card card = new Card(task_request.getCardName());
                     break;
                 }
 
