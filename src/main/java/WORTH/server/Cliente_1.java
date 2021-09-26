@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import static java.lang.Thread.sleep;
 
 
-public class Cliente_2 {
+public class Cliente_1 {
     public static void main(String[] args) {
         int port = 8080;
         try { SocketAddress address = new InetSocketAddress(args[0], port);
@@ -74,38 +74,7 @@ public class Cliente_2 {
             message = new String(buffer_response.array(), StandardCharsets.UTF_8);
             System.out.printf("[TCP] Received string:\n%s\n", message);
 
-            sleep(40000);
-            request ="{\"request\": \"createProject\", \"projectName\": \"cagnotti\"}";
-            byte_request = request.getBytes(StandardCharsets.UTF_8);
-            // Buffer contenente il messaggio
-            System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
-            buffer = ByteBuffer.allocate(byte_request.length + Integer.BYTES);
-            buffer.putInt(byte_request.length);
-            buffer.put(byte_request);
-            buffer.flip();
-            while (buffer.hasRemaining())
-                client.write(buffer);
-            // Buffer contenente la lunghezza
-            lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
-
-
-            while(lengthBuffer.hasRemaining())
-                client.read(lengthBuffer);
-            System.out.println("dopo read size");
-            lengthBuffer.flip();
-            System.out.println(lengthBuffer);
-
-            // Buffer contenente i dati
-            buffer_response = ByteBuffer.allocate(lengthBuffer.getInt());
-            while(buffer_response.hasRemaining())
-                client.read(buffer_response);
-            buffer_response.flip();
-            System.out.println(buffer_response);
-            // Stringa estratta dal buffer
-            message = new String(buffer_response.array(), StandardCharsets.UTF_8);
-            System.out.printf("[TCP] Received string:\n%s\n", message);
-
-            request1 ="{\"request\": \"addCard\", \"cardName\": \"CAGNOTTO\", \"projectName\": \"cagnotti\"}";
+            request1 ="{\"request\": \"addCard\", \"cardName\": \"BASSOTTO\", \"projectName\": \"cancello\"}";
             byte_request = request1.getBytes(StandardCharsets.UTF_8);
             // Buffer contenente il messaggio
             System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
@@ -133,6 +102,36 @@ public class Cliente_2 {
             // Stringa estratta dal buffer
             message = new String(buffer_response.array(), StandardCharsets.UTF_8);
             System.out.printf("[TCP] Received string:\n%s\n", message);
-        } catch(IOException | InterruptedException ex) { ex.printStackTrace(); }
+
+            request1 ="{\"request\": \"showCard\", \"cardName\": \"BASSOTTO\", \"projectName\": \"cancello\"}";
+            byte_request = request1.getBytes(StandardCharsets.UTF_8);
+            // Buffer contenente il messaggio
+            System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
+            buffer1 = ByteBuffer.allocate(byte_request.length + Integer.BYTES);
+            buffer1.putInt(byte_request.length);
+            buffer1.put(byte_request);
+            buffer1.flip();
+            while (buffer1.hasRemaining())
+                client.write(buffer1);
+            // Buffer contenente la lunghezza
+            lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+
+            while(lengthBuffer.hasRemaining())
+                client.read(lengthBuffer);
+            System.out.println("dopo read size");
+            lengthBuffer.flip();
+            System.out.println(lengthBuffer);
+
+            // Buffer contenente i dati
+            buffer_response = ByteBuffer.allocate(lengthBuffer.getInt());
+            while(buffer_response.hasRemaining())
+                client.read(buffer_response);
+            buffer_response.flip();
+            System.out.println(buffer_response);
+            // Stringa estratta dal buffer
+            message = new String(buffer_response.array(), StandardCharsets.UTF_8);
+            System.out.printf("[TCP] Received string:\n%s\n", message);
+        } catch(IOException ex) { ex.printStackTrace(); }
     }
 }
+

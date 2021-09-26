@@ -144,7 +144,7 @@ public class Project {
      * @param description Descrizione associata alla card
      * @param projectName Nome del progetto
      */
-    public synchronized void addCardProject(String cardname, String description, String projectName) throws IOException {
+    public synchronized void addCardProject(String cardname, String description, String projectName) throws Exception {
         /* Aggiunge la card alla struttura dati locale */
         if(showCardProject(cardname) == null) {
             Card card = new Card(cardname);
@@ -155,7 +155,7 @@ public class Project {
 
             /* Memorizza la card su disco */
             card.writeOnDisk(projectName);
-        }
+        } else throw new Exception("The card was already there.");
     }
 
     /**

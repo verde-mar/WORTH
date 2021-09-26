@@ -42,4 +42,6 @@ public class UserManager {
             utenti_registrati.get(nickName).setOffline();
         }
     }
+
+
 }
