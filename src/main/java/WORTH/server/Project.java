@@ -38,7 +38,7 @@ public class Project {
      * Costruttore della classe
      * @param nameProject Nome del progetto
      */
-    public Project(String nameProject){
+    public Project(String nameProject, String nickName){
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
@@ -47,7 +47,7 @@ public class Project {
         members = Collections.synchronizedList(new LinkedList<>());
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
-
+        if(!isMember(nickName)) members.add(nickName);
     }
 
     /**
@@ -164,14 +164,15 @@ public class Project {
      * @param projects Insieme totale dei progetti
      * @return boolean Restituisce false se il progetto non esiste, altrimenti true
      */
-    //todo: da testare l'eliminazione su disco
     public synchronized boolean cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
         /* Cancella il progetto dalla struttura dati locale */
         boolean remove_prj = true;
-        if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0)
+        if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
             remove_prj = projects.remove(projectName, projects.get(projectName));
+        }
         if(remove_prj) {
             /* Cancella il progetto dal disco */
+            System.out.println(projects.values());
             boolean eliminate = project.delete();
             if (eliminate)
                 System.out.println(projectName + " was eliminated");
@@ -216,14 +217,6 @@ public class Project {
     }
 
     /**
-     * Restituisce il progetto corrente
-     * @return Project
-     */
-    public Project showCards(){
-        return this;
-    }
-
-    /**IOException
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
      * @param listadiDest Nome della lista in cui si trovera' la card
@@ -286,15 +279,6 @@ public class Project {
     }
 
     /**
-     * Aggiunge username alla lista degli utenti del progetto
-     * @param username Nome dell'utente
-     */
-    public void addMemberToSync(String username){
-        if(!(members.contains(username)))
-            members.add(username);
-    }
-
-    /**
      * Indica se un utente e' membro del progetto corrente
      * @param username Username dell'utente che ha effettuato la richiesta
      * @return boolean
@@ -302,4 +286,5 @@ public class Project {
     public boolean isMember(String username){
         return members.contains(username);
     }
+
 }

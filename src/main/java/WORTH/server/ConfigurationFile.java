@@ -12,12 +12,11 @@ import java.util.Map;
  * ConfigurationFile e' la classe che rappresenta
  * il file di configurazione usato per inizializzare le strutture dati locali del server all'inizio
  */
-//todo: testing
 public class ConfigurationFile {
     /* Insieme totale dei progetti all'interno del WORTH.server*/
     private Map<String, Project> all_projects;
     /* Insieme totale degli utenti registrati */
-    private HashMap<String, User> utenti_registrati;
+    private Map<String, User> utenti_registrati;
 
     /**
      * Costruttore vuoto della classe (necessario a jackson)
@@ -25,10 +24,10 @@ public class ConfigurationFile {
     public ConfigurationFile(){   }
 
     /**
-     * Inizializza la struttura locale che indica i progetti totali all'interno del WORTH.server
+     * Inizializza la struttura locale che indica i progetti totali all'interno del WORTH.server e gli utenti registrati
      * @param all_projects Struttura dati che indica tutti i progetti
      */
-    public void setAll_projects(Map<String, Project> all_projects, HashMap<String, User> utenti_registrati) {
+    public void setAll(Map<String, Project> all_projects, HashMap<String, User> utenti_registrati) {
         this.all_projects = all_projects;
         this.utenti_registrati = utenti_registrati;
     }
@@ -59,21 +58,14 @@ public class ConfigurationFile {
             ObjectMapper mapper = new ObjectMapper();
             mapper.readValue(Paths.get("./WORTH_config/config.json").toFile(), ConfigurationFile.class);
         }
-
     }
 
     /**
      * Restituisce gli utenti registrati
-     * @return HashMap<String, User> Insieme degli utenti registrati
+     * @return Map<String, User> Insieme degli utenti registrati
      */
-    public HashMap<String, User> getUtenti_registrati() {
+    public Map<String, User> getUtenti_registrati() {
         return utenti_registrati;
     }
 
-    /**
-     * Inizializza l'insieme degli utenti registrati
-     */
-    public void setUtenti_registrati(HashMap<String, User> utenti_registrati) {
-        this.utenti_registrati = utenti_registrati;
-    }
 }

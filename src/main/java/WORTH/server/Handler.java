@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,23 +21,30 @@ public class Handler implements Callable<Response>  {
     private Request task_request;
     /* Oggetto che rappresenta una risposta del WORTH.client */
     private final Response task_response;
-    /* Oggetto che rappresenta l'insieme di progetti minchia*/
+    /* Oggetto che rappresenta l'insieme dei  progetti nel server */
     private final ConcurrentHashMap<String, Project> projects;
+    /* Oggetto che rappresenza l'insieme degli utenti registrati al servizio */
+    private HashMap<String, User> utenti_registrati;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
     ObjectMapper objectMapper;
-    /* Composizione della classe ProjectWorker. La classe contiene metodi ausiliari per la classe corrente */
+    /* Composizione della classe Worker. La classe contiene metodi ausiliari per la classe corrente */
     private final Worker worker;
+    /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
+    private final UserManager userManager;
 
     /**
-     * Costruttore dell'oggetto
-     * @param buffer contenente la richiesta
+     * Costruttore della classe
+     * @param buffer ByteBuffer rappresentante la richiesta
+     * @param projects Insieme totale dei progetti nel server
+     * @param utenti_registrati Insieme totale degli utenti registrati al servizio
      */
-    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) {
+    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) {
         this.buffer = buffer;
         this.projects = projects;
+        this.userManager = new UserManager(utenti_registrati);
         objectMapper = new ObjectMapper();
         task_response = new Response();
-        worker = new Worker(projects);
+        worker = new Worker(projects, utenti_registrati);
     }
 
     /**
@@ -73,11 +81,15 @@ public class Handler implements Callable<Response>  {
         try{
             parser();
             switch(task_request.getRequest()) {
-                /*case login : {
+                case login : {
+                    userManager.login(task_request.getNickUtente(), task_request.getPassword());
+                    break;
                 }
                 case logout : {
+                    userManager.logout(task_request.getNickUtente());
+                    break;
                 }
-                case listUsers : {
+                /*case listUsers : {
                 }
                 case listOnlineUsers : {
                 }
@@ -94,12 +106,13 @@ public class Handler implements Callable<Response>  {
                 }
                 case sendChatMsg : {
                 }*/
-                //todo: dopo che implementi il login, fai anche questa funzione
-                case createProject : projects.putIfAbsent(task_request.getProjectName(), new Project(task_request.getProjectName())); System.out.println(task_request.getProjectName());break;
 
+                case createProject : {
+                    worker.createProject(task_request.getProjectName(), task_request.getNickUtente());
+                }
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 case showCards : {
-                    Project project = projects.get(task_request.getProjectName()).showCards();
+                    Project project = worker.showCards(task_request.getProjectName(), task_request.getNickUtente());
                     task_response.setProject(project);
                     break;
                 }

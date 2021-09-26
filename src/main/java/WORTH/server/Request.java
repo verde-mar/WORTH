@@ -2,7 +2,6 @@ package WORTH.server;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
-//todo: testing
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
     protected enum RequestType{
@@ -88,5 +87,13 @@ public class Request {
      */
     public String getListaDestinazione(){
         return listaDestinazione;
+    }
+
+    /**
+     * Restituisce la password dell'utente che ha richiesto di effettuare il login
+     * @return String Password dell'utente
+     */
+    public String getPassword() {
+        return password;
     }
 }

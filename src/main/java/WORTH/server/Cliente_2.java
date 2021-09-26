@@ -72,7 +72,36 @@ public class Cliente_2 {
             message = new String(buffer_response.array(), StandardCharsets.UTF_8);
             System.out.printf("[TCP] Received string:\n%s\n", message);
 
-            request1 ="{\"request\": \"showCard\", \"projectName\": \"cancello\", \"cardName\": \"CAGNOTTO\"}";
+            request1 ="{\"request\": \"addCard\", \"cardName\": \"BASSOTTO\", \"projectName\": \"cancello\"}";
+            byte_request = request1.getBytes(StandardCharsets.UTF_8);
+            // Buffer contenente il messaggio
+            System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
+            buffer1 = ByteBuffer.allocate(byte_request.length + Integer.BYTES);
+            buffer1.putInt(byte_request.length);
+            buffer1.put(byte_request);
+            buffer1.flip();
+            while (buffer1.hasRemaining())
+                client.write(buffer1);
+            // Buffer contenente la lunghezza
+            lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+
+            while(lengthBuffer.hasRemaining())
+                client.read(lengthBuffer);
+            System.out.println("dopo read size");
+            lengthBuffer.flip();
+            System.out.println(lengthBuffer);
+
+            // Buffer contenente i dati
+            buffer_response = ByteBuffer.allocate(lengthBuffer.getInt());
+            while(buffer_response.hasRemaining())
+                client.read(buffer_response);
+            buffer_response.flip();
+            System.out.println(buffer_response);
+            // Stringa estratta dal buffer
+            message = new String(buffer_response.array(), StandardCharsets.UTF_8);
+            System.out.printf("[TCP] Received string:\n%s\n", message);
+
+            request1 ="{\"request\": \"showCards\", \"projectName\": \"cancello\"}";
             byte_request = request1.getBytes(StandardCharsets.UTF_8);
             // Buffer contenente il messaggio
             System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));

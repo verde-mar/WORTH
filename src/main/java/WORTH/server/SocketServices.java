@@ -30,14 +30,12 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
-    //todo: testare se funziona, altrimenti metti una lista
     /* Struttura dati rappresentante l'insieme dei progetti all'interno del WORTH.server */
     private final ConcurrentHashMap<String, Project> projects;
 
     /* File di configurazione */
     private final ConfigurationFile config_file;
 
-    //todo: testare se funziona, altrimenti metti una lista
     /* Struttura dati rappresentante l'insieme degli utenti registrati */
     private final HashMap<String, User> utenti_registrati;
 
@@ -64,19 +62,23 @@ public class SocketServices implements AutoCloseable{
         /* Registra il channel */
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
+        /* Inizializza il file di configurazione */
+        config_file = config;
+        mapper = new ObjectMapper();
+
         /* Crea la struttura dati per i progetti */
         if(config.getAll_projects() != null)
             projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
         else
             projects = new ConcurrentHashMap<>();
-        /* Inizializza il file di configurazione */
-        config_file = config;
-        mapper = new ObjectMapper();
+
         /* Crea la struttura dati per gli utenti registrati */
         if(config.getUtenti_registrati() != null)
-            utenti_registrati =config.getUtenti_registrati();
+            utenti_registrati = (HashMap<String, User>) config.getUtenti_registrati();
         else
             utenti_registrati = new HashMap<>();
+
+
     }
 
     /**
@@ -85,9 +87,8 @@ public class SocketServices implements AutoCloseable{
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
     private Future<Response> elaborateRequest(ByteBuffer buffer) {
-        return threadPool.submit(new Handler(buffer, projects));
+        return threadPool.submit(new Handler(buffer, projects, utenti_registrati));
     }
-
 
     /**
      * La funzione fa girare il selector finche' il thread main non viene interrotto
@@ -123,7 +124,7 @@ public class SocketServices implements AutoCloseable{
                     writeMessage(key);
                 }
             }
-            config_file.setAll_projects(projects, utenti_registrati);
+            config_file.setAll(projects, utenti_registrati);
             mapper.writeValue(Paths.get("./WORTH_config/config.json").toFile(), config_file);
         }
 

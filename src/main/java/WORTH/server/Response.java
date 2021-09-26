@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.LinkedList;
 import java.util.List;
 
-//todo: testing
-
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
     public void setCurrentList(String currentList) {
@@ -36,7 +34,6 @@ public class Response {
     private boolean done;
     private List<String> cardsName;
     private List<String> members;
-    private List<String> projects;
     private List<String> cardHistory;
     private Card card;
     private Project project;
@@ -67,17 +64,6 @@ public class Response {
         cardsName = new LinkedList<>();
         for(Card card : cards){
             cardsName.add(card.getNameCard());
-        }
-    }
-
-    /**
-     * Assegna a ciascun campo di projects i nomi dei peoject richiesti
-     * @param projs Lista dei progetti
-     */
-    public void setProjects(List<Project> projs){
-        projects = new LinkedList<>();
-        for(Project project : projs){
-            projects.add(project.getNameProject());
         }
     }
 
