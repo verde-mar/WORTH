@@ -60,4 +60,8 @@ public class User {
     public String getName() {
         return name;
     }
+
+    public List<String> getList_prj() {
+        return list_prj;
+    }
 }

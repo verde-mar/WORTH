@@ -21,10 +21,6 @@ public class Handler implements Callable<Response>  {
     private Request task_request;
     /* Oggetto che rappresenta una risposta del WORTH.client */
     private final Response task_response;
-    /* Oggetto che rappresenta l'insieme dei  progetti nel server */
-    private final ConcurrentHashMap<String, Project> projects;
-    /* Oggetto che rappresenza l'insieme degli utenti registrati al servizio */
-    private HashMap<String, User> utenti_registrati;
     /* Oggetto necessario per la serializzazione dei file JSON, formato usato sia per risposte e per richieste */
     ObjectMapper objectMapper;
     /* Composizione della classe Worker. La classe contiene metodi ausiliari per la classe corrente */
@@ -40,7 +36,7 @@ public class Handler implements Callable<Response>  {
      */
     public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) {
         this.buffer = buffer;
-        this.projects = projects;
+        /* Oggetto che rappresenta l'insieme dei  progetti nel server */
         this.userManager = new UserManager(utenti_registrati);
         objectMapper = new ObjectMapper();
         task_response = new Response();
@@ -76,39 +72,52 @@ public class Handler implements Callable<Response>  {
      * Override della chiamata call
      * @return WORTH.server.Message Risposta in formato JSON per il WORTH.client
      */
+    //todo: testing su listusers listonlineusers listProjects addmember
     @Override
     public Response call() {
         try{
             parser();
             switch(task_request.getRequest()) {
+                /* Effettua il login */
                 case login : {
                     userManager.login(task_request.getNickUtente(), task_request.getPassword());
                     break;
                 }
+                /* Effettua il logout */
                 case logout : {
                     userManager.logout(task_request.getNickUtente());
                     break;
                 }
-                /*case listUsers : {
+                /* Restituisce la lista degli utenti registrati al servizio */
+                case listUsers : {
+                    List<User> users = userManager.listUsers();
+                    task_response.setMembers(users);
+                    break;
                 }
+
+                /* Restituisce la lista degli utenti registrati al servizio e che sono online */
                 case listOnlineUsers : {
+                    List<User> onlineUsers = userManager.listOnlineUsers();
+                    task_response.setMembers(onlineUsers);
+                    break;
                 }
+
+                /* Restituisce la lista dei progetti di un determinato utente */
                 case listProjects : {
+                    User user = userManager.getUtente(task_request.getNickToAdd());
+                    task_response.setProjects(user.getList_prj());
+                    break;
                 }
 
+                /* Aggiunge un utente ad un progetto */
                 case addMember : {
-                    if(projects.containsKey(task_request.getProjectName())){
-                        projects.get(task_request.getProjectName()).addMember(new WORTH.server.User()); // new WORTH.server.User() non va bene, devo sistemarlo in fase di registrazione
-                        task_response.setMembers();
-                    }
+                    worker.addMember(task_request.getProjectName(), task_request.getNickToAdd(), task_request.getNickUtente());
                 }
-                case readChat : {
-                }
-                case sendChatMsg : {
-                }*/
 
+                /* Crea il progetto */
                 case createProject : {
                     worker.createProject(task_request.getProjectName(), task_request.getNickUtente());
+                    break;
                 }
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 case showCards : {

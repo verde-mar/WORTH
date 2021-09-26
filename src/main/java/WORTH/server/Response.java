@@ -7,9 +7,6 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
-    public void setCurrentList(String currentList) {
-    }
-
     protected enum RequestType{
         login,
         logout,
@@ -38,6 +35,7 @@ public class Response {
     private Card card;
     private Project project;
     private Request.RequestType request;
+    private List<String> projects;
 
     /**
      * Inizializza il campo richiesta, per associarla alla risposta
@@ -53,6 +51,14 @@ public class Response {
     public void setSuccess(){
         done = true;
         explanation = "success";
+    }
+
+    /**
+     * Inizializza projects
+     * @param list_prj Parametro con cui inizializzare projects
+     */
+    public void setProjects(List<String> list_prj) {
+        projects = list_prj;
     }
 
 

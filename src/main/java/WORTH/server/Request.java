@@ -27,6 +27,7 @@ public class Request {
     private String projectName;
     private String cardName;
     private String nickUtente;
+    private String nickToAdd;
     private String password;
     private String description;
     private Request.RequestType request;
@@ -39,6 +40,14 @@ public class Request {
      */
     public Request.RequestType getRequest() {
         return request;
+    }
+
+    /**
+     * Restituisce il nick dell'utente da aggiungere al progetto
+     * @return String nickname dell'utente da aggiungere al progetto
+     */
+    public String getNickToAdd() {
+        return nickToAdd;
     }
 
     /**

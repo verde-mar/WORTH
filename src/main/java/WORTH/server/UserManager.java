@@ -1,10 +1,12 @@
 package WORTH.server;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class UserManager {
     /* HashMap degli utenti registrati al servizio */
-    private HashMap<String, User> utenti_registrati;
+    private final HashMap<String, User> utenti_registrati;
 
     /**
      * Costruttore della classe
@@ -43,5 +45,34 @@ public class UserManager {
         }
     }
 
+    /**
+     * Restituisce la lista degli utenti, sia offline che online
+     * @return List<User> Lista degli utenti
+     */
+    public List<User> listUsers(){
+        return (List<User>) utenti_registrati.values();
+    }
 
+    /**
+     * Restituisce la lista degli utenti online
+     * @return List<User> Lista degli utenti
+     */
+    public List<User> listOnlineUsers(){
+        List<User> onlineUsers = new LinkedList<>();
+        for(User user: utenti_registrati.values()){
+            if(user.isOnline()){
+                onlineUsers.add(user);
+            }
+        }
+        return onlineUsers;
+    }
+
+    /**
+     * Restituisce l'utente con il nickname nickutente
+     * @param nickutente Nickname dell'utente cercato
+     * @return String Restituisce l'utente con il nickname nickutente
+     */
+    public User getUtente(String nickutente){
+        return utenti_registrati.get(nickutente);
+    }
 }

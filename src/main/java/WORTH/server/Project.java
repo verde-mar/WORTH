@@ -287,4 +287,11 @@ public class Project {
         return members.contains(username);
     }
 
+    /**
+     * Aggiunge un utente alla lista dei membri del progetto
+     * @param userToAdd Nickname dell'utente da aggiungere ai membri del progetto
+     */
+    public void addPeople(String userToAdd) {
+        members.add(userToAdd);
+    }
 }

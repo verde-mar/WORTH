@@ -39,6 +39,20 @@ public class Worker {
     }
 
     /**
+     * Aggiunge un utente ad un progetto
+     * @param projectName Nome del progetto
+     * @param userToAdd Nome dell'utente da aggiungere
+     * @param userName Nome dell'utente che aggiunge l'utente al progetto
+     * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione
+     */
+    public void addMember(String projectName, String userToAdd, String userName) throws Exception {
+        Project project = projects.get(projectName);
+        if(project.isMember(userName))
+            project.addPeople(userToAdd);
+        else throw new Exception("You are not allowed.");
+    }
+
+    /**
      * Restituisce la card di nome cardName
      * @param projectName Nome del progetto in cui si trova probabilmente la card
      * @param cardname Nome della card desiderata
