@@ -11,14 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
-    /* Insieme totale degli utenti registrati al servizio */
     private HashMap<String, User> utenti_registrati;
 
     /**
      * Costruttore della classe
      * @param projects Insieme totale dei progetti sul WORTH.server
      */
-    public Worker(ConcurrentHashMap<String,Project> projects, HashMap<String, User> utenti_registrati) {
+    public Worker(ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) {
         this.projects = projects;
         this.utenti_registrati = utenti_registrati;
     }
@@ -47,8 +46,9 @@ public class Worker {
      */
     public void addMember(String projectName, String userToAdd, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName))
+        if(project.isMember(userName)) {
             project.addPeople(userToAdd);
+        }
         else throw new Exception("You are not allowed.");
     }
 
@@ -139,8 +139,8 @@ public class Worker {
      * @throws Exception Nel caso in cui il progetto esistesse gia'
      */
     public void createProject(String projectName, String nickUtente) throws Exception {
-        Project project = new Project(projectName, nickUtente);
+        Project project = new Project(projectName, nickUtente, utenti_registrati);
         Project verify = projects.putIfAbsent(projectName, project);
-        if(verify == null) throw new Exception("The project was already here");
+        if(verify == null) throw new Exception("The project was already there");
     }
 }

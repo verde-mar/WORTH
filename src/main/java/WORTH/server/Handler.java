@@ -104,7 +104,7 @@ public class Handler implements Callable<Response>  {
 
                 /* Restituisce la lista dei progetti di un determinato utente */
                 case listProjects : {
-                    User user = userManager.getUtente(task_request.getNickToAdd());
+                    User user = userManager.getUtente(task_request.getNickUtente());
                     task_response.setProjects(user.getList_prj());
                     break;
                 }

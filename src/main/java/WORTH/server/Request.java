@@ -18,8 +18,6 @@ public class Request {
         addCard,
         moveCard,
         getCardHistory,
-        readChat,
-        sendChatMsg,
         cancelProject
     }
 

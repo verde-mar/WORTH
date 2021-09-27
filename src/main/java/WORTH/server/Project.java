@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;
@@ -38,7 +39,7 @@ public class Project {
      * Costruttore della classe
      * @param nameProject Nome del progetto
      */
-    public Project(String nameProject, String nickName){
+    public Project(String nameProject, String nickName, HashMap<String, User> utenti_registrati){
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
@@ -47,7 +48,11 @@ public class Project {
         members = Collections.synchronizedList(new LinkedList<>());
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
-        if(!isMember(nickName)) members.add(nickName);
+        if(!isMember(nickName)) {
+            members.add(nickName);
+            User user = utenti_registrati.get(nickName);
+            user.getList_prj().add(nameProject);
+        }
     }
 
     /**
@@ -293,5 +298,13 @@ public class Project {
      */
     public void addPeople(String userToAdd) {
         members.add(userToAdd);
+    }
+
+    /**
+     * Restituisce la lista dei membri al progetto
+     * @return List<String> Lista dei membri del progetto
+     */
+    public List<String> getMembers(){
+        return members;
     }
 }
