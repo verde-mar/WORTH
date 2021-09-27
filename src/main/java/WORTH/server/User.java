@@ -22,7 +22,6 @@ public class User {
         this.name = name;
     }
 
-
     /**
      * Restituisce la password
      * @return String Password
@@ -61,6 +60,10 @@ public class User {
         return name;
     }
 
+    /**
+     * Restituisce la lista dei progetti a cui appartiene la lista
+     * @return List<String> Lista dei progetti
+     */
     public List<String> getList_prj() {
         return list_prj;
     }

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,14 +92,22 @@ public class Handler implements Callable<Response>  {
                 /* Restituisce la lista degli utenti registrati al servizio */
                 case listUsers : {
                     Collection<User> users = userManager.listUsers();
-                    task_response.setMembers(users);
+                    List<String> utenti = new LinkedList<>();
+                    for(User user : users){
+                        utenti.add(user.getName());
+                    }
+                    task_response.setMembers(utenti);
                     break;
                 }
 
                 /* Restituisce la lista degli utenti registrati al servizio e che sono online */
                 case listOnlineUsers : {
                     List<User> onlineUsers = userManager.listOnlineUsers();
-                    task_response.setMembers(onlineUsers);
+                    List<String> utentiOnline = new LinkedList<>();
+                    for(User user : onlineUsers){
+                        utentiOnline.add(user.getName());
+                    }
+                    task_response.setMembers(utentiOnline);
                     break;
                 }
 
@@ -135,7 +144,7 @@ public class Handler implements Callable<Response>  {
                 }
                 /* Restituisce i membri di un progetto */
                 case showMembers : {
-                    Collection<User> members = worker.showMembers(task_request.getProjectName());
+                    List<String> members = worker.showMembers(task_request.getProjectName());
                     task_response.setMembers(members);
                     break;
                 }

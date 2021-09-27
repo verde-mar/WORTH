@@ -1,6 +1,5 @@
 package WORTH.server;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -148,7 +147,12 @@ public class Worker {
         if(verify == null) throw new Exception("The project was already there");
     }
 
-    public Collection<User> showMembers(String projectName) {
+    /**
+     * Restituisce i membri del progetto
+     * @param projectName Nome del progetto
+     * @return List<String> Lista dei membri del progetti
+     */
+    public List<String> showMembers(String projectName) {
         Project project = projects.get(projectName);
         return project.getMembers();
     }

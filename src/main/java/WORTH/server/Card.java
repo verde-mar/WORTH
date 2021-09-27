@@ -16,11 +16,11 @@ import java.util.List;
  */
 public class Card {
     /* Nome univoco della card */
-    private String nameCard;
+    private final String nameCard;
     /* Descrizione testuale della card */
     private String description;
     /* Storia associata alla card */
-    private List<String> history;
+    private final List<String> history;
     /* Lista corrente a cui appartiene la card */
     private String currentList;
     /* Oggetto necessario per creare un file all'interno della directory del progetto */
@@ -35,8 +35,6 @@ public class Card {
         history = new LinkedList<>();
         card_mapper = new ObjectMapper();
     }
-
-    public Card(){}
 
     /**
      * Restituisce il nome della card
@@ -101,15 +99,6 @@ public class Card {
     public void addDescription(String descript) {
         this.description = descript;
     }
-
-    /**
-     * Restituisce la descrizione associata alla card
-     * @return String La descrizione della card
-     */
-    public String getDescription() {
-        return description;
-    }
-
 
     /**
      * Scrive la card corrente nella directory definita da projectName
