@@ -1,6 +1,5 @@
 package WORTH.server;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;
@@ -23,12 +22,14 @@ public class Project {
     private List<Card> toBeRevised;
     /* Lista delle card le cui operazioni associate sono portate a termine da un membro del progetto */
     private List<Card> done;
-    @JsonIgnore /* Lista di membri del progetto */
+    /* Lista di membri del progetto */
     private List<String> members;
     @JsonIgnore /* Il progetto corrente */
     File project;
     @JsonIgnore /* Booleano che indica se e' stata creata una directory associata al progetto */
     boolean mkdir_bool;
+    @JsonIgnore /* Utenti registrati al servizio */
+    HashMap<String, User> utenti_registrati;
 
     /**
      * Costruttore vuoto della classe (necessario a jackson)
@@ -48,6 +49,7 @@ public class Project {
         members = Collections.synchronizedList(new LinkedList<>());
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
+        this.utenti_registrati = utenti_registrati;
         if(!isMember(nickName)) {
             members.add(nickName);
             User user = utenti_registrati.get(nickName);
@@ -296,15 +298,19 @@ public class Project {
      * Aggiunge un utente alla lista dei membri del progetto
      * @param userToAdd Nickname dell'utente da aggiungere ai membri del progetto
      */
-    public void addPeople(String userToAdd) {
-        members.add(userToAdd);
+    public void addPeople(String userToAdd) throws Exception {
+        if(!isMember(userToAdd)) {
+            members.add(userToAdd);
+            User user = utenti_registrati.get(userToAdd);
+            user.getList_prj().add(nameProject);
+        } else throw new Exception("The user is already logged in that project");
     }
 
     /**
      * Restituisce la lista dei membri al progetto
      * @return List<String> Lista dei membri del progetto
      */
-    public List<String> getMembers(){
+    public Collection<User> getMembers(){
         return members;
     }
 }

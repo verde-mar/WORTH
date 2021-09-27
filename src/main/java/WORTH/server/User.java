@@ -61,7 +61,7 @@ public class User {
         return name;
     }
 
-    public List<String> getList_prj() {
+    public List<Project> getList_prj() {
         return list_prj;
     }
 }

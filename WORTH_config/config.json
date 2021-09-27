@@ -1,1 +1,1 @@
-{"all_projects":{"cancello":{"nameProject":"cancello","to_Do":[],"inProgress":[],"toBeRevised":[],"done":[]}},"utenti_registrati":{"robert":{"password":"roby55","list_prj":["cancello"],"online":true,"name":"robert"}}}
+{"all_projects":{"cancello":{"nameProject":"cancello","to_Do":[],"inProgress":[],"toBeRevised":[],"done":[],"members":["robert","micinoGattino"]}},"utenti_registrati":{"robert":{"password":"roby55","list_prj":["cancello"],"online":true,"name":"robert"}}}

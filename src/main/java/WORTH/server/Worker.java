@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
-    private HashMap<String, User> utenti_registrati;
+    private final HashMap<String, User> utenti_registrati;
 
     /**
      * Costruttore della classe
@@ -42,14 +43,17 @@ public class Worker {
      * @param projectName Nome del progetto
      * @param userToAdd Nome dell'utente da aggiungere
      * @param userName Nome dell'utente che aggiunge l'utente al progetto
-     * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione
+     * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione o l'utente da aggiungere al progetto ci sia gia'
      */
     public void addMember(String projectName, String userToAdd, String userName) throws Exception {
         Project project = projects.get(projectName);
         if(project.isMember(userName)) {
             project.addPeople(userToAdd);
+            System.out.println("SUBITO DOPO ADDPEOPLE");
         }
-        else throw new Exception("You are not allowed.");
+        else {
+            throw new Exception("You are not allowed.");
+        }
     }
 
     /**
@@ -142,5 +146,10 @@ public class Worker {
         Project project = new Project(projectName, nickUtente, utenti_registrati);
         Project verify = projects.putIfAbsent(projectName, project);
         if(verify == null) throw new Exception("The project was already there");
+    }
+
+    public Collection<User> showMembers(String projectName) {
+        Project project = projects.get(projectName);
+        return project.getMembers();
     }
 }

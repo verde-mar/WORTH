@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +54,8 @@ public class UserManager {
      * Restituisce la lista degli utenti, sia offline che online
      * @return List<User> Lista degli utenti
      */
-    public List<User> listUsers(){
-        return (List<User>) utenti_registrati.values();
+    public Collection<User> listUsers(){
+        return  utenti_registrati.values();
     }
 
     /**

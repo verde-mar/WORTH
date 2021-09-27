@@ -75,7 +75,7 @@ public class Cliente_1 {
             message = new String(buffer_response.array(), StandardCharsets.UTF_8);
             System.out.printf("[TCP] Received string:\n%s\n", message);
 
-            request ="{\"request\": \"listProjects\", \"nickUtente\": \"robert\"}";
+            request ="{\"request\": \"addMember\", \"nickToAdd\": \"micinoGattino\", \"nickUtente\": \"robert\", \"projectName\": \"cancello\"}";
             byte_request = request.getBytes(StandardCharsets.UTF_8);
             // Buffer contenente il messaggio
             System.out.println("numero di bytes: " + (byte_request.length + Integer.BYTES));
@@ -91,9 +91,7 @@ public class Cliente_1 {
 
             while(lengthBuffer.hasRemaining())
                 client.read(lengthBuffer);
-            System.out.println("dopo read size");
             lengthBuffer.flip();
-            System.out.println(lengthBuffer);
 
             // Buffer contenente i dati
             buffer_response = ByteBuffer.allocate(lengthBuffer.getInt());

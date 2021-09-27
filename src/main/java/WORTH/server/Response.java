@@ -2,6 +2,7 @@ package WORTH.server;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class Response {
     private String explanation;
     private boolean done;
     private List<String> cardsName;
-    private List<String> members;
+    private Collection<User> members;
     private List<String> cardHistory;
     private Card card;
     private Project project;
@@ -57,8 +58,10 @@ public class Response {
      * Inizializza projects
      * @param list_prj Parametro con cui inizializzare projects
      */
-    public void setProjects(List<String> list_prj) {
-        projects = list_prj;
+    public void setProjects(List<Project> list_prj) {
+        for(Project project : list_prj){
+            projects.add(project.getNameProject());
+        }
     }
 
 
@@ -86,11 +89,8 @@ public class Response {
      * Setta i nomi dei membri del progetto
      * @param members Lista rappresentante i membri del progetto corrente
      */
-    public void setMembers(List<User> members){
-        this.members = new LinkedList<>();
-        for(User user : members){
-            this.members.add(user.getName());
-        }
+    public void setMembers(Collection<User> members){
+        this.members = members;
     }
 
     /**

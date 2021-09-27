@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -72,7 +73,6 @@ public class Handler implements Callable<Response>  {
      * Override della chiamata call
      * @return WORTH.server.Message Risposta in formato JSON per il WORTH.client
      */
-    //todo: testing su listusers listonlineusers listProjects addmember
     @Override
     public Response call() {
         try{
@@ -90,7 +90,7 @@ public class Handler implements Callable<Response>  {
                 }
                 /* Restituisce la lista degli utenti registrati al servizio */
                 case listUsers : {
-                    List<User> users = userManager.listUsers();
+                    Collection<User> users = userManager.listUsers();
                     task_response.setMembers(users);
                     break;
                 }
@@ -112,6 +112,7 @@ public class Handler implements Callable<Response>  {
                 /* Aggiunge un utente ad un progetto */
                 case addMember : {
                     worker.addMember(task_request.getProjectName(), task_request.getNickToAdd(), task_request.getNickUtente());
+                    break;
                 }
 
                 /* Crea il progetto */
@@ -130,6 +131,12 @@ public class Handler implements Callable<Response>  {
                 case showCard : {
                     Card card = worker.showCard(task_request.getProjectName(), task_request.getCardName(), task_request.getNickUtente());
                     task_response.setCard(card);
+                    break;
+                }
+                /* Restituisce i membri di un progetto */
+                case showMembers : {
+                    Collection<User> members = worker.showMembers(task_request.getProjectName());
+                    task_response.setMembers(members);
                     break;
                 }
 
