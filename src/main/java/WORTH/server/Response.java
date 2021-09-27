@@ -58,10 +58,8 @@ public class Response {
      * Inizializza projects
      * @param list_prj Parametro con cui inizializzare projects
      */
-    public void setProjects(List<Project> list_prj) {
-        for(Project project : list_prj){
-            projects.add(project.getNameProject());
-        }
+    public void setProjects(List<String> list_prj) {
+        this.projects = list_prj;
     }
 
 

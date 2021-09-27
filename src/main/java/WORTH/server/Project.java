@@ -310,7 +310,7 @@ public class Project {
      * Restituisce la lista dei membri al progetto
      * @return List<String> Lista dei membri del progetto
      */
-    public Collection<User> getMembers(){
+    public List<String> getMembers(){
         return members;
     }
 }
