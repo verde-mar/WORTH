@@ -3,7 +3,6 @@ package WORTH.server;
 import java.util.LinkedList;
 import java.util.List;
 
-//todo:testing
 public class User {
     /* Password dell'utente */
     private String password;

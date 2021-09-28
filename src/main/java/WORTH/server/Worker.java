@@ -32,9 +32,11 @@ public class Worker {
      */
     public void addCard(String projectName, String cardname, String descr, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName))
-            project.addCardProject(cardname, descr, projectName);
-        else throw new Exception("You are not allowed.");
+        if(project!=null) {
+            if(project.isMember(userName))
+                project.addCardProject(cardname, descr, projectName);
+            else throw new Exception("You are not allowed.");
+        } else throw new Exception("That project doesn't exist.");
     }
 
     /**
@@ -45,14 +47,16 @@ public class Worker {
      * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione o l'utente da aggiungere al progetto ci sia gia'
      */
     public void addMember(String projectName, String userToAdd, String userName) throws Exception {
-        Project project = projects.get(projectName);
-        if(project.isMember(userName)) {
-            project.addPeople(userToAdd);
-            System.out.println("SUBITO DOPO ADDPEOPLE");
-        }
-        else {
-            throw new Exception("You are not allowed.");
-        }
+        if(userToAdd != null) {
+            Project project = projects.get(projectName);
+            if (project != null) {
+                if (project.isMember(userName)) {
+                    project.addPeople(userToAdd);
+                } else {
+                    throw new Exception("You are not allowed.");
+                }
+            } else throw new Exception("That project doesn't exist.");
+        } else throw new Exception("L'utente che si vuole aggiungere e' null.");
     }
 
     /**
@@ -65,9 +69,11 @@ public class Worker {
      */
     public Card showCard(String projectName, String cardname, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName))
-            return project.showCardProject(cardname);
-        else throw new Exception("You are not allowed.");
+        if(project!=null) {
+            if(project.isMember(userName))
+                return project.showCardProject(cardname);
+            else throw new Exception("You are not allowed.");
+        } else throw new Exception("That project doesn't exist.");
     }
 
     /**
@@ -80,12 +86,15 @@ public class Worker {
      * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione
      */
     public void moveCard(String projectName, String cardname, String listaPartenza, String listaDestinazione, String userName) throws Exception {
-        Project project = projects.get(projectName);
-        if(project.isMember(userName)) {
-            Card card = project.showCardProject(cardname);
-            project.moveCard(listaPartenza, listaDestinazione, card);
-        }
-        else throw new Exception("You are not allowed.");
+        if(listaDestinazione != null && listaPartenza != null) {
+            Project project = projects.get(projectName);
+            if (project != null) {
+                if (project.isMember(userName)) {
+                    Card card = project.showCardProject(cardname);
+                    project.moveCard(listaPartenza, listaDestinazione, card);
+                } else throw new Exception("You are not allowed.");
+            } else throw new Exception("That project doesn't exist.");
+        } else throw new Exception("La lista di partenza o la lista di destinazione sono null o contengono qualche errore.");
     }
 
     /**
@@ -98,11 +107,13 @@ public class Worker {
      */
     public List<String> getCardHistory(String projectName, String cardname, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName)) {
-            Card card = project.showCardProject(cardname);
-            return project.getHistory(card);
-        }
-        else throw new Exception("You are not allowed.");
+        if(project!=null) {
+            if(project.isMember(userName)) {
+                Card card = project.showCardProject(cardname);
+                return project.getHistory(card);
+            }
+            else throw new Exception("You are not allowed.");
+        } else throw new Exception("That project doesn't exist.");
     }
 
     /**
@@ -113,11 +124,11 @@ public class Worker {
      */
     public void cancelProject(String projectName, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName)) {
-            project.cancelProject(projectName, projects);
-
-        }
-        else throw new Exception("You are not allowed.");
+        if(project!=null) {
+            if (project.isMember(userName)) {
+                project.cancelProject(projectName, projects);
+            } else throw new Exception("You are not allowed.");
+        } else throw new Exception("That project doesn't exist.");
     }
 
     /**
@@ -129,10 +140,12 @@ public class Worker {
      */
     public Project showCards(String projectName, String userName) throws Exception {
         Project project = projects.get(projectName);
-        if(project.isMember(userName)) {
-            return project;
-        }
-        else throw new Exception("You are not allowed.");
+        if(project!=null) {
+            if(project.isMember(userName)) {
+                return project;
+            }
+            else throw new Exception("You are not allowed.");
+        } else throw new Exception("That project doesn't exist.");
     }
 
     /**
@@ -142,9 +155,11 @@ public class Worker {
      * @throws Exception Nel caso in cui il progetto esistesse gia'
      */
     public void createProject(String projectName, String nickUtente) throws Exception {
-        Project project = new Project(projectName, nickUtente, utenti_registrati);
-        Project verify = projects.putIfAbsent(projectName, project);
-        if(verify == null) throw new Exception("The project was already there");
+        if(projectName != null && nickUtente != null) {
+            Project project = new Project(projectName, nickUtente, utenti_registrati);
+            Project verify = projects.putIfAbsent(projectName, project);
+            if (verify == null) throw new Exception("The project was already here");
+        } else throw new Exception("Project or username are null.");
     }
 
     /**
@@ -152,8 +167,10 @@ public class Worker {
      * @param projectName Nome del progetto
      * @return List<String> Lista dei membri del progetti
      */
-    public List<String> showMembers(String projectName) {
+    public List<String> showMembers(String projectName) throws Exception {
         Project project = projects.get(projectName);
-        return project.getMembers();
+        if(project!=null) {
+            return project.getMembers();
+        } else throw new Exception("That project doesn't exist.");
     }
 }

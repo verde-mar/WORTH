@@ -50,10 +50,13 @@ public class Project {
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
         this.utenti_registrati = utenti_registrati;
+        System.out.println("DENTRO IL COSTRUTTORE");
         if(!isMember(nickName)) {
+            System.out.println(nickName + "NEL COSTRUTTORE DEL PROGETTO");
             members.add(nickName);
             User user = utenti_registrati.get(nickName);
-            user.getList_prj().add(nameProject);
+            if(!user.getList_prj().contains(nameProject))
+                user.getList_prj().add(nameProject);
         }
     }
 
@@ -153,16 +156,18 @@ public class Project {
      */
     public synchronized void addCardProject(String cardname, String description, String projectName) throws Exception {
         /* Aggiunge la card alla struttura dati locale */
-        if(showCardProject(cardname) == null) {
-            Card card = new Card(cardname);
-            card.addHistory("added to to_Do; ");
-            card.addDescription(description);
-            card.addCurrentList("to_Do");
-            to_Do.add(card);
+        if(cardname != null) {
+            if (showCardProject(cardname) == null) {
+                Card card = new Card(cardname);
+                card.addHistory("added to to_Do; ");
+                card.addDescription(description);
+                card.addCurrentList("to_Do");
+                to_Do.add(card);
 
-            /* Memorizza la card su disco */
-            card.writeOnDisk(projectName);
-        } else throw new Exception("The card was already there.");
+                /* Memorizza la card su disco */
+                card.writeOnDisk(projectName);
+            } else throw new Exception("The card was already there.");
+        } else throw new Exception("The card is null");
     }
 
     /**
@@ -171,7 +176,7 @@ public class Project {
      * @param projects Insieme totale dei progetti
      * @return boolean Restituisce false se il progetto non esiste, altrimenti true
      */
-    public synchronized boolean cancelProject(String projectName, ConcurrentHashMap<String, Project> projects){
+    public synchronized boolean cancelProject(String projectName, ConcurrentHashMap<String, Project> projects) throws Exception {
         /* Cancella il progetto dalla struttura dati locale */
         boolean remove_prj = true;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
@@ -179,12 +184,18 @@ public class Project {
         }
         if(remove_prj) {
             /* Cancella il progetto dal disco */
-            System.out.println(projects.values());
             boolean eliminate = project.delete();
-            if (eliminate)
-                System.out.println(projectName + " was eliminated");
-            else
-                System.out.println("Could'nt eliminate " + projectName);
+            if (!eliminate) {
+                File[] files = project.listFiles();
+                assert files != null;
+                for(File file : files){
+                    boolean file_eliminate = file.delete();
+                    if(!file_eliminate) throw new Exception("Cannot eliminate the files in " + projectName);
+                }
+                eliminate = project.delete();
+                if(eliminate) System.out.println(nameProject + " was eliminated");
+            }
+
         }
         return  remove_prj;
     }
@@ -194,18 +205,20 @@ public class Project {
      * @param cardname Nome della card
      * @return WORTH.server.Card Restituisce la card di nome cardName
      */
-    public synchronized Card showCardProject(String cardname){
-        Card card = showCardList(to_Do, cardname);
-        if(card==null){
-            card = showCardList(inProgress, cardname);
-            if(card==null) {
-                card = showCardList(toBeRevised, cardname);
-                if(card==null){
-                    card = showCardList(done, cardname);
+    public Card showCardProject(String cardname) throws Exception {
+        if(cardname!=null) {
+            Card card = showCardList(to_Do, cardname);
+            if (card == null) {
+                card = showCardList(inProgress, cardname);
+                if (card == null) {
+                    card = showCardList(toBeRevised, cardname);
+                    if (card == null) {
+                        card = showCardList(done, cardname);
+                    }
                 }
             }
-        }
-        return card;
+            return card;
+        } throw new Exception("The card is null.");
     }
 
     /**
@@ -229,47 +242,46 @@ public class Project {
      * @param listadiDest Nome della lista in cui si trovera' la card
      * @param card Carta da spostare
      */
-    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws IOException {
+    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws Exception {
         card.eraseCurrentList();
         switch (listaDiPart) {
             case "to_Do" : {
                 to_Do.remove(card);
                 card.addHistory("removed from to_Do; ");
+                if(listadiDest.equals("inProgress") && !inProgress.contains(card)){
+                    inProgress.add(card);
+                    card.addHistory("added to inProgress; ");
+                    card.addCurrentList("inProgress");
+                } else throw new Exception("Moving not allowed.");
+                break;
             }
             case "inProgress" : {
                 inProgress.remove(card);
                 card.addHistory("removed from inProgress; ");
-            }
-            case "done" : {
-                done.remove(card);
-                card.addHistory("removed from done; ");
+                if((listadiDest.equals("done") && !done.contains(card))){
+                    done.add(card);
+                    card.addHistory("added to done; ");
+                    card.addCurrentList("done");
+                } else if((listadiDest.equals("toBeRevised") && !toBeRevised.contains(card))){
+                    toBeRevised.add(card);
+                    card.addHistory("added to toBeRevised; ");
+                    card.addCurrentList("toBeRevised");
+                } else throw new Exception("Moving not allowed.");
+                break;
             }
             case "toBeRevised" : {
                 toBeRevised.remove(card);
                 card.addHistory("removed from toBeRevised; ");
-            }
-        }
-
-        switch (listadiDest) {
-            case "to_Do" : {
-                to_Do.add(card);
-                card.addHistory("added to to_Do; ");
-                card.addCurrentList("to_Do");
-            }
-            case "inProgress" : {
-                inProgress.add(card);
-                card.addHistory("added to inProgress; ");
-                card.addCurrentList("inProgress");
-            }
-            case "done" : {
-                done.add(card);
-                card.addHistory("added to done; ");
-                card.addCurrentList("done");
-            }
-            case "toBeRevised" : {
-                toBeRevised.add(card);
-                card.addHistory("added to toBeRevised; ");
-                card.addCurrentList("toBeRevised");
+                if((listadiDest.equals("done") && !done.contains(card))){
+                    done.add(card);
+                    card.addHistory("added to done; ");
+                    card.addCurrentList("done");
+                } else if((listadiDest.equals("inProgress") && !inProgress.contains(card))){
+                    inProgress.add(card);
+                    card.addHistory("added to inProress; ");
+                    card.addCurrentList("inProgress");
+                }  else throw new Exception("Moving not allowed.");
+                break;
             }
         }
 
@@ -298,7 +310,7 @@ public class Project {
      * Aggiunge un utente alla lista dei membri del progetto
      * @param userToAdd Nickname dell'utente da aggiungere ai membri del progetto
      */
-    public void addPeople(String userToAdd) throws Exception {
+    public synchronized void addPeople(String userToAdd) throws Exception {
         if(!isMember(userToAdd)) {
             members.add(userToAdd);
             User user = utenti_registrati.get(userToAdd);

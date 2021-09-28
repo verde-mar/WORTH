@@ -25,7 +25,7 @@ public class UserManager {
      * @throws Exception Nel caso in cui il login non vada a buon fine
      */
     public void login(String nickName, String password) throws Exception {
-        if(utenti_registrati.containsKey(nickName) && (utenti_registrati.get(nickName).getPassword()).equals(password)){
+        if(utenti_registrati.containsKey(nickName) && !utenti_registrati.get(nickName).isOnline() && (utenti_registrati.get(nickName).getPassword()).equals(password)){
             utenti_registrati.get(nickName).setOnline();
         } else if(password == null){
             throw new Exception("Login failed. Check the password.");
