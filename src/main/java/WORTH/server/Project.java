@@ -3,7 +3,6 @@ package WORTH.server;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,9 +49,7 @@ public class Project {
         project = new File("./" + nameProject);
         mkdir_bool = project.mkdir();
         this.utenti_registrati = utenti_registrati;
-        System.out.println("DENTRO IL COSTRUTTORE");
         if(!isMember(nickName)) {
-            System.out.println(nickName + "NEL COSTRUTTORE DEL PROGETTO");
             members.add(nickName);
             User user = utenti_registrati.get(nickName);
             if(!user.getList_prj().contains(nameProject))
@@ -100,53 +97,6 @@ public class Project {
         return inProgress;
     }
 
-    /**
-     * Inizializza il campo della lista done con il parametro
-     * @param done Parametro contenente la lista done
-     */
-    public void setDone(List<Card> done) {
-        this.done = done;
-    }
-
-    /**
-     * Inizializza il campo della lista inProgress con il parametro
-     * @param inProgress Parametro contenente la lista inProgress
-     */
-    public void setInProgress(List<Card> inProgress) {
-        this.inProgress = inProgress;
-    }
-
-    /**
-     * Inizializza il campo della lista to_Do con il parametro
-     * @param to_Do Parametro contenente la lista to_Do
-     */
-    public void setTo_Do(List<Card> to_Do) {
-        this.to_Do = to_Do;
-    }
-
-    /**
-     * Inizializza il campo della lista nameProject con il parametro
-     * @param nameProject Parametro contenente la lista nameProject
-     */
-    public void setNameProject(String nameProject) {
-        this.nameProject = nameProject;
-    }
-
-    /**
-     * Inizializza il campo project con il parametro
-     * @param project Parametro contenente project
-     */
-    public void setProject(File project) {
-        this.project = project;
-    }
-
-    /**
-     * Inizializza il campo della lista toBeRevised con il parametro
-     * @param toBeRevised Parametro contenente la lista toBeRevised
-     */
-    public void setToBeRevised(List<Card> toBeRevised) {
-        this.toBeRevised = toBeRevised;
-    }
 
     /**
      * Aggiunge una card al progetto
@@ -174,9 +124,8 @@ public class Project {
      * Cancella un progetto
      * @param projectName Nome del progetto
      * @param projects Insieme totale dei progetti
-     * @return boolean Restituisce false se il progetto non esiste, altrimenti true
      */
-    public synchronized boolean cancelProject(String projectName, ConcurrentHashMap<String, Project> projects) throws Exception {
+    public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects) throws Exception {
         /* Cancella il progetto dalla struttura dati locale */
         boolean remove_prj = true;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
@@ -197,7 +146,6 @@ public class Project {
             }
 
         }
-        return  remove_prj;
     }
 
     /**
