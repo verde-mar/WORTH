@@ -1,8 +1,4 @@
-package WORTH.server.RMI;
-
-import WORTH.server.RMI.RemoteInterface;
-import WORTH.server.User;
-import WORTH.server.UserManager;
+package WORTH.server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

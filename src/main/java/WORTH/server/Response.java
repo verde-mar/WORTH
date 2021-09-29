@@ -1,5 +1,8 @@
 package WORTH.server;
 
+import WORTH.server.Card;
+import WORTH.server.Request;
+import WORTH.server.Project;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.LinkedList;

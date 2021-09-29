@@ -1,4 +1,4 @@
-package WORTH.server.RMI;
+package WORTH.server;
 
 import WORTH.server.UserManager;
 
