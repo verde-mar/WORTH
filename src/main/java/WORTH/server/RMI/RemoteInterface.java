@@ -1,4 +1,6 @@
-package WORTH.server;
+package WORTH.server.RMI;
+
+import WORTH.server.UserManager;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

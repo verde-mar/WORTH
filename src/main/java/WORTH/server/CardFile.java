@@ -55,36 +55,4 @@ public class CardFile {
     public void setHistory(List<String> history){
         this.history = history;
     }
-
-    /**
-     * Restituisce this.history
-     * @return List<String> La storia della card
-     */
-    public List<String> getHistory() {
-        return history;
-    }
-
-    /**
-     * Restituisce il nome della card
-     * @return String Nome della card
-     */
-    public String getNameCard() {
-        return nameCard;
-    }
-
-    /**
-     * Restituisce la lista corrente
-     * @return String Lista Corrente
-     */
-    public String getCurrentList() {
-        return currentList;
-    }
-
-    /**
-     * Restituisce la descrizione della card
-     * @return String Descriizone della card
-     */
-    public String getDescription() {
-        return description;
-    }
 }
