@@ -8,7 +8,7 @@ public class RemoteRegister extends UnicastRemoteObject implements RemoteInterfa
 
     /**
      * Costruttore della classe
-     * @throws RemoteException
+     * @throws RemoteException Nel caso di un errore di comunicazione
      */
     protected RemoteRegister() throws RemoteException {
         super();

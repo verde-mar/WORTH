@@ -82,8 +82,8 @@ public class UserManager {
     }
 
     /**
-     *
-     * @return
+     * Restituisce la struttura dati contenente gli utenti registrati
+     * @return HashMap<String, User> insieme degli utenti registrati
      */
     public HashMap<String, User> getUtentiRegistrati(){
         return utenti_registrati;
