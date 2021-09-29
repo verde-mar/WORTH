@@ -1,13 +1,21 @@
 package WORTH.server;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteServer;
+import java.rmi.server.UnicastRemoteObject;
 
-public class RemoteRegister extends RemoteServer implements RemoteInterface {
+public class RemoteRegister extends UnicastRemoteObject implements RemoteInterface {
     UserManager userManager;
-    public void register(String nickUtente, String password, UserManager userManager) throws RemoteException {
-        this.userManager = userManager;
 
+    /**
+     * Costruttore della classe
+     * @throws RemoteException
+     */
+    protected RemoteRegister() throws RemoteException {
+        super();
+    }
+
+    public synchronized void register(String nickUtente, String password, UserManager userManager) throws RemoteException {
+        this.userManager = userManager;
+        userManager.getUtentiRegistrati().putIfAbsent(nickUtente, new User(nickUtente, password));
     }
 }

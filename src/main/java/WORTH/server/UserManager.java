@@ -80,4 +80,12 @@ public class UserManager {
     public User getUtente(String nickutente){
         return utenti_registrati.get(nickutente);
     }
+
+    /**
+     *
+     * @return
+     */
+    public HashMap<String, User> getUtentiRegistrati(){
+        return utenti_registrati;
+    }
 }
