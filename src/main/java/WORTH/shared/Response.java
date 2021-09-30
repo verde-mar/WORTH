@@ -1,6 +1,8 @@
-package WORTH.server;
+package WORTH.shared;
 
+import WORTH.server.Card;
 import WORTH.shared.Project;
+import WORTH.shared.Request;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.LinkedList;
@@ -8,7 +10,7 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
-    protected enum RequestType{
+    public enum RequestType{
         login,
         logout,
         listUsers,

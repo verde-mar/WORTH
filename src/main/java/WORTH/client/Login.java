@@ -10,11 +10,11 @@ import java.rmi.RemoteException;
 
 public class Login extends JFrame {
     /* Campo di testo contenente lo username dell'utente */
-    private JTextField usernameField;
+    private final JTextField usernameField;
     /* Campo contenente la password */
-    private JPasswordField passwordField;
+    private final JPasswordField passwordField;
     /* Campo di testo contenente il nome dell'host del server */
-    private JTextField hostNameField;
+    private final JTextField hostNameField;
 
     public Login(){
         /* Imposta il titolo della finestra */
@@ -120,7 +120,7 @@ public class Login extends JFrame {
             /* Registra l'utente */
             client.registerUser(username, password);
             /* Esegue il login */
-            //login();
+            login();
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Something went wrong", JOptionPane.ERROR_MESSAGE);
         }

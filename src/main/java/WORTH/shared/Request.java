@@ -1,10 +1,10 @@
-package WORTH.server;
+package WORTH.shared;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
-    protected enum RequestType{
+    public enum RequestType{
         login,
         logout,
         listUsers,
