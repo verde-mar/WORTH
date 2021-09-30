@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import WORTH.shared.Project;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class ConfigurationFile {
 
     /**
      * Restituisce tutti i progetti all'interno del WORTH.server in quel momento
-     * @return Map<String, WORTH.server.Project> Struttura che indica l'insieme dei progetti nel WORTH.server
+     * @return Map<String, WORTH.shared.Project> Struttura che indica l'insieme dei progetti nel WORTH.server
      */
     public Map<String, Project> getAll_projects(){
         return all_projects;

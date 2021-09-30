@@ -1,5 +1,7 @@
-package WORTH.server;
+package WORTH.shared;
 
+import WORTH.server.Card;
+import WORTH.server.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;

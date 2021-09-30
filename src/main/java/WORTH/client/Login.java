@@ -1,9 +1,10 @@
 package WORTH.client;
 
-import WORTH.shared.Configuration;
-
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -25,7 +26,7 @@ public class Login extends JFrame {
         /* Controlli per il nome del server */
         JLabel hostNameLabel = new JLabel("Server");
         panel.add(hostNameLabel);
-        hostNameField = new JTextField(Configuration.SERVER_HOSTNAME);
+        hostNameField = new JTextField("localhost");
         panel.add(hostNameField);
         /* Controlli per lo username */
         JLabel usernameLabel = new JLabel("Username");
@@ -61,6 +62,46 @@ public class Login extends JFrame {
      * Esegue il login di un utente nel sistema
      */
     private void login() {
+        TCPClient tcpClient = null;
+        UDPClient udpClient = null;
+        try {
+            /* Indirizzo del server */
+            SocketAddress address = new InetSocketAddress(hostNameField.getText(), 8080);
+            /* Client che comunicano con il server */
+            tcpClient = new TCPClient(address);
+            udpClient = new UDPClient(tcpClient.getLocalAddress());
+            /* Driver che scrivono sul server */
+            TCPDriver tcpDriver = new TCPDriver(tcpClient);
+            UDPDriver udpDriver = new UDPDriver(udpClient);
+            /* Applicazione grafica che visualizza le informazioni */
+            App app = new App(tcpDriver, udpDriver);
+            /* Listener che attendono e notificano l'arrivo di pacchetti */
+            TCPListener tcpListener = new TCPListener(tcpClient, app);
+            UDPListener udpListener = new UDPListener(udpClient, app);
+            /* Avvia i due ascoltatori */
+            tcpListener.start();
+            udpListener.start();
+            /* Username dell'utente */
+            String username = usernameField.getText();
+            /* Password dell' utente */
+            String password = new String(passwordField.getPassword());
+            /* Richiede il login dell'utente */
+            tcpDriver.loginRequest(username, password);
+            /* Mostra la finestra principale */
+            app.setVisible(true);
+            /* Chiude la finestra corrente */
+            this.dispose();
+        } catch(IOException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Login error", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (tcpClient != null)
+                    tcpClient.close();
+                if (udpClient != null)
+                    udpClient.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -79,7 +120,7 @@ public class Login extends JFrame {
             /* Registra l'utente */
             client.registerUser(username, password);
             /* Esegue il login */
-            login();
+            //login();
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Something went wrong", JOptionPane.ERROR_MESSAGE);
         }

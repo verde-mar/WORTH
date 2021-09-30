@@ -1,7 +1,5 @@
 package WORTH.client;
 
-import WORTH.shared.Configuration;
-
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,7 +16,7 @@ public class RMIClient {
      * @throws NotBoundException Errore nel caso di un accesso al registro errato
      */
     public RMIClient(String hostname) throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry(hostname, Configuration.RMI_PORT);
+        Registry registry = LocateRegistry.getRegistry(hostname, 8081);
         rmiClient = (Registrator) registry.lookup("RegistrationService");
     }
 

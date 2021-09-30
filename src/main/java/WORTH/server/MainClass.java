@@ -16,13 +16,6 @@ public class MainClass {
         try {
             /* Creazione di una istanza dell'oggetto RemoteRegister */
             RemoteRegister receptionist = new RemoteRegister();
-            /* Esportazione dell'oggetto */
-            RemoteInterface recept = (RemoteInterface) UnicastRemoteObject.exportObject(receptionist, 0);
-            /* Creazione di un registry sulla porta 8081 */
-            LocateRegistry.createRegistry(8081);
-            Registry reg = LocateRegistry.getRegistry(8081);
-            /* Pubblicazione dello stub nel registry */
-            reg.rebind("Receptionist for registration", recept);
         } catch(RemoteException e){
             System.out.println("Error in communication " + e);
         }

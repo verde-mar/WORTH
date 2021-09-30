@@ -1,5 +1,7 @@
 package WORTH.server;
 
+import WORTH.shared.Project;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

@@ -30,11 +30,7 @@ public class UserManager {
         } else if(password == null){
             throw new Exception("Login failed. Check the password.");
         } else if(!utenti_registrati.containsKey(nickName)){
-            User user = new User(nickName, password);
-            utenti_registrati.put(nickName, user);
-            user.setOnline();
-            utenti_registrati.replace(nickName, user);
-            //throw new Exception("Login failed. You are not registered.");
+            throw new Exception("Login failed. You are not registered.");
         } else if(utenti_registrati.get(nickName).isOnline()){
             throw new Exception("You are already online, you don't need to login again.");
         }
