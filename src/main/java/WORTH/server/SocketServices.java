@@ -1,6 +1,7 @@
 package WORTH.server;
 
 import WORTH.shared.Project;
+import WORTH.shared.RemoteInterface;
 import WORTH.shared.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +13,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.*;
@@ -88,7 +93,7 @@ public class SocketServices implements AutoCloseable{
      * @param buffer contenente la richiesta in JSON
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
-    private Future<Response> elaborateRequest(ByteBuffer buffer) {
+    private Future<Response> elaborateRequest(ByteBuffer buffer) throws RemoteException {
         return threadPool.submit(new Handler(buffer, projects, utenti_registrati));
     }
 
@@ -99,6 +104,7 @@ public class SocketServices implements AutoCloseable{
      */
     public void start() throws IOException, InterruptedException, ExecutionException {
         System.out.printf("TCP Server started on local address %s\n", channel.getLocalAddress());
+        registerRMIService(8081);
         while (!Thread.interrupted()){
             selector.select();
 
@@ -126,6 +132,7 @@ public class SocketServices implements AutoCloseable{
                     writeMessage(key);
                 }
             }
+            System.out.println(utenti_registrati.values());
             config_file.setAll(projects, utenti_registrati);
             mapper.writeValue(Paths.get("./WORTH_config/config.json").toFile(), config_file);
         }
@@ -266,5 +273,14 @@ public class SocketServices implements AutoCloseable{
     public void close() throws IOException {
         selector.close();
         channel.close();
+    }
+
+    public void registerRMIService(int portNumber) throws RemoteException {
+        RemoteInterface server = new RemoteRegister(utenti_registrati);
+        RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(server, 0);
+
+        Registry registry = LocateRegistry.createRegistry(portNumber);
+        registry.rebind("RegistrationService", stub);
+        System.out.printf("[REGISTER] Register service is started on port %d\n", portNumber);
     }
 }

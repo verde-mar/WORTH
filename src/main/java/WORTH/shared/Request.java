@@ -18,7 +18,8 @@ public class Request {
         addCard,
         moveCard,
         getCardHistory,
-        cancelProject
+        cancelProject,
+        register;
     }
 
     /* Parametri necessari per la richiesta */

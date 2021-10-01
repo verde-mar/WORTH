@@ -1,13 +1,18 @@
-package WORTH.server;
+package WORTH.shared;
 
+import WORTH.server.User;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UserManager {
+public class UserManager implements Serializable {
     /* HashMap degli utenti registrati al servizio */
     private final HashMap<String, User> utenti_registrati;
+    /* Unica istanza di AccountService che può essere presente nel sistema */
+    private static UserManager instance;
 
     /**
      * Costruttore della classe
@@ -15,8 +20,11 @@ public class UserManager {
      */
     public UserManager(HashMap<String, User> utenti_registrati) { this.utenti_registrati = utenti_registrati; }
 
-    //todo: qui sono contenuti i metodi RMI necessari alla registrazione
-    //todo: se un utente si registra non necessariamente e' online, quindi devi settare il flag isOnline a false appena lo registri
+    public static synchronized UserManager getIstance(HashMap<String, User> utenti_registrati) {
+        if (instance == null)
+            instance = new UserManager(utenti_registrati);
+        return instance;
+    }
 
     /**
      * Effettua il login dell'utente
@@ -83,5 +91,9 @@ public class UserManager {
      */
     public HashMap<String, User> getUtentiRegistrati(){
         return utenti_registrati;
+    }
+
+    public void register(String nickUtente, String password) {
+        getUtentiRegistrati().putIfAbsent(nickUtente, new User(nickUtente, password));
     }
 }

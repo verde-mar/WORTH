@@ -1,13 +1,16 @@
 package WORTH.client;
 
+import WORTH.shared.RemoteInterface;
+import WORTH.shared.UserManager;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class RMIClient {
+public class RMIClient implements RemoteInterface {
     /* Oggetto remoto RMI */
-    private Registrator rmiClient;
+    private final RemoteInterface rmiClient;
 
     /**
      * Costruttore della classe
@@ -17,7 +20,7 @@ public class RMIClient {
      */
     public RMIClient(String hostname) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(hostname, 8081);
-        rmiClient = (Registrator) registry.lookup("RegistrationService");
+        rmiClient = (RemoteInterface) registry.lookup("RegistrationService");
     }
 
     /**
@@ -26,7 +29,7 @@ public class RMIClient {
      * @param password Password del client
      * @throws RemoteException Errore nella comunicazione
      */
-    public void registerUser(String username, String password) throws RemoteException {
-        rmiClient.registerUser(username, password);
+    public void register(String username, String password) throws RemoteException {
+        rmiClient.register(username, password);
     }
 }

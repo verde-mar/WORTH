@@ -1,8 +1,6 @@
 package WORTH.shared;
 
 import WORTH.server.Card;
-import WORTH.shared.Project;
-import WORTH.shared.Request;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.LinkedList;
@@ -10,8 +8,9 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
+
+
     public enum RequestType{
-        login,
         logout,
         listUsers,
         listOnlineUsers,
@@ -48,6 +47,10 @@ public class Response {
         this.request = request;
     }
 
+    public Request.RequestType getRequest() {
+        return request;
+    }
+
     /**
      * Assegna alla variabile done il valore true. Quindi la richiesta e' stata eseguita con successo
      */
@@ -64,6 +67,9 @@ public class Response {
         this.projects = list_prj;
     }
 
+    public boolean getDone() {
+        return done;
+    }
 
     /**
      * Assegna a ciascun campo di cards i nomi delle card richieste

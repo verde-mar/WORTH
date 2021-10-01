@@ -1,5 +1,8 @@
 package WORTH.client;
 
+
+import WORTH.shared.UserManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -7,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public class Login extends JFrame {
     /* Campo di testo contenente lo username dell'utente */
@@ -15,13 +19,14 @@ public class Login extends JFrame {
     private final JPasswordField passwordField;
     /* Campo di testo contenente il nome dell'host del server */
     private final JTextField hostNameField;
+    /* Struttura dati locale in cui memorizzare gli utenti registrati, e se sono online */
+    private final UserManager userManagerClient;
 
     public Login(){
         /* Imposta il titolo della finestra */
         super("Benvenut* su WORTH");
         /* Se la finestra viene chiusa bisogna uscire immediatamente */
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        /* Pannello che contiene i controlli (layout da 3 righe e 3 colonne) */
         JPanel panel = new JPanel(new GridLayout(4, 3));
         /* Controlli per il nome del server */
         JLabel hostNameLabel = new JLabel("Server");
@@ -56,6 +61,9 @@ public class Login extends JFrame {
         setLocationRelativeTo(null);
         /* Aggiunge il pannello con tutti i controlli alla finestra corrente */
         add(panel);
+
+        /* Costruzione della struttura dati */
+        userManagerClient = new UserManager(new HashMap<>());
     }
 
     /**
@@ -71,7 +79,7 @@ public class Login extends JFrame {
             tcpClient = new TCPClient(address);
             udpClient = new UDPClient(tcpClient.getLocalAddress());
             /* Driver che scrivono sul server */
-            TCPDriver tcpDriver = new TCPDriver(tcpClient);
+            TCPDriver tcpDriver = new TCPDriver(tcpClient, userManagerClient.getUtentiRegistrati());
             UDPDriver udpDriver = new UDPDriver(udpClient);
             /* Applicazione grafica che visualizza le informazioni */
             App app = new App(tcpDriver, udpDriver);
@@ -118,7 +126,8 @@ public class Login extends JFrame {
             /* Oggetto remoto che consente di registrare l'utente */
             RMIClient client = new RMIClient(hostName);
             /* Registra l'utente */
-            client.registerUser(username, password);
+            client.register(username, password);
+            userManagerClient.register(username,password);
             /* Esegue il login */
             login();
         } catch (RemoteException | NotBoundException e) {

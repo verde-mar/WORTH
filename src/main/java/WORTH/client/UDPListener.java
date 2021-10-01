@@ -1,9 +1,11 @@
 package WORTH.client;
 
-public class UDPListener {
+public class UDPListener extends Thread {
     public UDPListener(UDPClient udpClient, App app) {
     }
 
-    public void start() {
+    @Override
+    public void run() {
+        super.run();
     }
 }

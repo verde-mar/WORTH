@@ -3,11 +3,13 @@ package WORTH.server;
 import WORTH.shared.Project;
 import WORTH.shared.Request;
 import WORTH.shared.Response;
+import WORTH.shared.UserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,19 +35,22 @@ public class Handler implements Callable<Response>  {
     /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
     private final UserManager userManager;
 
+
     /**
      * Costruttore della classe
      * @param buffer ByteBuffer rappresentante la richiesta
      * @param projects Insieme totale dei progetti nel server
      * @param utenti_registrati Insieme totale degli utenti registrati al servizio
      */
-    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) {
+    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) throws RemoteException {
         this.buffer = buffer;
         /* Oggetto che rappresenta l'insieme dei  progetti nel server */
         this.userManager = new UserManager(utenti_registrati);
         objectMapper = new ObjectMapper();
         task_response = new Response();
         worker = new Worker(projects, utenti_registrati);
+
+
     }
 
     /**

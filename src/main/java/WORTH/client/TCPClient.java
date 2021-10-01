@@ -10,6 +10,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Classe che implementa l'invio e la ricezione di richieste e risposte, rispettivamente
+ */
 public class TCPClient implements Client {
     /* Socket necessaria pe rla connessione tcp */
     SocketChannel client;
