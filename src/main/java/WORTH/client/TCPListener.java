@@ -31,7 +31,7 @@ public class TCPListener extends Thread {
                     Response response = client.receive();
                     parser(response);
                 } catch (IOException e) {
-                    app.showError();
+                    handleError("Errore nella ricezione della risposta");
                 }
             }
         } catch(Exception e){
@@ -47,11 +47,17 @@ public class TCPListener extends Thread {
     private void parser(Response response) {
         /* Se la richiesta non e' stata eseguita con successo */
         if(!response.getDone()){
-            System.out.println("[TCP] Something went wrong");
-            app.showError();
+            handleError(response.getRequest().name());
+            //throw ecception?
         } else {
             handleResponse(response);
         }
+    }
+
+    private void handleError(String request) {
+        /* Se il login non è andato a buon fine chiude la finestra */
+        if (request.equals("login"))
+            app.close();
     }
 
     /**
@@ -60,56 +66,36 @@ public class TCPListener extends Thread {
      */
     private void handleResponse(Response response) {
         switch(response.getRequest()){
-            case listOnlineUsers: {
+            case listOnlineUsers: { //caso rmi
                 app.listOnlineUsers();
                 break;
             }
             case getCardHistory: {
-                app.getCardHistory();
+                app.getCardHistory(response.getHistory());
                 break;
             }
             case showMembers: {
-                app.showMembers();
+                app.showMembers(response.getMembers());
                 break;
             }
             case showCards: {
-                app.showCards();
+                app.showCards(response.getCards());
                 break;
             }
-            case listUsers: {
+            case listUsers: { //caso rmi
                 app.listUsers();
                 break;
             }
-            case addMember: {
-                app.addMember();
-                break;
-            }
             case showCard: {
-                app.showCard();
+                app.showCard(response.getCard());
                 break;
             }
-            case listProjects: {
+            case listProjects: { //ancora non so
                 app.listProjects();
                 break;
             }
-            case moveCard: {
+            case moveCard: { //deve metterlo in chat
                 app.moveCard();
-                break;
-            }
-            case addCard: {
-                app.addCard();
-                break;
-            }
-            case logout: {
-                app.logout();
-                break;
-            }
-            case createProject: {
-                app.createProject();
-                break;
-            }
-            case cancelProject: {
-                app.cancelProject();
                 break;
             }
         }

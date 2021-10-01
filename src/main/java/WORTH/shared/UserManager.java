@@ -66,6 +66,7 @@ public class UserManager implements Serializable {
      * Restituisce la lista degli utenti online
      * @return List<User> Lista degli utenti
      */
+    //todo: puoi migliorarlo con una struttura dati separata
     public List<User> listOnlineUsers(){
         List<User> onlineUsers = new LinkedList<>();
         for(User user: utenti_registrati.values()){

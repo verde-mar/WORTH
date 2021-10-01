@@ -8,8 +8,6 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
-
-
     public enum RequestType{
         logout,
         listUsers,
@@ -31,7 +29,7 @@ public class Response {
     /* Parametri necessari per la risposta */
     private String explanation;
     private boolean done;
-    private List<String> cardsName;
+    private List<Card> cards;
     private List<String> members;
     private List<String> cardHistory;
     private Card card;
@@ -45,6 +43,22 @@ public class Response {
      */
     public void setRequest(Request.RequestType request) {
         this.request = request;
+    }
+
+    public List<String> getHistory() {
+        return cardHistory;
+    }
+    public Card getCard() {
+        return card;
+    }
+
+
+    public List<String> getMembers() {
+        return members;
+    }
+
+    public List<Card> getCards() {
+        return cards;
     }
 
     public Request.RequestType getRequest() {
@@ -75,11 +89,8 @@ public class Response {
      * Assegna a ciascun campo di cards i nomi delle card richieste
      * @param cards List<WORTH.server.Card> rappresentante le card di un determinato progetto, precedentemente restituite
      */
-    public void setCardsName(List<Card> cards){
-        cardsName = new LinkedList<>();
-        for(Card card : cards){
-            cardsName.add(card.getNameCard());
-        }
+    public void setCards(List<Card> cards){
+        this.cards = cards;
     }
 
     /**

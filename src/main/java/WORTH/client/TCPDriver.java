@@ -1,27 +1,31 @@
 package WORTH.client;
 
-import WORTH.server.User;
+import WORTH.shared.Request;
 
 import java.io.IOException;
-import java.util.HashMap;
 
-/**
- * Classe che si occupa di formulare le richieste e parsare le risposte
- */
+
 public class TCPDriver {
-    private TCPClient tcpClient;
-    private HashMap<String, User> utenti_registrati;
+    private final TCPClient tcpClient;
 
-    public TCPDriver(TCPClient tcpClient, HashMap<String, User> utenti_registrati) {
+    public TCPDriver(TCPClient tcpClient) {
         this.tcpClient = tcpClient;
     }
 
-    /**
-     *
-     * @param username
-     * @param password
-     * @throws IOException
-     */
     public void loginRequest(String username, String password) throws IOException {
+        Request request_login = new Request();
+        request_login.setUserName(username);
+        request_login.setPassword(password);
+        tcpClient.send(request_login);
+    }
+
+    public void logoutRequest(String username) throws IOException {
+        Request requestLogOut = new Request();
+        requestLogOut.setUserName(username);
+        tcpClient.send(requestLogOut);
+    }
+
+    public void close() throws IOException {
+        tcpClient.close();
     }
 }

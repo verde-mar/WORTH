@@ -79,7 +79,7 @@ public class Login extends JFrame {
             tcpClient = new TCPClient(address);
             udpClient = new UDPClient(tcpClient.getLocalAddress());
             /* Driver che scrivono sul server */
-            TCPDriver tcpDriver = new TCPDriver(tcpClient, userManagerClient.getUtentiRegistrati());
+            TCPDriver tcpDriver = new TCPDriver(tcpClient);
             UDPDriver udpDriver = new UDPDriver(udpClient);
             /* Applicazione grafica che visualizza le informazioni */
             App app = new App(tcpDriver, udpDriver);
@@ -91,6 +91,7 @@ public class Login extends JFrame {
             udpListener.start();
             /* Username dell'utente */
             String username = usernameField.getText();
+            app.setUserName(username);
             /* Password dell' utente */
             String password = new String(passwordField.getPassword());
             /* Richiede il login dell'utente */

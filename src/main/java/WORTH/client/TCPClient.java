@@ -25,6 +25,7 @@ public class TCPClient implements Client {
      */
     public TCPClient(SocketAddress address) throws IOException {
         client = SocketChannel.open(address);
+        mapper = new ObjectMapper();
     }
 
     /**

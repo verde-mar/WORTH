@@ -19,7 +19,6 @@ public class Request {
         moveCard,
         getCardHistory,
         cancelProject,
-        register;
     }
 
     /* Parametri necessari per la richiesta */
@@ -56,6 +55,7 @@ public class Request {
     public String getProjectName(){
         return projectName;
     }
+
 
     /**
      * Restituisce il nome della card
@@ -103,5 +103,13 @@ public class Request {
      */
     public String getPassword() {
         return password;
+    }
+
+    public void setUserName(String username) {
+        nickUtente = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
