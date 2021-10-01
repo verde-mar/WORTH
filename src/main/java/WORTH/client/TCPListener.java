@@ -48,7 +48,6 @@ public class TCPListener extends Thread {
         /* Se la richiesta non e' stata eseguita con successo */
         if(!response.getDone()){
             handleError(response.getRequest().name());
-            //throw ecception?
         } else {
             handleResponse(response);
         }

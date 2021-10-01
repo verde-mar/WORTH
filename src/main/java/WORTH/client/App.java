@@ -68,7 +68,7 @@ public class App extends JFrame {
                 try {
                     tcpDriver.logoutRequest(username);
                 } catch (IOException e1) {
-                    JOptionPane.showMessageDialog(app, e1.getMessage(), "Errore di logout", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(app, e1.getMessage(), "Logout error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -80,7 +80,7 @@ public class App extends JFrame {
             udpDriver.close();
             this.dispose();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Errore di chiusura", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Closing error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -92,7 +92,7 @@ public class App extends JFrame {
         //che poi si chiude
     }
 
-    public void showMembers(List<String> members) {//todo: i membri del progetto li posso determinare da terminale, costa meno
+    public void showMembers(List<String> members) {//todo: i membri del progetto li posso determinare dal client, costa meno
 
     }
 
@@ -111,9 +111,6 @@ public class App extends JFrame {
     }
 
     public void moveCard() {//in chat
-    }
-
-    public void logout() {
     }
 
 }
