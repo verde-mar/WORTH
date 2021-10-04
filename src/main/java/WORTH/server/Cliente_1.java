@@ -25,10 +25,9 @@ public class Cliente_1 {
             buffer.flip();
             while (buffer.hasRemaining())
                 client.write(buffer);
+
             // Buffer contenente la lunghezza
             ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
-
-
             while(lengthBuffer.hasRemaining())
                 client.read(lengthBuffer);
             System.out.println("dopo read size");

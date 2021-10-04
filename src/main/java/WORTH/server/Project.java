@@ -1,10 +1,11 @@
-package WORTH.shared;
+package WORTH.server;
 
-import WORTH.server.Card;
-import WORTH.server.User;
+import WORTH.server.Persistence.UserFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +27,14 @@ public class Project {
     /* Lista di membri del progetto */
     private List<String> members;
     @JsonIgnore /* Il progetto corrente */
-    File project;
-    @JsonIgnore /* Booleano che indica se e' stata creata una directory associata al progetto */
-    boolean mkdir_bool;
+    private File project;
     @JsonIgnore /* Utenti registrati al servizio */
-    HashMap<String, User> utenti_registrati;
+    private HashMap<String, User> utenti_registrati;
+    /* File contenente informazioni */
+    private UserFile userFile;
+
+    ObjectMapper mapper;
+
 
     /**
      * Costruttore vuoto della classe (necessario a jackson)
@@ -41,31 +45,32 @@ public class Project {
      * Costruttore della classe
      * @param nameProject Nome del progetto
      */
-    public Project(String nameProject, String nickName, HashMap<String, User> utenti_registrati){
+    public Project(String nameProject, HashMap<String, User> utenti_registrati) throws Exception {
+        /* Inizializza i parametri */
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
+
+        /* Crea la directory associata al progetto */
         project = new File("./" + nameProject);
-        mkdir_bool = project.mkdir();
+        boolean mkdir_bool = project.mkdir();
+        if(!mkdir_bool) throw new Exception("Can't create the directory");
+
+
+        /* Crea il file associato ai membri del progetto */
+        userFile = new UserFile();
+        userFile.setUtenti(members);
+        mapper = new ObjectMapper();
+        mapper.writeValue(Paths.get("./" + nameProject + "/member.json").toFile(), UserFile.class);
+
         this.utenti_registrati = utenti_registrati;
-        if(!isMember(nickName)) {
-            members.add(nickName);
-            User user = utenti_registrati.get(nickName);
-            if(!user.getList_prj().contains(nameProject))
-                user.getList_prj().add(nameProject);
-        }
+
+        //TODO: CI DEVO AGGIUNGERE LA LISTA DEI MEMBRI DEL PROGETTO
     }
 
-    /**
-     * Restituisce il nome del progetto
-     * @return String Il nome del progetto
-     */
-    public String getNameProject() {
-        return nameProject;
-    }
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista done
@@ -264,8 +269,9 @@ public class Project {
         if(!isMember(userToAdd)) {
             members.add(userToAdd);
             User user = utenti_registrati.get(userToAdd);
-            user.getList_prj().add(nameProject);
-        } else throw new Exception("The user is already logged in that project");
+            user.getList_prj().add(this);
+            userFile.setUtenti(members);
+        } else throw new Exception("The user is already member of the project");
     }
 
     /**

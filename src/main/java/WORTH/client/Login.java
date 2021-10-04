@@ -1,38 +1,25 @@
 package WORTH.client;
 
-
-import WORTH.shared.UserManager;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.HashMap;
 
 public class Login extends JFrame {
     /* Campo di testo contenente lo username dell'utente */
     private final JTextField usernameField;
     /* Campo contenente la password */
     private final JPasswordField passwordField;
-    /* Campo di testo contenente il nome dell'host del server */
-    private final JTextField hostNameField;
-    /* Struttura dati locale in cui memorizzare gli utenti registrati, e se sono online */
-    private final UserManager userManagerClient;
+
 
     public Login(){
         /* Imposta il titolo della finestra */
         super("Benvenut* su WORTH");
         /* Se la finestra viene chiusa bisogna uscire immediatamente */
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel(new GridLayout(4, 3));
-        /* Controlli per il nome del server */
-        JLabel hostNameLabel = new JLabel("Server");
-        panel.add(hostNameLabel);
-        hostNameField = new JTextField("localhost");
-        panel.add(hostNameField);
+        JPanel panel = new JPanel(new GridLayout(3, 2));
         /* Controlli per lo username */
         JLabel usernameLabel = new JLabel("Username");
         panel.add(usernameLabel);
@@ -62,8 +49,7 @@ public class Login extends JFrame {
         /* Aggiunge il pannello con tutti i controlli alla finestra corrente */
         add(panel);
 
-        /* Costruzione della struttura dati */
-        userManagerClient = new UserManager(new HashMap<>());
+
     }
 
     /**
@@ -74,29 +60,25 @@ public class Login extends JFrame {
         UDPClient udpClient = null;
         try {
             /* Indirizzo del server */
-            SocketAddress address = new InetSocketAddress(hostNameField.getText(), 8080);
+            SocketAddress address = new InetSocketAddress("localhost", 8080);
             /* Client che comunicano con il server */
             tcpClient = new TCPClient(address);
             udpClient = new UDPClient(tcpClient.getLocalAddress());
             /* Driver che scrivono sul server */
-            TCPDriver tcpDriver = new TCPDriver(tcpClient);
+            WORTHClient WORTHClient = new WORTHClient(tcpClient);
             UDPDriver udpDriver = new UDPDriver(udpClient);
             /* Applicazione grafica che visualizza le informazioni */
-            App app = new App(tcpDriver, udpDriver);
-            /* Listener che attendono e notificano l'arrivo di pacchetti */
-            TCPListener tcpListener = new TCPListener(tcpClient, app);
-            UDPListener udpListener = new UDPListener(udpClient, app);
-            /* Avvia i due ascoltatori */
-            tcpListener.start();
-            udpListener.start();
+            App app = new App(WORTHClient, udpDriver);
             /* Username dell'utente */
             String username = usernameField.getText();
             app.setUserName(username);
             /* Password dell' utente */
             String password = new String(passwordField.getPassword());
             /* Richiede il login dell'utente */
-            tcpDriver.loginRequest(username, password);
+            WORTHClient.loginRequest(username, password);
             /* Mostra la finestra principale */
+            //todo: pero' prima di mostrare la finestra principale mi deve dare la lista di tutti i progetti
+            //todo: quindi ha senso inviare prima tale richiesta? Ma come inserisco la lista dei progetti in app? TATO HA DETTO CI
             app.setVisible(true);
             /* Chiude la finestra corrente */
             this.dispose();
@@ -110,6 +92,8 @@ public class Login extends JFrame {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+        } catch(Exception ex){
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Login error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -117,21 +101,18 @@ public class Login extends JFrame {
      * Registra l'utente nel sistema
      */
     private void register() {
-        /* Indirizzo del server */
-        String hostName = hostNameField.getText();
         /* Username dell'utente */
         String username = usernameField.getText();
         /* Password dell'utente */
         String password = new String(passwordField.getPassword());
         try {
             /* Oggetto remoto che consente di registrare l'utente */
-            RMIClient client = new RMIClient(hostName);
+            RMIClient client = new RMIClient("localhost");
             /* Registra l'utente */
             client.register(username, password);
-            userManagerClient.register(username,password);
             /* Esegue il login */
             login();
-        } catch (RemoteException | NotBoundException e) {
+        } catch (NotBoundException | IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Something went wrong", JOptionPane.ERROR_MESSAGE);
         }
     }

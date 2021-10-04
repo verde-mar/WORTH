@@ -1,7 +1,7 @@
 package WORTH.client;
 
-import WORTH.shared.Request;
-import WORTH.shared.Response;
+import WORTH.shared.worthProtocol.Request;
+import WORTH.shared.worthProtocol.Response;
 
 import java.io.IOException;
 

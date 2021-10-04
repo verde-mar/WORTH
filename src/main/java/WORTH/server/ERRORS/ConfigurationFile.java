@@ -1,6 +1,8 @@
-package WORTH.server;
+package WORTH.server.ERRORS;
 
-import WORTH.shared.Project;
+import WORTH.server.Project;
+import WORTH.server.User;
+import WORTH.server.UserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -18,6 +20,7 @@ public class ConfigurationFile {
     private Map<String, Project> all_projects;
     /* Insieme totale degli utenti registrati */
     private Map<String, User> utenti_registrati;
+    private static ConfigurationFile instance;
 
     /**
      * Costruttore vuoto della classe (necessario a jackson)
@@ -25,17 +28,8 @@ public class ConfigurationFile {
     public ConfigurationFile(){   }
 
     /**
-     * Inizializza la struttura locale che indica i progetti totali all'interno del WORTH.server e gli utenti registrati
-     * @param all_projects Struttura dati che indica tutti i progetti
-     */
-    public void setAll(Map<String, Project> all_projects, HashMap<String, User> utenti_registrati) {
-        this.all_projects = all_projects;
-        this.utenti_registrati = utenti_registrati;
-    }
-
-    /**
      * Restituisce tutti i progetti all'interno del WORTH.server in quel momento
-     * @return Map<String, WORTH.shared.Project> Struttura che indica l'insieme dei progetti nel WORTH.server
+     * @return Map<String, WORTH.server.Project> Struttura che indica l'insieme dei progetti nel WORTH.server
      */
     public Map<String, Project> getAll_projects(){
         return all_projects;
@@ -69,4 +63,11 @@ public class ConfigurationFile {
         return utenti_registrati;
     }
 
+    public void setAll_projects(Map<String, Project> all_projects) {
+        this.all_projects = all_projects;
+    }
+
+    public void setUtenti_registrati(Map<String, User> utenti_registrati) {
+        this.utenti_registrati = utenti_registrati;
+    }
 }

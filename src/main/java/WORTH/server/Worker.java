@@ -1,7 +1,5 @@
 package WORTH.server;
 
-import WORTH.shared.Project;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -158,9 +156,10 @@ public class Worker {
      */
     public void createProject(String projectName, String nickUtente) throws Exception {
         if(projectName != null && nickUtente != null) {
-            Project project = new Project(projectName, nickUtente, utenti_registrati);
+            Project project = new Project(projectName, utenti_registrati);
             Project verify = projects.putIfAbsent(projectName, project);
             if (verify == null) throw new Exception("The project was already here");
+            project.addPeople(nickUtente);
         } else throw new Exception("Project or username are null.");
     }
 

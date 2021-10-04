@@ -1,8 +1,8 @@
 package WORTH.client;
 
-import WORTH.shared.RemoteInterface;
-import WORTH.shared.UserManager;
+import WORTH.shared.rmi.RemoteInterface;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -29,7 +29,7 @@ public class RMIClient implements RemoteInterface {
      * @param password Password del client
      * @throws RemoteException Errore nella comunicazione
      */
-    public void register(String username, String password) throws RemoteException {
+    public void register(String username, String password) throws IOException {
         rmiClient.register(username, password);
     }
 }

@@ -1,21 +1,19 @@
 package WORTH.server;
 
-import WORTH.shared.UserManager;
-import WORTH.shared.RemoteInterface;
+import WORTH.shared.rmi.RemoteInterface;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 import java.rmi.server.RemoteServer;
-import java.util.HashMap;
 
 public class RemoteRegister extends RemoteServer implements RemoteInterface {
-    private UserManager userManager;
+    private final UserManager userManager;
 
-    protected RemoteRegister(HashMap<String, User> utenti_registrati) throws RemoteException {
+    protected RemoteRegister() throws Exception {
         super();
-        this.userManager = UserManager.getIstance(utenti_registrati);
+        this.userManager = UserManager.getIstance();
     }
 
-    public synchronized void register(String nickUtente, String password) throws RemoteException {
+    public synchronized void register(String nickUtente, String password) throws IOException {
         userManager.register(nickUtente, password);
     }
 }

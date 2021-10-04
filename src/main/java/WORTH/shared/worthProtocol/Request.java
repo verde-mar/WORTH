@@ -1,9 +1,10 @@
-package WORTH.shared;
+package WORTH.shared.worthProtocol;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
+
     public enum RequestType{
         login,
         logout,
@@ -38,6 +39,9 @@ public class Request {
      */
     public Request.RequestType getRequest() {
         return request;
+    }
+    public void setRequest(RequestType login) {
+        request = login;
     }
 
     /**

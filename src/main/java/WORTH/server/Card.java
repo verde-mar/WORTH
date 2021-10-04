@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import WORTH.server.Persistence.CardFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedWriter;

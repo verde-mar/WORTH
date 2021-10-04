@@ -1,15 +1,12 @@
 package WORTH.server;
 
-import WORTH.shared.Project;
-import WORTH.shared.Request;
-import WORTH.shared.Response;
-import WORTH.shared.UserManager;
+import WORTH.shared.worthProtocol.Request;
+import WORTH.shared.worthProtocol.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,19 +33,19 @@ public class Handler implements Callable<Response>  {
     private final UserManager userManager;
 
 
+
     /**
      * Costruttore della classe
      * @param buffer ByteBuffer rappresentante la richiesta
-     * @param projects Insieme totale dei progetti nel server
-     * @param utenti_registrati Insieme totale degli utenti registrati al servizio
+     *
      */
-    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects, HashMap<String, User> utenti_registrati) throws RemoteException {
+    public Handler(ByteBuffer buffer) throws Exception {
         this.buffer = buffer;
         /* Oggetto che rappresenta l'insieme dei  progetti nel server */
-        this.userManager = new UserManager(utenti_registrati);
+        this.userManager = UserManager.getIstance();
         objectMapper = new ObjectMapper();
         task_response = new Response();
-        worker = new Worker(projects, utenti_registrati);
+        worker = new Worker(new ConcurrentHashMap<>(), userManager.getUtenti());
 
 
     }
@@ -60,6 +57,7 @@ public class Handler implements Callable<Response>  {
     private void parser() throws IOException {
         /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
+        System.out.println("FILE RICHIESTA: " + buffer_toString);
         task_request = objectMapper.readValue(buffer_toString, Request.class);
     }
 
@@ -189,6 +187,7 @@ public class Handler implements Callable<Response>  {
             /* Definizione della risposta base: indica che l'operazione e' fallita */
             response(false, e.getLocalizedMessage());
         }
+
         return task_response;
     }
 }

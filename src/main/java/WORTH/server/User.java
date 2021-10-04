@@ -7,7 +7,7 @@ public class User {
     /* Password dell'utente */
     private String password;
     /* Lista dei progetti a cui appartiene */
-    private List<String> list_prj;
+    private List<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
     private String name;
@@ -63,7 +63,7 @@ public class User {
      * Restituisce la lista dei progetti a cui appartiene la lista
      * @return List<String> Lista dei progetti
      */
-    public List<String> getList_prj() {
+    public List<Project> getList_prj() {
         return list_prj;
     }
 }

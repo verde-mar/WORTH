@@ -1,7 +1,7 @@
 package WORTH.client;
 
-import WORTH.shared.Request;
-import WORTH.shared.Response;
+import WORTH.shared.worthProtocol.Request;
+import WORTH.shared.worthProtocol.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -51,12 +51,13 @@ public class TCPClient implements Client {
      */
     @Override
     public void send(Request request) throws IOException {
-        byte[] byteRequest = mapper.writeValueAsBytes(request);
-        ByteBuffer request_byte = ByteBuffer.allocate(Integer.BYTES);
-        request_byte.putInt(byteRequest.length);
-        request_byte.flip();
-        while(request_byte.hasRemaining())
-            client.write(request_byte);
+        byte[] arrayRequest = mapper.writeValueAsBytes(request);
+        ByteBuffer requestByteBuffer = ByteBuffer.allocate(Integer.BYTES + arrayRequest.length);
+        requestByteBuffer.putInt(arrayRequest.length);
+        requestByteBuffer.put(arrayRequest);
+        requestByteBuffer.flip();
+        while(requestByteBuffer.hasRemaining())
+            client.write(requestByteBuffer);
     }
 
     /**
@@ -75,7 +76,7 @@ public class TCPClient implements Client {
             client.read(buffer_response);
         buffer_response.flip();
         String message = StandardCharsets.UTF_8.decode(buffer_response).toString();
-
+        System.out.println("RISPOSTA DAL SERVER: " + message);
         return mapper.readValue(message, Response.class);
     }
 }

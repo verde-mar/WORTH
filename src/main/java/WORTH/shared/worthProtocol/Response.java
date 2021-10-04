@@ -1,9 +1,9 @@
-package WORTH.shared;
+package WORTH.shared.worthProtocol;
 
 import WORTH.server.Card;
+import WORTH.server.Project;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -35,7 +35,7 @@ public class Response {
     private Card card;
     private Project project;
     private Request.RequestType request;
-    private List<String> projects;
+    private List<Project> projects;
 
     /**
      * Inizializza il campo richiesta, per associarla alla risposta
@@ -65,6 +65,10 @@ public class Response {
         return request;
     }
 
+    public String getExplanation() {
+        return explanation;
+    }
+
     /**
      * Assegna alla variabile done il valore true. Quindi la richiesta e' stata eseguita con successo
      */
@@ -77,7 +81,7 @@ public class Response {
      * Inizializza projects
      * @param list_prj Parametro con cui inizializzare projects
      */
-    public void setProjects(List<String> list_prj) {
+    public void setProjects(List<Project> list_prj) {
         this.projects = list_prj;
     }
 

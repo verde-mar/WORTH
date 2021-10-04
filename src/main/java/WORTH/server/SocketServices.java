@@ -1,8 +1,7 @@
 package WORTH.server;
 
-import WORTH.shared.Project;
-import WORTH.shared.RemoteInterface;
-import WORTH.shared.Response;
+import WORTH.shared.rmi.RemoteInterface;
+import WORTH.shared.worthProtocol.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -12,12 +11,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.file.Paths;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
@@ -37,24 +33,14 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
-    /* Struttura dati rappresentante l'insieme dei progetti all'interno del WORTH.server */
-    private final ConcurrentHashMap<String, Project> projects;
-
-    /* File di configurazione */
-    private final ConfigurationFile config_file;
-
-    /* Struttura dati rappresentante l'insieme degli utenti registrati */
-    private final HashMap<String, User> utenti_registrati;
-
-    ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     /**
      * Costruttore della classe
      * @param portNumber Porta con cui il WORTH.server si mette in ascolto
-     * @param config File di configurazione iniziale
      * @throws IOException Nel caso ci sia un errore in IO
      */
-    public SocketServices(int portNumber, ConfigurationFile config) throws IOException {
+    public SocketServices(int portNumber) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
@@ -69,23 +55,7 @@ public class SocketServices implements AutoCloseable{
         /* Registra il channel */
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
-        /* Inizializza il file di configurazione */
-        config_file = config;
         mapper = new ObjectMapper();
-
-        /* Crea la struttura dati per i progetti */
-        if(config.getAll_projects() != null)
-            projects = (ConcurrentHashMap<String, Project>) config.getAll_projects();
-        else
-            projects = new ConcurrentHashMap<>();
-
-        /* Crea la struttura dati per gli utenti registrati */
-        if(config.getUtenti_registrati() != null)
-            utenti_registrati = (HashMap<String, User>) config.getUtenti_registrati();
-        else
-            utenti_registrati = new HashMap<>();
-
-
     }
 
     /**
@@ -93,8 +63,8 @@ public class SocketServices implements AutoCloseable{
      * @param buffer contenente la richiesta in JSON
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
-    private Future<Response> elaborateRequest(ByteBuffer buffer) throws RemoteException {
-        return threadPool.submit(new Handler(buffer, projects, utenti_registrati));
+    private Future<Response> elaborateRequest(ByteBuffer buffer) throws Exception {
+        return threadPool.submit(new Handler(buffer));
     }
 
     /**
@@ -102,7 +72,7 @@ public class SocketServices implements AutoCloseable{
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se avviene un errore nella lettura del messaggio in readMessage(key)
      */
-    public void start() throws IOException, InterruptedException, ExecutionException {
+    public void start() throws Exception {
         System.out.printf("TCP Server started on local address %s\n", channel.getLocalAddress());
         registerRMIService(8081);
         while (!Thread.interrupted()){
@@ -132,11 +102,7 @@ public class SocketServices implements AutoCloseable{
                     writeMessage(key);
                 }
             }
-            System.out.println(utenti_registrati.values());
-            config_file.setAll(projects, utenti_registrati);
-            mapper.writeValue(Paths.get("./WORTH_config/config.json").toFile(), config_file);
         }
-
     }
 
     /**
@@ -162,7 +128,7 @@ public class SocketServices implements AutoCloseable{
      * @throws IOException se avviene un errore nell'I/O
      * @throws InterruptedException se il thread viene interrotto durante la sleep()
      */
-    private void readMessage(SelectionKey key) throws IOException, InterruptedException {
+    private void readMessage(SelectionKey key) throws Exception {
         /* Contiene i dati */
         ByteBuffer buffer = (ByteBuffer) key.attachment();
 
@@ -275,8 +241,8 @@ public class SocketServices implements AutoCloseable{
         channel.close();
     }
 
-    public void registerRMIService(int portNumber) throws RemoteException {
-        RemoteInterface server = new RemoteRegister(utenti_registrati);
+    public void registerRMIService(int portNumber) throws Exception {
+        RemoteInterface server = new RemoteRegister();
         RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(server, 0);
 
         Registry registry = LocateRegistry.createRegistry(portNumber);

@@ -1,6 +1,6 @@
 package WORTH.client;
 
-import WORTH.shared.Project;
+import WORTH.server.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.*;
 public class ProjectList extends JPanel {
     private static final long serialVersionUID = 4038002113147564810L;
     /* Driver che permette di inviare richieste di amicizia */
-    private TCPDriver driver;
+    private WORTHClient driver;
     /* Modello dei dati presenti nella lista */
     private DefaultListModel<Project> listModel;
     /* Lista contenente il modello */
@@ -18,7 +18,7 @@ public class ProjectList extends JPanel {
      * Inizializza il componente passandogli il driver
      * @param driver Permette di inviare richieste di operazioni da effettuare (visione di un progetto, creazione di un progetto, uscita)
      */
-    public ProjectList(TCPDriver driver) {
+    public ProjectList(WORTHClient driver) {
         super(new BorderLayout());
         this.driver = driver;
         listModel = new DefaultListModel<>();
