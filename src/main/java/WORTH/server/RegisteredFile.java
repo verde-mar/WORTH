@@ -12,4 +12,6 @@ public class RegisteredFile {
     public void setUtentiRegistrati(HashMap<String, User> utenti_registrati) {
         this.utentiRegistrati = utenti_registrati;
     }
+
+
 }

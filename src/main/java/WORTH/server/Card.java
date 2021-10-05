@@ -108,13 +108,7 @@ public class Card {
      * @param projectName Nome del progetto
      * @throws IOException Se vi e' un errore nell'IO
      */
-    public synchronized void writeOnDisk(String projectName) throws IOException {
-        CardFile cardFile = new CardFile();
-        cardFile.setNameCard(nameCard);
-        cardFile.setCurrentList(getCurrentList());
-        cardFile.setDescription(description);
-        cardFile.setHistory(getHistory());
-
-        card_mapper.writeValue(Paths.get("./" + projectName + "/" + nameCard + ".json").toFile(), cardFile);
+    public synchronized void writeOnDisk(String projectName) throws IOException {//todo:testing
+        card_mapper.writeValue(Paths.get("./" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 }

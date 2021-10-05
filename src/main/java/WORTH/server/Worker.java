@@ -154,12 +154,12 @@ public class Worker {
      * @param nickUtente Nickname dell'utente che ha richiesto la creazione
      * @throws Exception Nel caso in cui il progetto esistesse gia'
      */
-    public void createProject(String projectName, String nickUtente) throws Exception {
+    public synchronized void createProject(String projectName, String nickUtente) throws Exception {
         if(projectName != null && nickUtente != null) {
             Project project = new Project(projectName, utenti_registrati);
-            Project verify = projects.putIfAbsent(projectName, project);
-            if (verify == null) throw new Exception("The project was already here");
+            projects.putIfAbsent(projectName, project);
             project.addPeople(nickUtente);
+
         } else throw new Exception("Project or username are null.");
     }
 

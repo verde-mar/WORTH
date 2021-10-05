@@ -8,6 +8,14 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
     public enum RequestType{
         logout,
         listUsers,

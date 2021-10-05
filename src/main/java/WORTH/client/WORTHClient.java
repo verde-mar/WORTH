@@ -13,7 +13,7 @@ public class WORTHClient {
         this.tcpClient = tcpClient;
     }
 
-    public void loginRequest(String username, String password) throws Exception {
+    public void login(String username, String password) throws Exception {
         Request request_login = new Request();
         request_login.setUserName(username);
         request_login.setPassword(password);
@@ -23,7 +23,7 @@ public class WORTHClient {
         if(!response.getDone()) throw new Exception(response.getExplanation());
     }
 
-    public void logoutRequest(String username) throws IOException {
+    public void logout(String username) throws IOException {
         Request requestLogOut = new Request();
         requestLogOut.setUserName(username);
         requestLogOut.setRequest(Request.RequestType.logout);
@@ -34,5 +34,24 @@ public class WORTHClient {
 
     public void close() throws IOException {
         tcpClient.close();
+    }
+
+    public Response createProject(String projectName, String username) throws IOException {
+        Request createPrj = new Request();
+        createPrj.setRequest(Request.RequestType.createProject);
+        createPrj.setProjectName(projectName);
+        createPrj.setUserName(username);
+        tcpClient.send(createPrj);
+
+        return tcpClient.receive();
+    }
+
+    public Response listProjects(String username) throws IOException {
+        Request listPrjs = new Request();
+        listPrjs.setRequest(Request.RequestType.listProjects);
+        listPrjs.setUserName(username);
+        tcpClient.send(listPrjs);
+
+        return tcpClient.receive();
     }
 }

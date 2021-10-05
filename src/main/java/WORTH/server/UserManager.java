@@ -1,24 +1,25 @@
 package WORTH.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UserManager implements Serializable {
+public class UserManager {
     /* HashMap degli utenti registrati al servizio */
     private final HashMap<String, User> utentiRegistrati;
     /* Unica istanza di AccountService che può essere presente nel sistema */
     private static UserManager instance;
-    ObjectMapper mapper;
-    File utentiRegistrati_ondisk;
-    RegisteredFile registeredFile;
+
+    private final ObjectMapper mapper;
+    private final File utentiRegistrati_ondisk;
+    private RegisteredFile registeredFile;
+
 
 
     private UserManager() throws Exception {
@@ -27,12 +28,12 @@ public class UserManager implements Serializable {
         registeredFile = new RegisteredFile();
 
         if(utentiRegistrati_ondisk.exists()){
-
             registeredFile = mapper.readValue(utentiRegistrati_ondisk, RegisteredFile.class);
-            System.out.println(utentiRegistrati_ondisk.getCanonicalPath());
             utentiRegistrati = registeredFile.getUtentiRegistrati();
         } else {
+
             boolean created = utentiRegistrati_ondisk.createNewFile();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
             if(created)
                 utentiRegistrati = new HashMap<>();
             else
@@ -47,6 +48,8 @@ public class UserManager implements Serializable {
         return instance;
     }
 
+
+
     /**
      * Effettua il login dell'utente
      * @param nickName Nickname dell'utente
@@ -54,6 +57,7 @@ public class UserManager implements Serializable {
      * @throws Exception Nel caso in cui il login non vada a buon fine
      */
     public void login(String nickName, String password) throws Exception {
+        System.out.println(getUtenti());
         if(utentiRegistrati.containsKey(nickName) && !utentiRegistrati.get(nickName).isOnline() && (utentiRegistrati.get(nickName).getPassword()).equals(password)){
             utentiRegistrati.get(nickName).setOnline();
         } else if(password == null){
@@ -105,7 +109,9 @@ public class UserManager implements Serializable {
      * @param nickutente Nickname dell'utente cercato
      * @return String Restituisce l'utente con il nickname nickutente
      */
-    public User getUtente(String nickutente){
+    public User getUtente(String nickutente) throws IOException {
+        registeredFile.setUtentiRegistrati(utentiRegistrati);
+        mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
         return utentiRegistrati.get(nickutente);
     }
 
@@ -118,10 +124,10 @@ public class UserManager implements Serializable {
     }
 
     public void register(String nickUtente, String password) throws IOException {
-        utentiRegistrati.putIfAbsent(nickUtente, new User(nickUtente, password));
-        registeredFile.setUtentiRegistrati(utentiRegistrati);
-        mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
-        //todo: riserializzo tutta l'hashmap sul file
-        //todo: se questo nome utente non e' disponibile dai un errore
+        User verify = utentiRegistrati.putIfAbsent(nickUtente, new User(nickUtente, password));
+        if(verify == null) {
+            registeredFile.setUtentiRegistrati(utentiRegistrati);
+            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+        }
     }
 }

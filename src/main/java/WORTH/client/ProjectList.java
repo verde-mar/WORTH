@@ -19,20 +19,10 @@ public class ProjectList extends JPanel {
      * @param driver Permette di inviare richieste di operazioni da effettuare (visione di un progetto, creazione di un progetto, uscita)
      */
     public ProjectList(WORTHClient driver) {
-        super(new BorderLayout());
-        this.driver = driver;
-        listModel = new DefaultListModel<>();
-        list = new JList<>(listModel);
-        list.setLayoutOrientation(JList.VERTICAL);
-        add(new JScrollPane(list), BorderLayout.CENTER);
 
-        /* Tasti che si riferiscono a progetti dell'utente */
-        JButton projectButton = new JButton();
-        projectButton.addActionListener(e -> seeProject());
-        add(projectButton, BorderLayout.SOUTH);
-        setSize(100, 500);
     }
 
     private void seeProject() {
+
     }
 }

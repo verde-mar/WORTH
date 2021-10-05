@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
-
     public enum RequestType{
         login,
         logout,
@@ -115,5 +114,9 @@ public class Request {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

@@ -75,7 +75,7 @@ public class Login extends JFrame {
             /* Password dell' utente */
             String password = new String(passwordField.getPassword());
             /* Richiede il login dell'utente */
-            WORTHClient.loginRequest(username, password);
+            WORTHClient.login(username, password);
             /* Mostra la finestra principale */
             //todo: pero' prima di mostrare la finestra principale mi deve dare la lista di tutti i progetti
             //todo: quindi ha senso inviare prima tale richiesta? Ma come inserisco la lista dei progetti in app? TATO HA DETTO CI

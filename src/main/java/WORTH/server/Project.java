@@ -1,6 +1,7 @@
 package WORTH.server;
 
 import WORTH.server.Persistence.UserFile;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,10 +10,12 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+//todo: manca la persistenza della lista di progetti di cui si parla nella specifica
 /**
  * Project e' la classe che rappresenta un progetto,
  * e include come e' possibile interagirci
  */
+
 public class Project {
     /* Nome del progetto, univoco */
     private String nameProject;
@@ -30,9 +33,9 @@ public class Project {
     private File project;
     @JsonIgnore /* Utenti registrati al servizio */
     private HashMap<String, User> utenti_registrati;
-    /* File contenente informazioni */
+    @JsonIgnore /* File contenente informazioni */
     private UserFile userFile;
-
+    @JsonIgnore
     ObjectMapper mapper;
 
 
@@ -46,6 +49,7 @@ public class Project {
      * @param nameProject Nome del progetto
      */
     public Project(String nameProject, HashMap<String, User> utenti_registrati) throws Exception {
+
         /* Inizializza i parametri */
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
@@ -57,18 +61,16 @@ public class Project {
         /* Crea la directory associata al progetto */
         project = new File("./" + nameProject);
         boolean mkdir_bool = project.mkdir();
-        if(!mkdir_bool) throw new Exception("Can't create the directory");
-
+        if(!mkdir_bool) throw new Exception("The directory was already here or I couldnt create the directory");
 
         /* Crea il file associato ai membri del progetto */
         userFile = new UserFile();
         userFile.setUtenti(members);
         mapper = new ObjectMapper();
-        mapper.writeValue(Paths.get("./" + nameProject + "/member.json").toFile(), UserFile.class);
+        mapper.writeValue(Paths.get("./" + nameProject + "/members.json").toFile(), userFile);
 
         this.utenti_registrati = utenti_registrati;
 
-        //TODO: CI DEVO AGGIUNGERE LA LISTA DEI MEMBRI DEL PROGETTO
     }
 
 
@@ -191,6 +193,10 @@ public class Project {
         return null;
     }
 
+    public String getNameProject(){
+        return nameProject;
+    }
+
     /**
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
@@ -271,6 +277,8 @@ public class Project {
             User user = utenti_registrati.get(userToAdd);
             user.getList_prj().add(this);
             userFile.setUtenti(members);
+            mapper.writeValue(Paths.get("./" + nameProject + "/members.json").toFile(), userFile);
+
         } else throw new Exception("The user is already member of the project");
     }
 

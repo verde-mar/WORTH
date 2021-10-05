@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -31,7 +30,6 @@ public class Handler implements Callable<Response>  {
     private final Worker worker;
     /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
     private final UserManager userManager;
-
 
 
     /**

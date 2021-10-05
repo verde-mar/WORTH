@@ -1,13 +1,16 @@
 package WORTH.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.LinkedList;
 import java.util.List;
+
 
 public class User {
     /* Password dell'utente */
     private String password;
     /* Lista dei progetti a cui appartiene */
-    private List<Project> list_prj;
+    private LinkedList<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
     private String name;
