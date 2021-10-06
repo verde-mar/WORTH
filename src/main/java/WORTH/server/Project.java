@@ -1,11 +1,11 @@
 package WORTH.server;
 
 import WORTH.server.Persistence.UserFile;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +48,7 @@ public class Project {
      * Costruttore della classe
      * @param nameProject Nome del progetto
      */
-    public Project(String nameProject, HashMap<String, User> utenti_registrati) throws Exception {
+    public Project(String nameProject) throws Exception {
 
         /* Inizializza i parametri */
         this.nameProject = nameProject;
@@ -57,22 +57,23 @@ public class Project {
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
-
         /* Crea la directory associata al progetto */
-        project = new File("./" + nameProject);
-        boolean mkdir_bool = project.mkdir();
-        if(!mkdir_bool) throw new Exception("The directory was already here or I couldnt create the directory");
-
-        /* Crea il file associato ai membri del progetto */
-        userFile = new UserFile();
-        userFile.setUtenti(members);
-        mapper = new ObjectMapper();
-        mapper.writeValue(Paths.get("./" + nameProject + "/members.json").toFile(), userFile);
-
-        this.utenti_registrati = utenti_registrati;
+        project = new File("./projects/" + nameProject);
+        if(!project.exists()) {
+            boolean mkdir_bool = project.mkdir();
+            System.out.println(mkdir_bool);
+            userFile = new UserFile();
+            userFile.setUtenti(members);
+            mapper = new ObjectMapper();
+            mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+        }
 
     }
 
+
+    public void setUtenti_registrati(HashMap<String, User> utenti_registrati) {
+        this.utenti_registrati = utenti_registrati;
+    }
 
     /**
      * Restituisce la lista che contiene le card all'interno della lista done
@@ -264,6 +265,7 @@ public class Project {
      * @return boolean
      */
     public boolean isMember(String username){
+        System.out.println(getMembers());
         return members.contains(username);
     }
 
@@ -277,7 +279,7 @@ public class Project {
             User user = utenti_registrati.get(userToAdd);
             user.getList_prj().add(this);
             userFile.setUtenti(members);
-            mapper.writeValue(Paths.get("./" + nameProject + "/members.json").toFile(), userFile);
+            mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
 
         } else throw new Exception("The user is already member of the project");
     }

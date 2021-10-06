@@ -108,12 +108,33 @@ public class Request {
         return password;
     }
 
-    public void setUserName(String username) {
-        nickUtente = username;
-    }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    public void setListaDestinazione(String listaDestinazione) {
+        this.listaDestinazione = listaDestinazione;
+    }
+
+    public void setListaPartenza(String listaPartenza) {
+        this.listaPartenza = listaPartenza;
+    }
+
+    public void setNickToAdd(String nickToAdd) {
+        this.nickToAdd = nickToAdd;
+    }
+
+    public void setNickUtente(String nickUtente) {
+        this.nickUtente = nickUtente;
     }
 
     public void setProjectName(String projectName) {

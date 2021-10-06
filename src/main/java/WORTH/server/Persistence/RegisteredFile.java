@@ -1,4 +1,6 @@
-package WORTH.server;
+package WORTH.server.Persistence;
+
+import WORTH.server.User;
 
 import java.util.HashMap;
 

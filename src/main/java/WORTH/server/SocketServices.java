@@ -35,12 +35,9 @@ public class SocketServices implements AutoCloseable{
 
     private final ObjectMapper mapper;
 
-    /**
-     * Costruttore della classe
-     * @param portNumber Porta con cui il WORTH.server si mette in ascolto
-     * @throws IOException Nel caso ci sia un errore in IO
-     */
-    public SocketServices(int portNumber) throws IOException {
+    private final ConcurrentHashMap<String, Project> projects;
+
+    public SocketServices(int portNumber, ConcurrentHashMap<String, Project> projects) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
@@ -56,6 +53,8 @@ public class SocketServices implements AutoCloseable{
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
         mapper = new ObjectMapper();
+
+        this.projects = projects;
     }
 
     /**
@@ -64,7 +63,7 @@ public class SocketServices implements AutoCloseable{
      * @return Future<WORTH.server.Message> un thread del threadpool
      */
     private Future<Response> elaborateRequest(ByteBuffer buffer) throws Exception {
-        return threadPool.submit(new Handler(buffer));
+        return threadPool.submit(new Handler(buffer, projects));
     }
 
     /**

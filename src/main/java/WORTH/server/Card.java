@@ -109,6 +109,6 @@ public class Card {
      * @throws IOException Se vi e' un errore nell'IO
      */
     public synchronized void writeOnDisk(String projectName) throws IOException {//todo:testing
-        card_mapper.writeValue(Paths.get("./" + projectName + "/" + nameCard + ".json").toFile(), this);
+        card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 }

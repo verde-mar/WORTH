@@ -3,14 +3,18 @@
     "utente1" : {
       "password" : "utente1",
       "list_prj" : [ {
-        "nameProject" : "polpette",
-        "to_Do" : [ ],
+        "nameProject" : "cartone",
+        "to_Do" : [ {
+          "nameCard" : "cartaDiCartone",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        } ],
         "inProgress" : [ ],
         "toBeRevised" : [ ],
         "done" : [ ],
         "members" : [ "utente1" ]
       } ],
-      "online" : true,
+      "online" : false,
       "name" : "utente1"
     }
   }

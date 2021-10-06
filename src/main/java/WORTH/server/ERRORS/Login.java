@@ -1,4 +1,6 @@
-package WORTH.client;
+package WORTH.server.ERRORS;
+
+import WORTH.client.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,8 +79,6 @@ public class Login extends JFrame {
             /* Richiede il login dell'utente */
             WORTHClient.login(username, password);
             /* Mostra la finestra principale */
-            //todo: pero' prima di mostrare la finestra principale mi deve dare la lista di tutti i progetti
-            //todo: quindi ha senso inviare prima tale richiesta? Ma come inserisco la lista dei progetti in app? TATO HA DETTO CI
             app.setVisible(true);
             /* Chiude la finestra corrente */
             this.dispose();

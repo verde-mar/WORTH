@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import WORTH.server.Persistence.RegisteredFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -24,14 +25,13 @@ public class UserManager {
 
     private UserManager() throws Exception {
         mapper = new ObjectMapper();
-        utentiRegistrati_ondisk = new File("./" + "utentiRegistrati_ondisk.json");
+        utentiRegistrati_ondisk = new File("./" + "UsersOnDisk.json");
         registeredFile = new RegisteredFile();
 
         if(utentiRegistrati_ondisk.exists()){
             registeredFile = mapper.readValue(utentiRegistrati_ondisk, RegisteredFile.class);
             utentiRegistrati = registeredFile.getUtentiRegistrati();
         } else {
-
             boolean created = utentiRegistrati_ondisk.createNewFile();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             if(created)
@@ -57,9 +57,10 @@ public class UserManager {
      * @throws Exception Nel caso in cui il login non vada a buon fine
      */
     public void login(String nickName, String password) throws Exception {
-        System.out.println(getUtenti());
         if(utentiRegistrati.containsKey(nickName) && !utentiRegistrati.get(nickName).isOnline() && (utentiRegistrati.get(nickName).getPassword()).equals(password)){
             utentiRegistrati.get(nickName).setOnline();
+            registeredFile.setUtentiRegistrati(utentiRegistrati);
+            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
         } else if(password == null){
             throw new Exception("Login failed. Check the password.");
         } else if(!utentiRegistrati.containsKey(nickName)){
@@ -73,11 +74,11 @@ public class UserManager {
      * Effettua il logout dell'utente
      * @param nickName Nickname dell'utente
      */
-    public void logout(String nickName){
-        System.out.println(utentiRegistrati);
+    public void logout(String nickName) throws IOException {
         if(utentiRegistrati.containsKey(nickName)){
-            System.out.println("DENTRO L'IF DI LOGOUT");
             utentiRegistrati.get(nickName).setOffline();
+            registeredFile.setUtentiRegistrati(utentiRegistrati);
+            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
         }
     }
 

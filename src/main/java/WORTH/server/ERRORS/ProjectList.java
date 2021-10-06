@@ -1,5 +1,6 @@
-package WORTH.client;
+package WORTH.server.ERRORS;
 
+import WORTH.client.WORTHClient;
 import WORTH.server.Project;
 
 import javax.swing.*;

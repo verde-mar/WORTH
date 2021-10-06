@@ -33,9 +33,13 @@ public class Worker {
     public void addCard(String projectName, String cardname, String descr, String userName) throws Exception {
         Project project = projects.get(projectName);
         if(project!=null) {
-            if(project.isMember(userName))
+            System.out.println(userName);
+            if(project.isMember(userName)) {
                 project.addCardProject(cardname, descr, projectName);
-            else throw new Exception("You are not allowed.");
+            }
+            else {
+                throw new Exception("You are not allowed.");
+            }
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -156,7 +160,8 @@ public class Worker {
      */
     public synchronized void createProject(String projectName, String nickUtente) throws Exception {
         if(projectName != null && nickUtente != null) {
-            Project project = new Project(projectName, utenti_registrati);
+            Project project = new Project(projectName);
+            project.setUtenti_registrati(utenti_registrati);
             projects.putIfAbsent(projectName, project);
             project.addPeople(nickUtente);
 

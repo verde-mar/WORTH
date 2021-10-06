@@ -1,4 +1,6 @@
-package WORTH.client;
+package WORTH.server.ERRORS;
+
+import WORTH.client.UDPClient;
 
 public class UDPDriver {
     public UDPDriver(UDPClient udpClient) {

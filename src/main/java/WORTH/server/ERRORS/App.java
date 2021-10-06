@@ -1,5 +1,6 @@
-package WORTH.client;
+package WORTH.server.ERRORS;
 
+import WORTH.client.WORTHClient;
 import WORTH.shared.worthProtocol.Response;
 
 import javax.swing.*;
@@ -10,19 +11,13 @@ import java.io.IOException;
 
 public class App extends JFrame {
     /* Componente che invia i comandi al server tramite TCP */
-    private final WORTHClient WORTHClient;
+    private final WORTH.client.WORTHClient WORTHClient;
 
     /* Componente che invia i comandi al server tramite UDP */
     private final UDPDriver udpDriver;
 
-    /* Lista dei progetti */
-    private ProjectList projectsList;
-
     /* UserName dell'utente corrente */
     private String username;
-
-
-
 
     /**
      * Costruttore della classe
@@ -36,8 +31,7 @@ public class App extends JFrame {
         this.udpDriver = udpDriver;
 
         /* Pannello che contiene i controlli */
-        JPanel jPanel = new JPanel(new GridLayout(20,15));
-
+        JPanel jPanel = new JPanel(new GridLayout(20, 15));
 
         /* Pulsante per creare un nuovo progetto */
         JLabel nameProject = new JLabel("Nome del nuovo progetto: ");
@@ -54,17 +48,11 @@ public class App extends JFrame {
             }
         });
 
-        /* Pulsante per vedere tutti i progetti */
-        JButton projectButton = new JButton("Mostrami tutti i miei progetti");
-        jPanel.add(projectButton);
-        projectButton.addActionListener(e -> {
-            try {
-                seeProjects();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-        
+        JLabel projects = new JLabel("I tuoi progetti ");
+        jPanel.add(projects);
+
+
+
         registerCloseOperation();
 
         setResizable(false);
@@ -73,13 +61,9 @@ public class App extends JFrame {
         add(jPanel);
     }
 
-    private void seeProjects() throws IOException {
-        Response response = WORTHClient.listProjects(username);
-        System.out.println(response.getProjects());
-    }
 
     private void createNewProject(String nameProject) throws IOException {
-        WORTHClient.createProject(nameProject, username);
+        Response response = WORTHClient.createProject(nameProject, username);
         //todo:se la richiesta ha avuto successo devo aggiungere il bottone di questo progetto in ProjectsList
     }
 

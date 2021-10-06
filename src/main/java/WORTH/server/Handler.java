@@ -31,20 +31,21 @@ public class Handler implements Callable<Response>  {
     /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
     private final UserManager userManager;
 
+    private ConcurrentHashMap<String, Project> projects;
+
 
     /**
      * Costruttore della classe
      * @param buffer ByteBuffer rappresentante la richiesta
      *
      */
-    public Handler(ByteBuffer buffer) throws Exception {
+    public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) throws Exception {
         this.buffer = buffer;
         /* Oggetto che rappresenta l'insieme dei  progetti nel server */
         this.userManager = UserManager.getIstance();
         objectMapper = new ObjectMapper();
         task_response = new Response();
-        worker = new Worker(new ConcurrentHashMap<>(), userManager.getUtenti());
-
+        worker = new Worker(projects, userManager.getUtenti());
 
     }
 
