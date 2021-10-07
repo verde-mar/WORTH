@@ -15,96 +15,79 @@ import java.util.regex.Pattern;
 
 public class MainClient extends JFrame {
     private static boolean interrupted = false;
+    private static boolean login = false;
+    private static boolean registered = false;
 
     private static Response handleCommand(List<String> tokens, WORTHClient worthClient, RMIClient rmiClient) throws Exception {
         Response response = new Response();
-        switch (tokens.get(0)) {
-            case "login": {
-                String nickUtente = tokens.get(1);
-                String password = tokens.get(2);
-                response = worthClient.login(nickUtente, password);
-                break;
-            }
-            case "register": {
-                String nickUtente = tokens.get(1);
-                String password = tokens.get(2);
-                rmiClient.register(nickUtente, password);
-                response.setSuccess();
-                break;
-            }
-            case "create_project": {
-                String nickUtente = tokens.get(1);
-                String projectName = tokens.get(2);
-                response = worthClient.createProject(projectName, nickUtente);
-                break;
-            }
-            case "add_card": {
-                String nickUtente = tokens.get(1);
-                String projectName = tokens.get(2);
-                String cardName = tokens.get(3);
-                String description = tokens.get(4);
-                response = worthClient.addCard(nickUtente, projectName, cardName, description);
-                break;
-            }
-            case "move_card": {
-                String nickUtente = tokens.get(1);
-                String projectName = tokens.get(2);
-                String cardName = tokens.get(3);
-                String fromList = tokens.get(4);
-                String toList = tokens.get(5);
-                // TODO
-                break;
-            }
-            case "show_cards": {
-                String nickUtente = tokens.get(1);
-                String projectName = tokens.get(2);
-                break;
-            }
-            case "show_card": {
-                String nickUtente = tokens.get(1);
-                String projectName = tokens.get(2);
-                String cardName = tokens.get(3);
-                response = worthClient.showCard(nickUtente, projectName, cardName);
-                break;
-            }
-            case "cancel_project": {
-                //String projectName = tokens[1];
-                // TODO
-                break;
-            }
-            case "add_member": {
-                //String projectName = tokens[1];
-                //String nickUtente = tokens[2];
-                // TODO
-                break;
-            }
-            case "show_members": {
-                //String projectName = tokens[1];
-                // TODO
-                break;
-            }
-            case "get_card_history": {
-                //String projectName = tokens[1];
-                //String cardName = tokens[2];
-                // TODO
-                break;
-            }
-            case "list_users":
-                // TODO
-                break;
-            case "list_online_users": {
-                // TODO
-                break;
-            }
-            case "list_projects": {
-                String username = tokens.get(1);
-                response = worthClient.listProjects(username);
-                break;
-            }
-            case "logout":
-                response = worthClient.logout(tokens.get(1));
-                interrupted = true;
-                break;
+
+        //todo: blocca le altre azioni se il login non va a buon termine
+        //todo: blocca le altre azioni se il login non a buon termine
+        if (tokens.get(0).equals("login")) {
+            login = true;
+            String nickUtente = tokens.get(1);
+            String password = tokens.get(2);
+            response = worthClient.login(nickUtente, password);
+        } else if ("register".equals(tokens.get(0))) {
+            String nickUtente = tokens.get(1);
+            String password = tokens.get(2);
+            rmiClient.register(nickUtente, password);
+            response.setSuccess();
+            registered = true;
+        } else if (tokens.get(0).equals("create_project") && login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            response = worthClient.createProject(projectName, nickUtente);
+        } else if (tokens.get(0).equals("add_card") && login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            String cardName = tokens.get(3);
+            String description = tokens.get(4);
+            response = worthClient.addCard(nickUtente, projectName, cardName, description);
+        } else if (tokens.get(0).equals("move_card")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            String cardName = tokens.get(3);
+            String fromList = tokens.get(4);
+            String toList = tokens.get(5);
+            response = worthClient.moveCard(nickUtente, projectName, cardName, fromList, toList);
+        } else if (tokens.get(0).equals("show_cards")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            response = worthClient.showCards(nickUtente, projectName);
+        } else if (tokens.get(0).equals("show_card")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            String cardName = tokens.get(3);
+            response = worthClient.showCard(nickUtente, projectName, cardName);
+        } else if (tokens.get(0).equals("cancel_project")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            response = worthClient.cancelProject(projectName, nickUtente);
+        } else if (tokens.get(0).equals("add_member")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            String nickToAdd = tokens.get(3);
+            response = worthClient.addMember(nickUtente, projectName, nickToAdd);
+        } else if (tokens.get(0).equals("show_members")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            response = worthClient.showMembers(nickUtente, projectName);
+        } else if (tokens.get(0).equals("get_card_history")&& login) {
+            String nickUtente = tokens.get(1);
+            String projectName = tokens.get(2);
+            String cardName = tokens.get(3);
+            response = worthClient.getCardHistory(nickUtente, projectName, cardName);
+        } else if ("list_users".equals(tokens.get(0))) { //vedi se ci vuole rmi callback
+            // TODO
+        } else if ("list_online_users".equals(tokens.get(0))) {//vedi se ci vuole rmicallback
+            // TODO
+        } else if (tokens.get(0).equals("list_projects")&& login) {
+            String username = tokens.get(1);
+            response = worthClient.listProjects(username);
+        } else if (tokens.get(0).equals("logout")&& login) {
+            response = worthClient.logout(tokens.get(1));
+            interrupted = true;
         }
         return response;
     }
@@ -128,7 +111,7 @@ public class MainClient extends JFrame {
                 if(result.getDone())
                     System.out.println(result.getExplanation());
             }
-            catch (Exception e) { System.err.println(e.getMessage()); }
+            catch (Exception e) { System.err.println("Some parameters are missing. Try again: ");  }
         }
     }
 }

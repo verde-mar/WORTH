@@ -13,10 +13,19 @@ public class User {
     private LinkedList<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
+    /* Nome dell'utente */
     private String name;
 
+    /**
+     * Costruttore necessario a Jackson
+     */
     public User(){}
 
+    /**
+     * Costruttore della classe
+     * @param name Nome dell'utente
+     * @param password Password dell'utente
+     */
     public User(String name, String password){
         this.password = password;
         list_prj = new LinkedList<>();

@@ -31,8 +31,6 @@ public class Handler implements Callable<Response>  {
     /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
     private final UserManager userManager;
 
-    private ConcurrentHashMap<String, Project> projects;
-
 
     /**
      * Costruttore della classe

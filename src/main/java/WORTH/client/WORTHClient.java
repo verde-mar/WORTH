@@ -22,7 +22,7 @@ public class WORTHClient {
         return tcpClient.receive();
     }
 
-    public Response logout(String username) throws IOException {
+    public Response logout(String username) throws IOException { //todo: se metto il nickname errato mi da' comunque successo di logout
         Request requestLogOut = new Request();
         requestLogOut.setNickUtente(username);
         requestLogOut.setRequest(Request.RequestType.logout);
@@ -76,6 +76,77 @@ public class WORTHClient {
         showCard.setCardName(cardName);
 
         tcpClient.send(showCard);
+
+        return tcpClient.receive();
+    }
+
+    public Response cancelProject(String projectName, String nickUtente) throws IOException {
+        Request cancelPrj = new Request();
+        cancelPrj.setRequest(Request.RequestType.cancelProject);
+        cancelPrj.setProjectName(projectName);
+        cancelPrj.setNickUtente(nickUtente);
+
+        tcpClient.send(cancelPrj);
+
+        return tcpClient.receive();
+    }
+
+    public Response moveCard(String nickUtente, String projectName, String cardName, String fromList, String toList) throws IOException {
+        Request moveC = new Request();
+        moveC.setRequest(Request.RequestType.moveCard);
+        moveC.setNickUtente(nickUtente);
+        moveC.setProjectName(projectName);
+        moveC.setCardName(cardName);
+        moveC.setListaPartenza(fromList);
+        moveC.setListaDestinazione(toList);
+
+        tcpClient.send(moveC);
+
+        return tcpClient.receive();
+    }
+
+    public Response showCards(String nickUtente, String projectName) throws IOException {
+        Request showCs = new Request();
+        showCs.setRequest(Request.RequestType.showCards);
+        showCs.setNickUtente(nickUtente);
+        showCs.setProjectName(projectName);
+
+        tcpClient.send(showCs);
+
+        return tcpClient.receive();
+    }
+
+    public Response showMembers(String nickUtente, String projectName) throws IOException {
+        Request showMs = new Request();
+        showMs.setRequest(Request.RequestType.showMembers);
+        showMs.setNickUtente(nickUtente);
+        showMs.setProjectName(projectName);
+
+        tcpClient.send(showMs);
+
+        return tcpClient.receive();
+    }
+
+    public Response addMember(String nickUtente, String projectName, String nickToAdd) throws IOException {
+        Request addM = new Request();
+        addM.setRequest(Request.RequestType.addMember);
+        addM.setNickUtente(nickUtente);
+        addM.setProjectName(projectName);
+        addM.setNickToAdd(nickToAdd);
+
+        tcpClient.send(addM);
+
+        return tcpClient.receive();
+    }
+
+    public Response getCardHistory(String nickUtente, String projectName, String cardName) throws IOException {
+        Request getCH = new Request();
+        getCH.setNickUtente(nickUtente);
+        getCH.setProjectName(projectName);
+        getCH.setRequest(Request.RequestType.getCardHistory);
+        getCH.setCardName(cardName);
+
+        tcpClient.send(getCH);
 
         return tcpClient.receive();
     }

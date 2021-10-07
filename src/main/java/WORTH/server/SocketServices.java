@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import static java.lang.Thread.sleep;
 
 /**
- * SocketServices e' il server che tramite un selettore
+ * SocketServices e' la classe del server che tramite un selettore
  * gestisce le nuove connessioni TCP
  */
 public class SocketServices implements AutoCloseable{
@@ -33,10 +33,18 @@ public class SocketServices implements AutoCloseable{
     /* Threadpool a cui assegnare i task */
     private final ThreadPoolExecutor threadPool;
 
+    /* Mapper necessario alla serializzazione/deserializzazione JSON */
     private final ObjectMapper mapper;
 
+    /* Progetti sul server */
     private final ConcurrentHashMap<String, Project> projects;
 
+    /**
+     * Costruttore della classe
+     * @param portNumber Numero di porta del servizio TCP
+     * @param projects Progetti iniziali gia' presenti sul server
+     * @throws IOException Nel caso in cui ci sia un errore di tipo I/O
+     */
     public SocketServices(int portNumber, ConcurrentHashMap<String, Project> projects) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -240,6 +248,11 @@ public class SocketServices implements AutoCloseable{
         channel.close();
     }
 
+    /**
+     * Inizializzazione degli oggetti necessari al servizio RMI
+     * @param portNumber Numero di porta necessaria all'esportazione degli oggetti
+     * @throws Exception Nel cas
+     */
     public void registerRMIService(int portNumber) throws Exception {
         RemoteInterface server = new RemoteRegister();
         RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(server, 0);

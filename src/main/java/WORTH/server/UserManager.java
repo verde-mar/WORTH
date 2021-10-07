@@ -1,6 +1,6 @@
 package WORTH.server;
 
-import WORTH.server.Persistence.RegisteredFile;
+import WORTH.Persistence.RegisteredFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -11,18 +11,26 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Gestore della registrazione e del login degli utenti.
+ * Si occupa anche della persistenza degli utenti registrati al servizio.
+ */
 public class UserManager {
     /* HashMap degli utenti registrati al servizio */
     private final HashMap<String, User> utentiRegistrati;
     /* Unica istanza di AccountService che può essere presente nel sistema */
     private static UserManager instance;
-
+    /* Mapper necessario all'interazione con il file JSON */
     private final ObjectMapper mapper;
+    /* File contenente gli utenti registrati */
     private final File utentiRegistrati_ondisk;
+    /* File JSON per gli utenti registrati al servizio */
     private RegisteredFile registeredFile;
 
-
-
+    /**
+     * Costruttore della classe
+     * @throws Exception Nel caso non sia possibile creare il file di configurazione per gli utenti
+     */
     private UserManager() throws Exception {
         mapper = new ObjectMapper();
         utentiRegistrati_ondisk = new File("./" + "UsersOnDisk.json");
@@ -42,13 +50,16 @@ public class UserManager {
 
     }
 
+    /**
+     * Restituisce una istanza della classe
+     * @return UserManager Una istanza della classe
+     * @throws Exception Nel caso non sia possibile creare il file di configurazione per gli utenti
+     */
     public static synchronized UserManager getIstance() throws Exception {
         if (instance == null)
             instance = new UserManager();
         return instance;
     }
-
-
 
     /**
      * Effettua il login dell'utente
@@ -124,6 +135,12 @@ public class UserManager {
         return utentiRegistrati;
     }
 
+    /**
+     * Registra l'utente
+     * @param nickUtente Nickname dell'utente che sta richiedendo l'operazione
+     * @param password Password dell'utente
+     * @throws IOException Nel caso di un errore nella scrittura su file
+     */
     public void register(String nickUtente, String password) throws IOException {
         User verify = utentiRegistrati.putIfAbsent(nickUtente, new User(nickUtente, password));
         if(verify == null) {

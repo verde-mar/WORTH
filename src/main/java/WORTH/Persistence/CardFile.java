@@ -1,6 +1,5 @@
-package WORTH.server.Persistence;
+package WORTH.Persistence;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,13 +15,6 @@ public class CardFile {
     private List<String> history;
     /* Lista corrente a cui appartiene la card */
     private String currentList;
-
-    /**
-     * Costruttore della classe
-     */
-    public CardFile() {
-        history = new LinkedList<>();
-    }
 
     /**
      * Inizializza la variabile this.currentList
@@ -54,5 +46,21 @@ public class CardFile {
      */
     public void setHistory(List<String> history){
         this.history = history;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getNameCard() {
+        return nameCard;
+    }
+
+    public String getCurrentList() {
+        return currentList;
+    }
+
+    public List<String> getHistory() {
+        return history;
     }
 }

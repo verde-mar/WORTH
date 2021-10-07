@@ -1,11 +1,10 @@
 package WORTH.server;
 
-import WORTH.server.Persistence.UserFile;
+import WORTH.Persistence.UserFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,16 +30,14 @@ public class Project {
     private List<String> members;
     @JsonIgnore /* Il progetto corrente */
     private File project;
-    @JsonIgnore /* Utenti registrati al servizio */
-    private HashMap<String, User> utenti_registrati;
     @JsonIgnore /* File contenente informazioni */
     private UserFile userFile;
-    @JsonIgnore
+    @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
     ObjectMapper mapper;
 
 
     /**
-     * Costruttore vuoto della classe (necessario a jackson)
+     * Costruttore vuoto della classe necessario a Jackson
      */
     public Project(){}
 
@@ -49,7 +46,6 @@ public class Project {
      * @param nameProject Nome del progetto
      */
     public Project(String nameProject) throws Exception {
-
         /* Inizializza i parametri */
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
@@ -57,22 +53,16 @@ public class Project {
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
+
         /* Crea la directory associata al progetto */
         project = new File("./projects/" + nameProject);
         if(!project.exists()) {
             boolean mkdir_bool = project.mkdir();
-            System.out.println(mkdir_bool);
             userFile = new UserFile();
             userFile.setUtenti(members);
             mapper = new ObjectMapper();
             mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
         }
-
-    }
-
-
-    public void setUtenti_registrati(HashMap<String, User> utenti_registrati) {
-        this.utenti_registrati = utenti_registrati;
     }
 
     /**
@@ -163,21 +153,20 @@ public class Project {
      * @param cardname Nome della card
      * @return WORTH.server.Card Restituisce la card di nome cardName
      */
-    public Card showCardProject(String cardname) throws Exception {
-        if(cardname!=null) {
-            Card card = showCardList(to_Do, cardname);
+    public Card showCardProject(String cardname) {
+        Card card = showCardList(to_Do, cardname);
+        if (card == null) {
+            card = showCardList(inProgress, cardname);
             if (card == null) {
-                card = showCardList(inProgress, cardname);
+                card = showCardList(toBeRevised, cardname);
                 if (card == null) {
-                    card = showCardList(toBeRevised, cardname);
-                    if (card == null) {
-                        card = showCardList(done, cardname);
-                    }
+                    card = showCardList(done, cardname);
                 }
             }
-            return card;
-        } throw new Exception("The card is null.");
+        }
+        return card;
     }
+
 
     /**
      * Cerca nella lista passata come parametro la card di nome cardname
@@ -187,6 +176,7 @@ public class Project {
      */
     public synchronized Card showCardList(List<Card> lista, String cardName){
         for (Card value : lista) {
+            System.out.println(value.getNameCard());
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
@@ -194,6 +184,10 @@ public class Project {
         return null;
     }
 
+    /**
+     * Funzione necessaria a Jackson
+     * @return String Restituisce il nome del progetto
+     */
     public String getNameProject(){
         return nameProject;
     }
@@ -205,11 +199,17 @@ public class Project {
      * @param card Carta da spostare
      */
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws Exception {
+        /* Cancella la lista corrente per aggiornarla */
         card.eraseCurrentList();
+
+        /* In base alla lista di partenza, si effettua il movimento della carta, altrimenti viene lanciata una eccezione */
         switch (listaDiPart) {
             case "to_Do" : {
+                /* Viene rimossa dalla lista corrente e aggiornata la history */
                 to_Do.remove(card);
                 card.addHistory("removed from to_Do; ");
+                /* Vengono effettuati i controlli per permettere o no il movimento
+                    e in base a questi viene spostata oppure lanciata una eccezione */
                 if(listadiDest.equals("inProgress") && !inProgress.contains(card)){
                     inProgress.add(card);
                     card.addHistory("added to inProgress; ");
@@ -218,8 +218,11 @@ public class Project {
                 break;
             }
             case "inProgress" : {
+                /* Viene rimossa dalla lista corrente e aggiornata la history */
                 inProgress.remove(card);
                 card.addHistory("removed from inProgress; ");
+                /* Vengono effettuati i controlli per permettere o no il movimento
+                    e in base a questi viene spostata oppure lanciata una eccezione */
                 if((listadiDest.equals("done") && !done.contains(card))){
                     done.add(card);
                     card.addHistory("added to done; ");
@@ -232,8 +235,11 @@ public class Project {
                 break;
             }
             case "toBeRevised" : {
+                /* Viene rimossa dalla lista corrente e aggiornata la history */
                 toBeRevised.remove(card);
                 card.addHistory("removed from toBeRevised; ");
+                /* Vengono effettuati i controlli per permettere o no il movimento
+                    e in base a questi viene spostata oppure lanciata una eccezione */
                 if((listadiDest.equals("done") && !done.contains(card))){
                     done.add(card);
                     card.addHistory("added to done; ");
@@ -246,8 +252,8 @@ public class Project {
                 break;
             }
         }
-
-        card.update();
+        /* Viene aggiornato il file su disco */
+        card.writeOnDisk(nameProject);
     }
 
     /**
@@ -265,24 +271,31 @@ public class Project {
      * @return boolean
      */
     public boolean isMember(String username){
-        System.out.println(getMembers());
         return members.contains(username);
     }
 
     /**
-     * Aggiunge un utente alla lista dei membri del progetto
-     * @param userToAdd Nickname dell'utente da aggiungere ai membri del progetto
+     * Funzione che aggiunge utenti al progetto
+     * @param userToAdd Nickname dell'utente da aggiungere
+     * @param utenti_registrati Struttura dati in memoria che si riferisce a tutti gli utenti registrati
+     * @throws Exception Nel caso in cui l'utente sia gia' membro del progetto o non sia registrato
      */
-    public synchronized void addPeople(String userToAdd) throws Exception {
-        if(!isMember(userToAdd)) {
-            members.add(userToAdd);
-            User user = utenti_registrati.get(userToAdd);
-            user.getList_prj().add(this);
-            userFile.setUtenti(members);
-            mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
-
-        } else throw new Exception("The user is already member of the project");
+    public synchronized void addPeople(String userToAdd, HashMap<String, User> utenti_registrati) throws Exception {
+        User user = utenti_registrati.get(userToAdd);
+        if(user != null) {
+            if(!isMember(userToAdd)) {
+                members.add(userToAdd);
+                user.getList_prj().add(this);
+                userFile.setUtenti(members);
+                mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+            } else {
+                throw new Exception("The user is already member of the project");
+            }
+        } else {
+            throw new Exception("The user isn't registered");
+        }
     }
+
 
     /**
      * Restituisce la lista dei membri al progetto
@@ -290,5 +303,45 @@ public class Project {
      */
     public List<String> getMembers(){
         return members;
+    }
+
+    /**
+     * Nella fase iniziale di inizializzazione delle strutture dati in memoria,
+     * questa funzione viene chiamata per aggiungere card ad un Project
+     * @param cardname String Nome della card
+     * @param description String Descrizione della card
+     * @param currentList String Lista corrente
+     * @throws Exception Nel caso in cui la card sia gia' presente nella struttura dati
+     */
+    public void addCard(String cardname, String description, String currentList) throws Exception {
+        if (showCardProject(cardname) == null) {
+            Card card = new Card(cardname);
+            card.addHistory("added to " + currentList + "; ");
+            card.addDescription(description);
+            card.addCurrentList(currentList);
+            switch (currentList) {
+                case "to_Do":
+                    to_Do.add(card);
+                    break;
+                case "inProgress":
+                    inProgress.add(card);
+                    break;
+                case "toBeRevised":
+                    toBeRevised.add(card);
+                    break;
+                default:
+                    done.add(card);
+                    break;
+            }
+        } else throw new Exception("The card was already there.");
+    }
+
+    /**
+     * Nella fase iniziale di inizializzazione delle strutture dati in memoria,
+     * questa funzione viene usata per aggiungere un utente al progetto
+     * @param mbrs File in cui sono contenuti gli utenti gia' membri del progetto
+     */
+    public void addMembers(UserFile mbrs) {
+        members.addAll(mbrs.getUtenti());
     }
 }

@@ -1,4 +1,4 @@
-package WORTH.server.Persistence;
+package WORTH.Persistence;
 
 import java.util.List;
 

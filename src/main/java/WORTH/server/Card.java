@@ -1,11 +1,7 @@
 package WORTH.server;
 
-import WORTH.server.Persistence.CardFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
@@ -27,6 +23,9 @@ public class Card {
     /* Oggetto necessario per creare un file all'interno della directory del progetto */
     ObjectMapper card_mapper;
 
+    /**
+     * Costruttore necessario a Jackson
+     */
     public Card(){}
 
     /**
@@ -54,7 +53,7 @@ public class Card {
     public void addCurrentList(String list){ currentList = list; }
 
     /**
-     * Restituisce la lista corrente
+     * Funzione necessaria a Jackson per utilizzare il campo currentList
      * @return String La lista corrente
      */
     public String getCurrentList(){ return currentList; }
@@ -74,18 +73,6 @@ public class Card {
         history.add(start);
     }
 
-    /**
-     * Aggiorna il file su disco associato alla card corrente
-     * @throws IOException Nel caso ci siano errori I/O nella scrittura sul file
-     */
-    public synchronized void update() throws IOException {
-        File card_file = new File(nameCard);
-        if(card_file.exists()){
-            try(BufferedWriter out = new BufferedWriter(new FileWriter(card_file.getName()))) {
-                out.write(String.valueOf(getHistory()));
-            }
-        }
-    }
 
     /**
      * Restituisce la history di una card
@@ -111,4 +98,13 @@ public class Card {
     public synchronized void writeOnDisk(String projectName) throws IOException {//todo:testing
         card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
+
+    /**
+     * Funzione necessaria a Jackson per utilizzare il valore description
+     * @return String La descrizione della card
+     */
+    public String getDescription() {
+        return description;
+    }
+
 }

@@ -33,7 +33,6 @@ public class Worker {
     public void addCard(String projectName, String cardname, String descr, String userName) throws Exception {
         Project project = projects.get(projectName);
         if(project!=null) {
-            System.out.println(userName);
             if(project.isMember(userName)) {
                 project.addCardProject(cardname, descr, projectName);
             }
@@ -51,16 +50,14 @@ public class Worker {
      * @throws Exception Nel caso l'utente non abbia l'autorizzazione ad effettuare tale oeprazione o l'utente da aggiungere al progetto ci sia gia'
      */
     public void addMember(String projectName, String userToAdd, String userName) throws Exception {
-        if(userToAdd != null) {
             Project project = projects.get(projectName);
             if (project != null) {
                 if (project.isMember(userName)) {
-                    project.addPeople(userToAdd);
+                    project.addPeople(userToAdd, utenti_registrati);
                 } else {
                     throw new Exception("You are not allowed.");
                 }
             } else throw new Exception("That project doesn't exist.");
-        } else throw new Exception("L'utente che si vuole aggiungere e' null.");
     }
 
     /**
@@ -158,13 +155,14 @@ public class Worker {
      * @param nickUtente Nickname dell'utente che ha richiesto la creazione
      * @throws Exception Nel caso in cui il progetto esistesse gia'
      */
-    public synchronized void createProject(String projectName, String nickUtente) throws Exception {
+    public void createProject(String projectName, String nickUtente) throws Exception {
         if(projectName != null && nickUtente != null) {
             Project project = new Project(projectName);
-            project.setUtenti_registrati(utenti_registrati);
-            projects.putIfAbsent(projectName, project);
-            project.addPeople(nickUtente);
-
+            Project prj = projects.putIfAbsent(projectName, project);
+            if(prj==null) {
+                project.addPeople(nickUtente, utenti_registrati);
+            }
+            else throw new Exception("The project was already there");
         } else throw new Exception("Project or username are null.");
     }
 

@@ -1,4 +1,4 @@
-package WORTH.server.Persistence;
+package WORTH.Persistence;
 
 import WORTH.server.User;
 
