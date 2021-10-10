@@ -260,5 +260,7 @@ public class SocketServices implements AutoCloseable{
         Registry registry = LocateRegistry.createRegistry(portNumber);
         registry.rebind("RegistrationService", stub);
         System.out.printf("[REGISTER] Register service is started on port %d\n", portNumber);
+
+
     }
 }

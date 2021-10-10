@@ -1,12 +1,11 @@
 package WORTH.server;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class User {
+public class User implements Serializable {
     /* Password dell'utente */
     private String password;
     /* Lista dei progetti a cui appartiene */
@@ -77,5 +76,13 @@ public class User {
      */
     public List<Project> getList_prj() {
         return list_prj;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", online=" + online +
+                '}';
     }
 }

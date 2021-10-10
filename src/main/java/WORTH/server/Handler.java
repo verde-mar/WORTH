@@ -92,27 +92,6 @@ public class Handler implements Callable<Response>  {
                     userManager.logout(task_request.getNickUtente());
                     break;
                 }
-                /* Restituisce la lista degli utenti registrati al servizio */
-                case listUsers : {
-                    Collection<User> users = userManager.listUsers();
-                    List<String> utenti = new LinkedList<>();
-                    for(User user : users){
-                        utenti.add(user.getName());
-                    }
-                    task_response.setMembers(utenti);
-                    break;
-                }
-
-                /* Restituisce la lista degli utenti registrati al servizio e che sono online */
-                case listOnlineUsers : {
-                    List<User> onlineUsers = userManager.listOnlineUsers();
-                    List<String> utentiOnline = new LinkedList<>();
-                    for(User user : onlineUsers){
-                        utentiOnline.add(user.getName());
-                    }
-                    task_response.setMembers(utentiOnline);
-                    break;
-                }
 
                 /* Restituisce la lista dei progetti di un determinato utente */
                 case listProjects : {

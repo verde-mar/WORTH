@@ -1,5 +1,7 @@
 package WORTH.client;
 
+import WORTH.server.User;
+import WORTH.shared.rmi.NotifyInterface;
 import WORTH.shared.rmi.RemoteInterface;
 
 import java.io.IOException;
@@ -7,10 +9,14 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
-public class RMIClient implements RemoteInterface {
+public class RMIClient {
     /* Oggetto remoto RMI */
     private final RemoteInterface rmiClient;
+    private NotifyInterface stub;
+    private List<User> users;
 
     /**
      * Costruttore della classe
@@ -32,4 +38,31 @@ public class RMIClient implements RemoteInterface {
     public void register(String username, String password) throws IOException {
         rmiClient.register(username, password);
     }
+
+    public void registerForCallback() throws Exception {
+        NotifyInterface notify = new NotifyImpl();
+        stub = (NotifyInterface) UnicastRemoteObject.exportObject(notify, 0);
+        users = rmiClient.registerForCallback(stub);
+        System.out.println("Registered for callback");
+    }
+
+    public void unregisterForCallback() throws RemoteException {
+        rmiClient.unregisterForCallback(stub);
+        System.out.println("Unregistered for callback");
+    }
+
+    public void listUsers() {
+        for(User user : users){
+            System.out.println(user.toString());
+        }
+    }
+
+    public void listOnlineUsers() {
+        for(User user : users){
+            if(user.isOnline())
+                System.out.println("user: " + user.getName());
+        }
+    }
+
+
 }

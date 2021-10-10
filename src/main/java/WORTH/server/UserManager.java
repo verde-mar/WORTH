@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Gestore della registrazione e del login degli utenti.
@@ -68,7 +65,7 @@ public class UserManager {
      * @throws Exception Nel caso in cui il login non vada a buon fine
      */
     public void login(String nickName, String password) throws Exception {
-        if(utentiRegistrati.containsKey(nickName) && !utentiRegistrati.get(nickName).isOnline() && (utentiRegistrati.get(nickName).getPassword()).equals(password)){
+        if(utentiRegistrati.containsKey(nickName) && !utentiRegistrati.get(nickName).isOnline() && (utentiRegistrati.get(nickName).getPassword()).equals(password)){ //se la password e' sbagliata non lancia password
             utentiRegistrati.get(nickName).setOnline();
             registeredFile.setUtentiRegistrati(utentiRegistrati);
             mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
@@ -78,6 +75,8 @@ public class UserManager {
             throw new Exception("Login failed. You are not registered.");
         } else if(utentiRegistrati.get(nickName).isOnline()){
             throw new Exception("You are already online, you don't need to login again.");
+        } else if(!(utentiRegistrati.get(nickName).getPassword()).equals(password)){
+            throw new Exception("Password not valid");
         }
     }
 
@@ -85,35 +84,15 @@ public class UserManager {
      * Effettua il logout dell'utente
      * @param nickName Nickname dell'utente
      */
-    public void logout(String nickName) throws IOException {
-        if(utentiRegistrati.containsKey(nickName)){
-            utentiRegistrati.get(nickName).setOffline();
-            registeredFile.setUtentiRegistrati(utentiRegistrati);
-            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
-        }
-    }
-
-    /**
-     * Restituisce la lista degli utenti, sia offline che online
-     * @return List<User> Lista degli utenti
-     */
-    public Collection<User> listUsers(){
-        return  utentiRegistrati.values();
-    }
-
-    /**
-     * Restituisce la lista degli utenti online
-     * @return List<User> Lista degli utenti
-     */
-    //todo: puoi migliorarlo con una struttura dati separata
-    public List<User> listOnlineUsers(){
-        List<User> onlineUsers = new LinkedList<>();
-        for(User user: utentiRegistrati.values()){
-            if(user.isOnline()){
-                onlineUsers.add(user);
-            }
-        }
-        return onlineUsers;
+    public void logout(String nickName) throws Exception {
+        User user = utentiRegistrati.get(nickName);
+        if(user!=null) {
+            if(user.isOnline()) {
+                user.setOffline();
+                registeredFile.setUtentiRegistrati(utentiRegistrati);
+                mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+            } else throw new Exception("L'utente inserito non e' online");
+        } else throw new Exception("L'utente inserito non esiste");
     }
 
     /**

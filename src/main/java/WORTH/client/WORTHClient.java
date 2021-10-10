@@ -6,7 +6,7 @@ import WORTH.shared.worthProtocol.Response;
 import java.io.IOException;
 
 
-public class WORTHClient {
+public class WORTHClient implements AutoCloseable {
     private final TCPClient tcpClient;
 
     public WORTHClient(TCPClient tcpClient) {
@@ -22,7 +22,7 @@ public class WORTHClient {
         return tcpClient.receive();
     }
 
-    public Response logout(String username) throws IOException { //todo: se metto il nickname errato mi da' comunque successo di logout
+    public Response logout(String username) throws IOException {
         Request requestLogOut = new Request();
         requestLogOut.setNickUtente(username);
         requestLogOut.setRequest(Request.RequestType.logout);

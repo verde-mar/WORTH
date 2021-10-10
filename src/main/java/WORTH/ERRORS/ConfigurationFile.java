@@ -1,14 +1,12 @@
-package WORTH.server.ERRORS;
+package WORTH.ERRORS;
 
 import WORTH.server.Project;
 import WORTH.server.User;
-import WORTH.server.UserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

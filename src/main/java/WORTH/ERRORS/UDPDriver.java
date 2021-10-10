@@ -1,4 +1,4 @@
-package WORTH.server.ERRORS;
+package WORTH.ERRORS;
 
 import WORTH.client.UDPClient;
 

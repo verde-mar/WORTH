@@ -5,17 +5,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-//todo: manca la persistenza della lista di progetti di cui si parla nella specifica
 /**
  * Project e' la classe che rappresenta un progetto,
  * e include come e' possibile interagirci
  */
 
-public class Project {
+public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;
     /* Lista delle card che devono ancora essere prese in carico da un membro del progetto */

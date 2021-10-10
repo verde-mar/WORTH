@@ -1,4 +1,4 @@
-package WORTH.server.ERRORS;
+package WORTH.ERRORS;
 
 import WORTH.client.WORTHClient;
 import WORTH.shared.worthProtocol.Response;

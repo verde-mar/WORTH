@@ -5,7 +5,7 @@ import WORTH.shared.worthProtocol.Response;
 
 import java.io.IOException;
 
-public interface Client {
+public interface Client extends AutoCloseable {
     /**
      * Invia la richiesta al server
      * @param request La richiesta per il server

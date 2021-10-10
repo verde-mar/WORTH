@@ -1,10 +1,9 @@
-package WORTH.server.ERRORS;
+package WORTH.ERRORS;
 
 import WORTH.client.WORTHClient;
 import WORTH.server.Project;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ProjectList extends JPanel {
     private static final long serialVersionUID = 4038002113147564810L;

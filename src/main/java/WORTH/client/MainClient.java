@@ -14,26 +14,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainClient extends JFrame {
-    private static boolean interrupted = false;
     private static boolean login = false;
-    private static boolean registered = false;
 
     private static Response handleCommand(List<String> tokens, WORTHClient worthClient, RMIClient rmiClient) throws Exception {
         Response response = new Response();
 
-        //todo: blocca le altre azioni se il login non va a buon termine
-        //todo: blocca le altre azioni se il login non a buon termine
         if (tokens.get(0).equals("login")) {
-            login = true;
-            String nickUtente = tokens.get(1);
-            String password = tokens.get(2);
-            response = worthClient.login(nickUtente, password);
+            if(!login) {
+                login = true;
+                String nickUtente = tokens.get(1);
+                String password = tokens.get(2);
+                response = worthClient.login(nickUtente, password);
+                rmiClient.registerForCallback();
+            } else
+                throw new Exception("You are already loggedin");
         } else if ("register".equals(tokens.get(0))) {
             String nickUtente = tokens.get(1);
             String password = tokens.get(2);
             rmiClient.register(nickUtente, password);
-            response.setSuccess();
-            registered = true;
         } else if (tokens.get(0).equals("create_project") && login) {
             String nickUtente = tokens.get(1);
             String projectName = tokens.get(2);
@@ -78,40 +76,46 @@ public class MainClient extends JFrame {
             String projectName = tokens.get(2);
             String cardName = tokens.get(3);
             response = worthClient.getCardHistory(nickUtente, projectName, cardName);
-        } else if ("list_users".equals(tokens.get(0))) { //vedi se ci vuole rmi callback
-            // TODO
-        } else if ("list_online_users".equals(tokens.get(0))) {//vedi se ci vuole rmicallback
-            // TODO
+        } else if ("list_users".equals(tokens.get(0))) {
+          rmiClient.listUsers();
+        } else if ("list_online_users".equals(tokens.get(0))) {
+            rmiClient.listOnlineUsers();
         } else if (tokens.get(0).equals("list_projects")&& login) {
             String username = tokens.get(1);
             response = worthClient.listProjects(username);
-        } else if (tokens.get(0).equals("logout")&& login) {
+        } else if (tokens.get(0).equals("logout") && login) {
             response = worthClient.logout(tokens.get(1));
-            interrupted = true;
+            rmiClient.unregisterForCallback();
+            Thread.currentThread().interrupt();
         }
         return response;
     }
 
-    public static void main(String[] args) throws IOException, NotBoundException {
+    public static void main(String[] args) throws Exception {
         SocketAddress address = new InetSocketAddress("localhost", 8080);
-        TCPClient tcpClient = new TCPClient(address);
-        WORTHClient WORTHClient = new WORTHClient(tcpClient);
-        RMIClient rmiClient = new RMIClient("localhost");
-
-        Scanner scanner = new Scanner(System.in);
-        while (!interrupted) {
+        try(
+                TCPClient tcpClient = new TCPClient(address);
+                WORTHClient WORTHClient = new WORTHClient(tcpClient);
+                Scanner scanner = new Scanner(System.in);
+        ) {
+            RMIClient rmiClient = new RMIClient("localhost");
+            Pattern p = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
             System.out.print("> ");
+            while (!Thread.interrupted()) {
+
                 String input = scanner.nextLine();
                 List<String> list = new ArrayList<String>();
-                Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(input);
+                Matcher m = p.matcher(input);
                 while (m.find())
                     list.add(m.group(1));
-            try {
-                Response result = handleCommand(list, WORTHClient, rmiClient);
-                if(result.getDone())
-                    System.out.println(result.getExplanation());
+                try {
+                    Response result = handleCommand(list, WORTHClient, rmiClient);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());/*System.err.println("Some parameters are missing. Try again: ");*/
+                }
+                System.out.print("> ");
             }
-            catch (Exception e) { System.err.println("Some parameters are missing. Try again: ");  }
         }
+        System.exit(0);
     }
 }

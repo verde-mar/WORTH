@@ -1,1 +1,23 @@
-{"utentiRegistrati":{"utente1":{"password":"utente1","list_prj":[{"nameProject":"casolare","to_Do":[{"nameCard":"card1","description":"\"io sono una card\"","history":["added to to_Do; "],"currentList":"to_Do"}],"inProgress":[],"toBeRevised":[],"done":[],"members":["utente1","utente2"]}],"online":true,"name":"utente1"},"utente2":{"password":"utente2","list_prj":[{"nameProject":"casolare","to_Do":[{"nameCard":"card1","description":"\"io sono una card\"","history":["added to to_Do; "],"currentList":"to_Do"}],"inProgress":[],"toBeRevised":[],"done":[],"members":["utente1","utente2"]}],"online":false,"name":"utente2"}}}
+{
+  "utentiRegistrati" : {
+    "utente1" : {
+      "password" : "utente1",
+      "list_prj" : [ {
+        "nameProject" : "cartone",
+        "to_Do" : [ ],
+        "inProgress" : [ ],
+        "toBeRevised" : [ ],
+        "done" : [ ],
+        "members" : [ "utente1" ]
+      } ],
+      "online" : false,
+      "name" : "utente1"
+    },
+    "utente2" : {
+      "password" : "utente2",
+      "list_prj" : [ ],
+      "online" : false,
+      "name" : "utente2"
+    }
+  }
+}
