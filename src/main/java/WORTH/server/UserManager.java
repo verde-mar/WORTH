@@ -86,13 +86,13 @@ public class UserManager {
      */
     public void logout(String nickName) throws Exception {
         User user = utentiRegistrati.get(nickName);
-        if(user!=null) {
-            if(user.isOnline()) {
-                user.setOffline();
-                registeredFile.setUtentiRegistrati(utentiRegistrati);
-                mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
-            } else throw new Exception("L'utente inserito non e' online");
-        } else throw new Exception("L'utente inserito non esiste");
+        if(user.isOnline()) {
+            user.setOffline();
+            registeredFile.setUtentiRegistrati(utentiRegistrati);
+            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+        } else if(!utentiRegistrati.containsKey(nickName)) {
+            throw new Exception("Login failed. You are not registered.");
+        } else throw new Exception(nickName + "isn't online");
     }
 
     /**

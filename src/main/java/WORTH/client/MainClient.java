@@ -3,10 +3,8 @@ package WORTH.client;
 import WORTH.shared.worthProtocol.Response;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,11 +19,13 @@ public class MainClient extends JFrame {
 
         if (tokens.get(0).equals("login")) {
             if(!login) {
-                login = true;
                 String nickUtente = tokens.get(1);
                 String password = tokens.get(2);
                 response = worthClient.login(nickUtente, password);
-                rmiClient.registerForCallback();
+                if(response.getDone()) {
+                    login = true;
+                    rmiClient.registerForCallback();
+                }
             } else
                 throw new Exception("You are already loggedin");
         } else if ("register".equals(tokens.get(0))) {
@@ -102,7 +102,6 @@ public class MainClient extends JFrame {
             Pattern p = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
             System.out.print("> ");
             while (!Thread.interrupted()) {
-
                 String input = scanner.nextLine();
                 List<String> list = new ArrayList<String>();
                 Matcher m = p.matcher(input);

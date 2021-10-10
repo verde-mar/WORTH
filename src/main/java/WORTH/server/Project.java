@@ -53,15 +53,19 @@ public class Project implements Serializable {
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
+        userFile = new UserFile();
 
         /* Crea la directory associata al progetto */
         project = new File("./projects/" + nameProject);
+        mapper = new ObjectMapper();
         if(!project.exists()) {
             boolean mkdir_bool = project.mkdir();
-            userFile = new UserFile();
             userFile.setUtenti(members);
-            mapper = new ObjectMapper();
             mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+        } else {
+            File members = new File("./projects/" + nameProject + "/members.json");
+            UserFile file = mapper.readValue(members, UserFile.class);
+            addMembers(file);
         }
     }
 
@@ -184,6 +188,10 @@ public class Project implements Serializable {
         return null;
     }
 
+    public UserFile getUserFile() {
+        return userFile;
+    }
+
     /**
      * Funzione necessaria a Jackson
      * @return String Restituisce il nome del progetto
@@ -282,17 +290,24 @@ public class Project implements Serializable {
      */
     public synchronized void addPeople(String userToAdd, HashMap<String, User> utenti_registrati) throws Exception {
         User user = utenti_registrati.get(userToAdd);
-        if(user != null) {
-            if(!isMember(userToAdd)) {
-                members.add(userToAdd);
-                user.getList_prj().add(this);
-                userFile.setUtenti(members);
-                mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+        try {
+            if (user != null) {
+                if (!isMember(userToAdd)) {
+                    members.add(userToAdd);
+                    user.getList_prj().add(this);
+                    userFile.setUtenti(members);
+                    System.out.println("DOPO LA SET UTENTI IN USERFILE");
+                    mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+                } else {
+                    throw new Exception("The user is already member of the project");
+                }
             } else {
-                throw new Exception("The user is already member of the project");
+                throw new Exception("The user isn't registered");
             }
-        } else {
-            throw new Exception("The user isn't registered");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 

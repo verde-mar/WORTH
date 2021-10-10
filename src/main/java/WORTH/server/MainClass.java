@@ -50,8 +50,6 @@ public class MainClass {
                     Project project = new Project(name);
                     Project prj = projects.putIfAbsent(name, project);
                     if(prj==null) {
-                        /* Scorre il file contenente i membri del progetto, e li aggiunge in memoria */
-                        setUsers(name, project);
                         /* Scorre i file rappresentanti le card del progetto, e li aggiunge in memoria */
                         setCards(project, file_corr);
                     }
@@ -60,19 +58,6 @@ public class MainClass {
         }
     }
 
-    /**
-     * Scorre il file contenente i membri del progetto, e li aggiunge in memoria
-     * @param name Nome del progetto
-     * @param project Il progetto corrente
-     * @throws Exception
-     */
-    private static void setUsers(String name, Project project) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        File members = new File("./projects/" + name + "/members.json");
-        UserFile mbrs = mapper.readValue(members, UserFile.class);
-        project.addMembers(mbrs);
-
-    }
 
     /**
      * Scorre i file rappresentanti le card del progetto, e li aggiunge in memoria
