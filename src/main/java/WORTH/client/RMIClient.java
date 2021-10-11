@@ -33,15 +33,15 @@ public class RMIClient {
      * Registra un utente nel registro
      * @param username Nome del client che si vuole registrare
      * @param password Password del client
-     * @throws RemoteException Errore nella comunicazione
+     * @throws RemoteException Nel caso di un errore nella comunicaizone
      */
     public void register(String username, String password) throws IOException {
         rmiClient.register(username, password);
     }
 
     /**
-     *
-     * @throws Exception
+     * Registra l'utente al servizio di notifica del server
+     * @throws Exception Nel caso di un errore generico
      */
     public void registerForCallback() throws Exception {
         NotifyInterface notify = new NotifyImpl();
@@ -51,8 +51,8 @@ public class RMIClient {
     }
 
     /**
-     *
-     * @throws RemoteException
+     * De-registra l'utente al servizio di notifica del server
+     * @throws RemoteException Nel caso di un errore nella comunicaizone
      */
     public void unregisterForCallback() throws RemoteException {
         rmiClient.unregisterForCallback(stub);
@@ -60,7 +60,7 @@ public class RMIClient {
     }
 
     /**
-     *
+     * Stampa i campi specificati in toString()
      */
     public void listUsers() {
         for(User user : users){
@@ -69,7 +69,7 @@ public class RMIClient {
     }
 
     /**
-     *
+     * Stampa il nome degli utenti online
      */
     public void listOnlineUsers() {
         for(User user : users){
