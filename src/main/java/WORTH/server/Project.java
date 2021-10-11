@@ -1,5 +1,6 @@
 package WORTH.server;
 
+import WORTH.Persistence.CardFile;
 import WORTH.Persistence.UserFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,11 +10,7 @@ import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-/**
- * Project e' la classe che rappresenta un progetto,
- * e include come e' possibile interagirci
- */
+import java.text.Collator;
 
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
@@ -66,6 +63,15 @@ public class Project implements Serializable {
             File members = new File("./projects/" + nameProject + "/members.json");
             UserFile file = mapper.readValue(members, UserFile.class);
             addMembers(file);
+            File[] filesName = project.listFiles();
+            assert filesName != null;
+            for (File curr_f : filesName) {
+                if(!curr_f.isDirectory() && !curr_f.getName().equals("members.json")) {
+                    CardFile cardFile = mapper.readValue(curr_f, CardFile.class);
+                    int endIndex = curr_f.getName().indexOf(".");
+                    addCard(curr_f.getName().substring(0, endIndex), cardFile.getDescription(), cardFile.getHistory(), cardFile.getCurrentList());
+                }
+            }
         }
     }
 
@@ -109,19 +115,17 @@ public class Project implements Serializable {
      * @param projectName Nome del progetto
      */
     public synchronized void addCardProject(String cardname, String description, String projectName) throws Exception {
-        /* Aggiunge la card alla struttura dati locale */
-        if(cardname != null) {
-            if (showCardProject(cardname) == null) {
-                Card card = new Card(cardname);
-                card.addHistory("added to to_Do; ");
-                card.addDescription(description);
-                card.addCurrentList("to_Do");
-                to_Do.add(card);
+        /* Aggiunge la card alla struttura dati locale, se non esiste gia' */
+        if (showCardProject(cardname) == null) {
+            Card card = new Card(cardname);
+            card.addHistory("added to to_Do; ");
+            card.addDescription(description);
+            card.addCurrentList("to_Do");
+            to_Do.add(card);
 
-                /* Memorizza la card su disco */
-                card.writeOnDisk(projectName);
-            } else throw new Exception("The card was already there.");
-        } else throw new Exception("The card is null");
+            /* Memorizza la card su disco */
+            card.writeOnDisk(projectName);
+        } else throw new Exception("The card was already there.");
     }
 
     /**
@@ -131,9 +135,15 @@ public class Project implements Serializable {
      */
     public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects) throws Exception {
         /* Cancella il progetto dalla struttura dati locale */
-        boolean remove_prj = true;
+        boolean remove_prj = false;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
+            System.out.println("CONTROLLO DI CANCELLA IL PROGETTO");
             remove_prj = projects.remove(projectName, projects.get(projectName));
+            UserManager userManager = UserManager.getIstance();
+            for(String nameUser : members) {
+                User user = userManager.getUtente(nameUser);
+                user.getList_prj().remove(this);
+            }
         }
         if(remove_prj) {
             /* Cancella il progetto dal disco */
@@ -149,6 +159,8 @@ public class Project implements Serializable {
                 if(eliminate) System.out.println(nameProject + " was eliminated");
             }
 
+        } else {
+            throw new Exception("The project cannot be removed");
         }
     }
 
@@ -159,12 +171,16 @@ public class Project implements Serializable {
      */
     public Card showCardProject(String cardname) {
         Card card = showCardList(to_Do, cardname);
+        System.out.println("card in todo? " + card);
         if (card == null) {
             card = showCardList(inProgress, cardname);
+            System.out.println("card in inProgress? " + card);
             if (card == null) {
                 card = showCardList(toBeRevised, cardname);
+                System.out.println("card in toBeRevised? " + card);
                 if (card == null) {
                     card = showCardList(done, cardname);
+                    System.out.println("card in done? " + card);
                 }
             }
         }
@@ -188,10 +204,6 @@ public class Project implements Serializable {
         return null;
     }
 
-    public UserFile getUserFile() {
-        return userFile;
-    }
-
     /**
      * Funzione necessaria a Jackson
      * @return String Restituisce il nome del progetto
@@ -209,56 +221,46 @@ public class Project implements Serializable {
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws Exception {
         /* Cancella la lista corrente per aggiornarla */
         card.eraseCurrentList();
-
+        Collator myCollator = Collator.getInstance();
         /* In base alla lista di partenza, si effettua il movimento della carta, altrimenti viene lanciata una eccezione */
-        switch (listaDiPart) {
-            case "to_Do" : {
-                /* Viene rimossa dalla lista corrente e aggiornata la history */
+        if ("to_Do".equals(listaDiPart)) {
+            if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
                 to_Do.remove(card);
                 card.addHistory("removed from to_Do; ");
-                /* Vengono effettuati i controlli per permettere o no il movimento
-                    e in base a questi viene spostata oppure lanciata una eccezione */
-                if(listadiDest.equals("inProgress") && !inProgress.contains(card)){
-                    inProgress.add(card);
-                    card.addHistory("added to inProgress; ");
-                    card.addCurrentList("inProgress");
-                } else throw new Exception("Moving not allowed.");
-                break;
-            }
-            case "inProgress" : {
-                /* Viene rimossa dalla lista corrente e aggiornata la history */
+                inProgress.add(card);
+                card.addHistory("added to inProgress; ");
+                card.addCurrentList("inProgress");
+            } else throw new Exception("Moving not allowed.");
+        } else if ("inProgress".equals(listaDiPart)) {
+            if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
                 inProgress.remove(card);
                 card.addHistory("removed from inProgress; ");
-                /* Vengono effettuati i controlli per permettere o no il movimento
-                    e in base a questi viene spostata oppure lanciata una eccezione */
-                if((listadiDest.equals("done") && !done.contains(card))){
-                    done.add(card);
-                    card.addHistory("added to done; ");
-                    card.addCurrentList("done");
-                } else if((listadiDest.equals("toBeRevised") && !toBeRevised.contains(card))){
-                    toBeRevised.add(card);
-                    card.addHistory("added to toBeRevised; ");
-                    card.addCurrentList("toBeRevised");
-                } else throw new Exception("Moving not allowed.");
-                break;
-            }
-            case "toBeRevised" : {
-                /* Viene rimossa dalla lista corrente e aggiornata la history */
+                done.add(card);
+                card.addHistory("added to done; ");
+                card.addCurrentList("done");
+            } else if (myCollator.compare(listadiDest, "toBeRevised") == 0 && !toBeRevised.contains(card)) {
+                inProgress.remove(card);
+                card.addHistory("removed from inProgress; ");
+                toBeRevised.add(card);
+                card.addHistory("added to toBeRevised; ");
+                card.addCurrentList("toBeRevised");
+            } else throw new Exception("Moving not allowed.");
+        } else if ("toBeRevised".equals(listaDiPart)) {
+            if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
                 toBeRevised.remove(card);
                 card.addHistory("removed from toBeRevised; ");
-                /* Vengono effettuati i controlli per permettere o no il movimento
-                    e in base a questi viene spostata oppure lanciata una eccezione */
-                if((listadiDest.equals("done") && !done.contains(card))){
-                    done.add(card);
-                    card.addHistory("added to done; ");
-                    card.addCurrentList("done");
-                } else if((listadiDest.equals("inProgress") && !inProgress.contains(card))){
-                    inProgress.add(card);
-                    card.addHistory("added to inProress; ");
-                    card.addCurrentList("inProgress");
-                }  else throw new Exception("Moving not allowed.");
-                break;
-            }
+                done.add(card);
+                card.addHistory("added to done; ");
+                card.addCurrentList("done");
+            } else if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
+                toBeRevised.remove(card);
+                card.addHistory("removed from toBeRevised; ");
+                inProgress.add(card);
+                card.addHistory("added to inProress; ");
+                card.addCurrentList("inProgress");
+            } else throw new Exception("Moving not allowed.");
+        } else {
+            throw new Exception(listaDiPart + " is not a valid entry");
         }
         /* Viene aggiornato il file su disco */
         card.writeOnDisk(nameProject);
@@ -276,39 +278,38 @@ public class Project implements Serializable {
     /**
      * Indica se un utente e' membro del progetto corrente
      * @param username Username dell'utente che ha effettuato la richiesta
-     * @return boolean
+     * @return boolean Se l'utente e' gia membro del progetto o no
      */
     public boolean isMember(String username){
         return members.contains(username);
     }
 
     /**
-     * Funzione che aggiunge utenti al progetto
-     * @param userToAdd Nickname dell'utente da aggiungere
-     * @param utenti_registrati Struttura dati in memoria che si riferisce a tutti gli utenti registrati
-     * @throws Exception Nel caso in cui l'utente sia gia' membro del progetto o non sia registrato
+     * Aggiunge un utente al progetto
+     * @param userToAdd Nickname dell'utente da inserire
+     * @throws Exception Nel caso in cui l'utente identificato da userToAdd non sia registrato o sia gia' membro del progetto
      */
-    public synchronized void addPeople(String userToAdd, HashMap<String, User> utenti_registrati) throws Exception {
-        User user = utenti_registrati.get(userToAdd);
-        try {
-            if (user != null) {
-                if (!isMember(userToAdd)) {
-                    members.add(userToAdd);
-                    user.getList_prj().add(this);
-                    userFile.setUtenti(members);
-                    System.out.println("DOPO LA SET UTENTI IN USERFILE");
-                    mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
-                } else {
-                    throw new Exception("The user is already member of the project");
-                }
+    public synchronized void addPeople(String userToAdd) throws Exception {
+        /* Cerca l'utente il cui nickname e' userToAdd */
+        User user = UserManager.getIstance().getUtenti().get(userToAdd);
+        /* Se l'utente da aggiungere non esiste */
+        if (user != null) {
+            /* Se l'utente non e' gia' membro del progetto */
+            if (!isMember(userToAdd)) {
+                /* Aggiunge l'utente alla lista dei membri del progetto */
+                members.add(userToAdd);
+                /* Aggiunge il progetto alla lista dei progetti a cui l'utente appartiene */
+                user.getList_prj().add(this);
+                /* Aggiorna il file dei membri del progetto presente su disco */
+                userFile.setUtenti(members);
+                mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
             } else {
-                throw new Exception("The user isn't registered");
+                throw new Exception("The user is already member of the project");
             }
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            throw e;
+        } else {
+            throw new Exception("The user isn't registered");
         }
+
     }
 
 
@@ -328,12 +329,14 @@ public class Project implements Serializable {
      * @param currentList String Lista corrente
      * @throws Exception Nel caso in cui la card sia gia' presente nella struttura dati
      */
-    public void addCard(String cardname, String description, String currentList) throws Exception {
+    public void addCard(String cardname, String description, List<String> history, String currentList) throws Exception {
         if (showCardProject(cardname) == null) {
             Card card = new Card(cardname);
-            card.addHistory("added to " + currentList + "; ");
             card.addDescription(description);
             card.addCurrentList(currentList);
+            for(String story : history) {
+                card.addHistory(story);
+            }
             switch (currentList) {
                 case "to_Do":
                     to_Do.add(card);

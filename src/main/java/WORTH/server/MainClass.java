@@ -1,8 +1,5 @@
 package WORTH.server;
 
-import WORTH.Persistence.CardFile;
-import WORTH.Persistence.UserFile;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.util.Objects;
@@ -22,11 +19,7 @@ public class MainClass {
         }
     }
 
-    /**
-     * Inizializza le strutture dati in memoria
-     * @param projects Insieme dei progetti nel server
-     * @throws Exception
-     */
+
     private static void set(ConcurrentHashMap<String, Project> projects) throws Exception {
         File direct = new File("./projects");
         if (!direct.exists()) {
@@ -49,32 +42,11 @@ public class MainClass {
                 if (file_corr.isDirectory()) {
                     Project project = new Project(name);
                     Project prj = projects.putIfAbsent(name, project);
-                    if(prj==null) {
-                        /* Scorre i file rappresentanti le card del progetto, e li aggiunge in memoria */
-                        setCards(project, file_corr);
+                    if(prj == null){
+                        System.out.println("A new project was added");
+                    } else {
+                        System.out.println("The project was already there");
                     }
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Scorre i file rappresentanti le card del progetto, e li aggiunge in memoria
-     * @param project Progetto corrente
-     * @param currentDirectory Directory corrente
-     * @throws Exception
-     */
-    private static void setCards(Project project, File currentDirectory) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        if(currentDirectory.isDirectory()){
-            File[] filesName = currentDirectory.listFiles();
-            assert filesName != null;
-            for (File curr_f : filesName) {
-                if(!curr_f.isDirectory() && !curr_f.getName().equals("members.json")) {
-                    CardFile cardFile = mapper.readValue(curr_f, CardFile.class);
-                    int endIndex = curr_f.getName().indexOf(".");
-                    project.addCard(curr_f.getName().substring(0, endIndex), cardFile.getDescription(), cardFile.getCurrentList());
                 }
             }
         }

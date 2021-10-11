@@ -11,6 +11,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//todo: c'e' da testare tutte le operazioni con molti client e in sezione critica
+//todo: c'e' da non permettere che un utente faccia delle operazioni se non e' loggato
+//todo: penso manchi il metodo help
 public class MainClient extends JFrame {
     private static boolean login = false;
 
@@ -41,6 +44,9 @@ public class MainClient extends JFrame {
             String projectName = tokens.get(2);
             String cardName = tokens.get(3);
             String description = tokens.get(4);
+            if(tokens.size()>5){
+                throw new Exception("Description must be between \"\" ");
+            }
             response = worthClient.addCard(nickUtente, projectName, cardName, description);
         } else if (tokens.get(0).equals("move_card")&& login) {
             String nickUtente = tokens.get(1);
@@ -87,6 +93,8 @@ public class MainClient extends JFrame {
             response = worthClient.logout(tokens.get(1));
             rmiClient.unregisterForCallback();
             Thread.currentThread().interrupt();
+        } else {
+            throw new Exception("You have'nt loggedin or this method doesn't exist");
         }
         return response;
     }
@@ -96,21 +104,21 @@ public class MainClient extends JFrame {
         try(
                 TCPClient tcpClient = new TCPClient(address);
                 WORTHClient WORTHClient = new WORTHClient(tcpClient);
-                Scanner scanner = new Scanner(System.in);
+                Scanner scanner = new Scanner(System.in)
         ) {
             RMIClient rmiClient = new RMIClient("localhost");
             Pattern p = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
             System.out.print("> ");
             while (!Thread.interrupted()) {
                 String input = scanner.nextLine();
-                List<String> list = new ArrayList<String>();
+                List<String> list = new ArrayList<>();
                 Matcher m = p.matcher(input);
                 while (m.find())
                     list.add(m.group(1));
                 try {
                     Response result = handleCommand(list, WORTHClient, rmiClient);
                 } catch (Exception e) {
-                    System.err.println(e.getMessage());/*System.err.println("Some parameters are missing. Try again: ");*/
+                    System.err.println(e.getMessage());
                 }
                 System.out.print("> ");
             }

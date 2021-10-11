@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,18 +30,14 @@ public class Handler implements Callable<Response>  {
     private final UserManager userManager;
 
 
-    /**
-     * Costruttore della classe
-     * @param buffer ByteBuffer rappresentante la richiesta
-     *
-     */
+
     public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) throws Exception {
         this.buffer = buffer;
         /* Oggetto che rappresenta l'insieme dei  progetti nel server */
         this.userManager = UserManager.getIstance();
         objectMapper = new ObjectMapper();
         task_response = new Response();
-        worker = new Worker(projects, userManager.getUtenti());
+        worker = new Worker(projects);
 
     }
 
@@ -54,6 +48,7 @@ public class Handler implements Callable<Response>  {
     private void parser() throws IOException {
         /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
+        //todo: da eliminare questa stampa
         System.out.println("FILE RICHIESTA: " + buffer_toString);
         task_request = objectMapper.readValue(buffer_toString, Request.class);
     }
@@ -96,6 +91,7 @@ public class Handler implements Callable<Response>  {
                 /* Restituisce la lista dei progetti di un determinato utente */
                 case listProjects : {
                     User user = userManager.getUtente(task_request.getNickUtente());
+                    System.out.println(user.getList_prj());
                     task_response.setProjects(user.getList_prj());
                     break;
                 }
@@ -126,7 +122,7 @@ public class Handler implements Callable<Response>  {
                 }
                 /* Restituisce i membri di un progetto */
                 case showMembers : {
-                    List<String> members = worker.showMembers(task_request.getProjectName());
+                    List<String> members = worker.showMembers(task_request.getNickUtente(), task_request.getProjectName());
                     task_response.setMembers(members);
                     break;
                 }

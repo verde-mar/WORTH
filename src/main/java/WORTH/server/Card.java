@@ -3,15 +3,12 @@ package WORTH.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * WORTH.server.Card e' la classe che rappresenta una card
- * e come e' possibile interagirci
- */
-public class Card {
+public class Card implements Serializable {
     /* Nome univoco della card */
     private String nameCard;
     /* Descrizione testuale della card */
@@ -96,6 +93,7 @@ public class Card {
      * @throws IOException Se vi e' un errore nell'IO
      */
     public synchronized void writeOnDisk(String projectName) throws IOException {
+
         card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 

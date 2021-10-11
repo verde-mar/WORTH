@@ -4,16 +4,15 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-
 public class User implements Serializable {
+    /* Nome dell'utente */
+    private String name;
     /* Password dell'utente */
     private String password;
     /* Lista dei progetti a cui appartiene */
     private LinkedList<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
-    /* Nome dell'utente */
-    private String name;
 
     /**
      * Costruttore necessario a Jackson
@@ -78,6 +77,10 @@ public class User implements Serializable {
         return list_prj;
     }
 
+    /**
+     * Restituisce solo alcuni campi, sovrascrivendo toString()
+     * @return String Stringa contenente alcuni campi dello user
+     */
     @Override
     public String toString() {
         return "User{" +

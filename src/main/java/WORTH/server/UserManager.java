@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- * Gestore della registrazione e del login degli utenti.
- * Si occupa anche della persistenza degli utenti registrati al servizio.
- */
+
 public class UserManager {
     /* HashMap degli utenti registrati al servizio */
     private final HashMap<String, User> utentiRegistrati;
