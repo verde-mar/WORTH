@@ -93,7 +93,6 @@ public class Card implements Serializable {
      * @throws IOException Se vi e' un errore nell'IO
      */
     public synchronized void writeOnDisk(String projectName) throws IOException {
-
         card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 

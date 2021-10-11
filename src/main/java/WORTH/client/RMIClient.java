@@ -15,7 +15,9 @@ import java.util.List;
 public class RMIClient {
     /* Oggetto remoto RMI */
     private final RemoteInterface rmiClient;
+    /* Oggetto remoto per l'interazione RMI Callback */
     private NotifyInterface stub;
+    /* Lista degli utenti registrati */
     private List<User> users;
 
     /**
