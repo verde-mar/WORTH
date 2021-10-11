@@ -39,6 +39,10 @@ public class RMIClient {
         rmiClient.register(username, password);
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void registerForCallback() throws Exception {
         NotifyInterface notify = new NotifyImpl();
         stub = (NotifyInterface) UnicastRemoteObject.exportObject(notify, 0);
@@ -46,23 +50,31 @@ public class RMIClient {
         System.out.println("Registered for callback");
     }
 
+    /**
+     *
+     * @throws RemoteException
+     */
     public void unregisterForCallback() throws RemoteException {
         rmiClient.unregisterForCallback(stub);
         System.out.println("Unregistered for callback");
     }
 
+    /**
+     *
+     */
     public void listUsers() {
         for(User user : users){
             System.out.println(user.toString());
         }
     }
 
+    /**
+     *
+     */
     public void listOnlineUsers() {
         for(User user : users){
             if(user.isOnline())
                 System.out.println("user: " + user.getName());
         }
     }
-
-
 }

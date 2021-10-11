@@ -2,10 +2,6 @@ package WORTH.Persistence;
 
 import java.util.List;
 
-/**
- * CardFile e' la classe che rappresenta una card
- * su disco in formato JSON
- */
 public class CardFile {
     /* Nome univoco della card */
     private String nameCard;
@@ -48,18 +44,34 @@ public class CardFile {
         this.history = history;
     }
 
+    /**
+     * Restituisce la descrizione della card
+     * @return String Descrizione della card
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Restituisce il nome della card
+     * @return String Il nome della card
+     */
     public String getNameCard() {
         return nameCard;
     }
 
+    /**
+     * Restituisce la lista corrente
+     * @return String La lista corrente
+     */
     public String getCurrentList() {
         return currentList;
     }
 
+    /**
+     * Restituisce la history di una card
+     * @return List<String> History della card
+     */
     public List<String> getHistory() {
         return history;
     }
