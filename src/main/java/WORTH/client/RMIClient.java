@@ -49,7 +49,6 @@ public class RMIClient {
         NotifyInterface notify = new NotifyImpl();
         stub = (NotifyInterface) UnicastRemoteObject.exportObject(notify, 0);
         users = rmiClient.registerForCallback(stub);
-        System.out.println("Registered for callback");
     }
 
     /**
@@ -58,7 +57,6 @@ public class RMIClient {
      */
     public void unregisterForCallback() throws RemoteException {
         rmiClient.unregisterForCallback(stub);
-        System.out.println("Unregistered for callback");
     }
 
     /**

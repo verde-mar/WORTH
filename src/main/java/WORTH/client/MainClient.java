@@ -12,9 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 //todo: c'e' da testare tutte le operazioni con molti client e in sezione critica
-//todo: c'e' da non permettere che un utente faccia delle operazioni se non e' loggato
 public class MainClient extends JFrame {
-    private static boolean login = false;
+    static boolean login = false;
 
     private static Response handleCommand(List<String> tokens, WORTHClient worthClient, RMIClient rmiClient) throws Exception {
         Response response = new Response();
@@ -29,7 +28,7 @@ public class MainClient extends JFrame {
                     rmiClient.registerForCallback();
                 }
             } else
-                throw new Exception("You are already loggedin");
+                throw new Exception("You are already loggedin or another user is logged in");
         } else if ("register".equals(tokens.get(0))) {
             String nickUtente = tokens.get(1);
             String password = tokens.get(2);
@@ -82,7 +81,7 @@ public class MainClient extends JFrame {
             String cardName = tokens.get(3);
             response = worthClient.getCardHistory(nickUtente, projectName, cardName);
         } else if ("list_users".equals(tokens.get(0))) {
-          rmiClient.listUsers();
+            rmiClient.listUsers();
         } else if ("list_online_users".equals(tokens.get(0))) {
             rmiClient.listOnlineUsers();
         } else if (tokens.get(0).equals("list_projects")&& login) {
@@ -122,6 +121,7 @@ public class MainClient extends JFrame {
                 WORTHClient WORTHClient = new WORTHClient(tcpClient);
                 Scanner scanner = new Scanner(System.in)
         ) {
+
             RMIClient rmiClient = new RMIClient("localhost");
             Pattern p = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
             System.out.print("> ");
@@ -133,6 +133,7 @@ public class MainClient extends JFrame {
                     list.add(m.group(1));
                 try {
                     Response result = handleCommand(list, WORTHClient, rmiClient);
+                    Worker.toString(result);
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }

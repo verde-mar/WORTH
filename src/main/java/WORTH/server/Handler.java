@@ -48,8 +48,6 @@ public class Handler implements Callable<Response>  {
     private void parser() throws IOException {
         /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
-        //todo: da eliminare questa stampa
-        System.out.println("FILE RICHIESTA: " + buffer_toString);
         task_request = objectMapper.readValue(buffer_toString, Request.class);
     }
 

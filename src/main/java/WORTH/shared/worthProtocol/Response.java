@@ -37,7 +37,6 @@ public class Response {
     /* Parametri necessari per la risposta */
     private String explanation;
     private boolean done;
-    private List<Card> cards;
     private List<String> members;
     private List<String> cardHistory;
     private Card card;
@@ -63,10 +62,6 @@ public class Response {
 
     public List<String> getMembers() {
         return members;
-    }
-
-    public List<Card> getCards() {
-        return cards;
     }
 
     public Request.RequestType getRequest() {
@@ -97,13 +92,6 @@ public class Response {
         return done;
     }
 
-    /**
-     * Assegna a ciascun campo di cards i nomi delle card richieste
-     * @param cards List<WORTH.server.Card> rappresentante le card di un determinato progetto, precedentemente restituite
-     */
-    public void setCards(List<Card> cards){
-        this.cards = cards;
-    }
 
     /**
      * Setta la variabile a false, quindi la richiesta non e' stata eseguita con successo

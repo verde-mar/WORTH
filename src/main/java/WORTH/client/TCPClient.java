@@ -76,7 +76,6 @@ public class TCPClient implements Client {
             client.read(buffer_response);
         buffer_response.flip();
         String message = StandardCharsets.UTF_8.decode(buffer_response).toString();
-        System.out.println("RISPOSTA DAL SERVER: " + message);
         return mapper.readValue(message, Response.class);
     }
 }

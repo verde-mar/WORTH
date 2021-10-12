@@ -171,16 +171,12 @@ public class Project implements Serializable {
      */
     public Card showCardProject(String cardname) {
         Card card = showCardList(to_Do, cardname);
-        System.out.println("card in todo? " + card);
         if (card == null) {
             card = showCardList(inProgress, cardname);
-            System.out.println("card in inProgress? " + card);
             if (card == null) {
                 card = showCardList(toBeRevised, cardname);
-                System.out.println("card in toBeRevised? " + card);
                 if (card == null) {
                     card = showCardList(done, cardname);
-                    System.out.println("card in done? " + card);
                 }
             }
         }

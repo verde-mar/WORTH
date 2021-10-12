@@ -6,13 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
+    UserManager userManager;
 
     /**
      * Costruttore della classe
      * @param projects Insieme totale dei progetti sul WORTH.server
      */
-    public Worker(ConcurrentHashMap<String, Project> projects) {
+    public Worker(ConcurrentHashMap<String, Project> projects) throws Exception {
         this.projects = projects;
+        userManager = UserManager.getIstance();
     }
 
     /**
@@ -26,11 +28,12 @@ public class Worker {
     public void addCard(String projectName, String cardname, String descr, String userName) throws Exception {
         Project project = projects.get(projectName);
         if(project!=null) {
-            if(project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if(project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 project.addCardProject(cardname, descr, projectName);
             }
             else {
-                throw new Exception("You are not allowed.");
+                throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
             }
         } else throw new Exception("That project doesn't exist.");
     }
@@ -46,12 +49,12 @@ public class Worker {
             Project project = projects.get(projectName);
             /* Se il progetto esiste */
             if (project != null) {
-                /* Se chi ha richiesto l'operazione e' membro del progetto */
-                if (project.isMember(userName)) {
+                /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+                if (project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                     /* Aggiunge userToAdd al progetto */
                     project.addPeople(userToAdd);
                 } else {
-                    throw new Exception("You are not allowed.");
+                    throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
                 }
             } else throw new Exception("That project doesn't exist.");
     }
@@ -68,12 +71,12 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if(project!=null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if(project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if(project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 /* Se la trova, restituisce la card cercata */
                 return project.showCardProject(cardname);
             }
-            else throw new Exception("You are not allowed.");
+            else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -90,8 +93,8 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if (project != null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if (project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if (project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 Card card = project.showCardProject(cardname);
                 /* Se la card esiste */
                 if(card != null) {
@@ -100,7 +103,7 @@ public class Worker {
                 } else {
                     throw new Exception("This card doesn't exist");
                 }
-            } else throw new Exception("You are not allowed.");
+            } else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -116,12 +119,12 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if(project!=null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if(project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if(project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 Card card = project.showCardProject(cardname);
                 return project.getHistory(card);
             }
-            else throw new Exception("You are not allowed.");
+            else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -135,10 +138,10 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if(project!=null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if (project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if (project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 project.cancelProject(projectName, projects);
-            } else throw new Exception("You are not allowed.");
+            } else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -153,11 +156,11 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if(project!=null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if(project.isMember(userName)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if(project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 return project;
             }
-            else throw new Exception("You are not allowed.");
+            else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -165,18 +168,20 @@ public class Worker {
      * Crea il progetto
      * @param projectName Nome del progetto
      * @param nickUtente Nickname dell'utente che ha richiesto la creazione
-     * @throws Exception Nel caso in cui il progetto esistesse gia'
+     * @throws Exception Nel caso di un errore generico
      */
     public void createProject(String projectName, String nickUtente) throws Exception {
-        /* Crea il progetto */
-        Project project = new Project(projectName);
-        /* Inserisce il progetto nella struttura in memoria */
-        Project prj = projects.putIfAbsent(projectName, project);
-        /* Se il progetto non esisteva gia' */
-        if(prj==null) {
-            project.addPeople(nickUtente);
-        }
-        else throw new Exception("The project was already there");
+        /* Se chi ha richiesto l'operazione e' online */
+        if(userManager.getUtente(nickUtente).isOnline()){
+             /* Crea il progetto */
+            Project project = new Project(projectName);
+            /* Inserisce il progetto nella struttura in memoria */
+            Project prj = projects.putIfAbsent(projectName, project);
+            /* Se il progetto non esisteva gia' */
+            if (prj == null) {
+                project.addPeople(nickUtente);
+            } else throw new Exception("The project was already there");
+        } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
     }
 
     /**
@@ -189,10 +194,10 @@ public class Worker {
         Project project = projects.get(projectName);
         /* Se il progetto esiste */
         if(project!=null) {
-            /* Se chi ha richiesto l'operazione e' membro del progetto */
-            if(project.isMember(name)) {
+            /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
+            if(project.isMember(name) && userManager.getUtente(name).isOnline()) {
                 return project.getMembers();
-            } else throw new Exception("You are not allowed.");
+            } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 }

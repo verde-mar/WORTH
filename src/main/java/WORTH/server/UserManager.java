@@ -89,7 +89,7 @@ public class UserManager {
             mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
         } else if(!utentiRegistrati.containsKey(nickName)) {
             throw new Exception("Login failed. You are not registered.");
-        } else throw new Exception(nickName + "isn't online");
+        } else throw new Exception(nickName + " isn't online");
     }
 
     /**
