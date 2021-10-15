@@ -254,7 +254,7 @@ public class SocketServices implements AutoCloseable{
      * @throws Exception Nel cas
      */
     public void registerRMIService(int portNumber) throws Exception {
-        RemoteInterface server = UserManager.getIstance();
+        RemoteInterface server = UserManager.getInstance();
         RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(server, 0);
 
         Registry registry = LocateRegistry.createRegistry(portNumber);

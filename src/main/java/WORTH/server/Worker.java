@@ -15,7 +15,7 @@ public class Worker {
      */
     public Worker(ConcurrentHashMap<String, Project> projects) throws Exception {
         this.projects = projects;
-        userManager = UserManager.getIstance();
+        userManager = UserManager.getInstance();
     }
 
     /**

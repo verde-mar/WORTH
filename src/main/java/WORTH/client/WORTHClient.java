@@ -289,7 +289,7 @@ public class WORTHClient implements AutoCloseable {
     public void setIPAddresses(List<Project> projects) throws IOException {
         for(Project project: projects){
             ProjectChat communicator = udpClient.getChat().putIfAbsent(project.getNameProject(), new ProjectChat());
-            if(communicator==null) udpClient.set(project.getAddress_udp(), project.getNameProject());
+            if(communicator==null) udpClient.set(project.getAddressUdp(), project.getNameProject());
         }
     }
 }

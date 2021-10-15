@@ -8,6 +8,8 @@ public class RegisteredFile {
     /* Struttura in memoria che si riferisce agli utenti registrati al servizio */
     private HashMap<String, User> utentiRegistrati;
 
+    public RegisteredFile(){}
+
     /**
      * Restituisce gli utenti registrati
      * @return HashMap<String, User> Struttura degli utenti registrati

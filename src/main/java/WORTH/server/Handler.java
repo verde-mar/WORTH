@@ -34,7 +34,7 @@ public class Handler implements Callable<Response>  {
     public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) throws Exception {
         this.buffer = buffer;
         /* Oggetto che rappresenta l'insieme dei  progetti nel server */
-        this.userManager = UserManager.getIstance();
+        this.userManager = UserManager.getInstance();
         objectMapper = new ObjectMapper();
         task_response = new Response();
         worker = new Worker(projects);

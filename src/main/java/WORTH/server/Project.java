@@ -1,13 +1,12 @@
 package WORTH.server;
 
 import WORTH.Persistence.CardFile;
-import WORTH.Persistence.UserFile;
+import WORTH.Persistence.ProjectUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.Serializable;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.*;
@@ -30,12 +29,15 @@ public class Project implements Serializable {
     @JsonIgnore /* Il progetto corrente */
     private File project;
     @JsonIgnore /* File contenente informazioni */
-    private UserFile userFile;
+    private ProjectUtils info;
     @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
     private ObjectMapper mapper;
-    private InetAddress address_udp;
-    private int port_udp;
-    AddressGenerator addressGenerator;
+    /* Indirizzo IP per la comunicazione UDP */
+    private InetAddress addressUdp;
+    /* Porta del server per la comunicazione UDP */ //todo: mi serve se tanto voglio sempre usare la porta 8082?
+    private int portUdp;
+    @JsonIgnore
+    private AddressGenerator addressGenerator;
 
 
     /**
@@ -48,41 +50,57 @@ public class Project implements Serializable {
      * @param nameProject Nome del progetto
      */
     public Project(String nameProject) throws Exception {
-        /* Inizializza i parametri */
+        /* Inizializza gli attributi */
         this.nameProject = nameProject;
         to_Do = Collections.synchronizedList(new LinkedList<>());
         inProgress = Collections.synchronizedList(new LinkedList<>());
         toBeRevised = Collections.synchronizedList(new LinkedList<>());
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
-        userFile = new UserFile();
+
         addressGenerator = AddressGenerator.getInstance();
+
         /* Crea la directory associata al progetto */
         project = new File("./projects/" + nameProject);
         mapper = new ObjectMapper();
         if(!project.exists()) {
+            /* Crea la directory */
             boolean mkdir_bool = project.mkdir();
-            userFile.setUtenti(members);
-            address_udp = addressGenerator.lookForAddress();
-            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + address_udp);
-            port_udp = 8082;
-            mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+
+            /* Inizializza e crea il file contenente i membri del progetto */
+            info = new ProjectUtils();
+            info.setUtenti(members);
+
+            /* Assegna all'attributo addressUdp un indirizzo IP */
+            addressUdp = addressGenerator.lookForAddress(nameProject);
+            info.setIpAddress(addressUdp);
+            System.out.println("addressUDP SE IL PROGETTO NON ESISTE: " + addressUdp);
+
+            /* Scrive i dati su disco */
+            mapper.writeValue(Paths.get("./projects/" + nameProject + "/info.json").toFile(), info);
         } else {
-            File members = new File("./projects/" + nameProject + "/members.json");
-            UserFile file = mapper.readValue(members, UserFile.class);
-            addMembers(file);
+            /* Legge da disco tutti i membri del progetto, indirizzo IP  e li carica in memoria */
+            File informations = new File("./projects/" + nameProject + "/info.json");
+            info = mapper.readValue(informations, ProjectUtils.class);
+            addMembers();
+            addressUdp = info.getIpAddress();
+
+            System.out.println("addressUDP SE IL PROGETTO ESISTE GIA': " + addressUdp);
+
+            /* Scorre tutte le card presenti su disco e le carica in memoria */
             File[] filesName = project.listFiles();
             assert filesName != null;
             for (File curr_f : filesName) {
-                if(!curr_f.isDirectory() && !curr_f.getName().equals("members.json")) {
+                if(!curr_f.isDirectory() && !curr_f.getName().equals("info.json")) {
                     CardFile cardFile = mapper.readValue(curr_f, CardFile.class);
                     int endIndex = curr_f.getName().indexOf(".");
                     addCard(curr_f.getName().substring(0, endIndex), cardFile.getDescription(), cardFile.getHistory(), cardFile.getCurrentList());
                 }
             }
-            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + address_udp);
-
+            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + addressUdp);
         }
+        //todo: devo capire cosa farmene di questa porta
+        portUdp = 8082;
     }
 
     /**
@@ -148,14 +166,14 @@ public class Project implements Serializable {
         boolean remove_prj = false;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
             remove_prj = projects.remove(projectName, projects.get(projectName));
-            UserManager userManager = UserManager.getIstance();
+            UserManager userManager = UserManager.getInstance();
             for(String nameUser : members) {
                 User user = userManager.getUtente(nameUser);
                 user.getList_prj().remove(this);
             }
         }
         if(remove_prj) {
-            addressGenerator.setFalse(address_udp);
+            addressGenerator.resetAddress(addressUdp);
             /* Cancella il progetto dal disco */
             boolean eliminate = project.delete();
             if (!eliminate) {
@@ -305,7 +323,7 @@ public class Project implements Serializable {
      */
     public synchronized void addPeople(String userToAdd) throws Exception {
         /* Cerca l'utente il cui nickname e' userToAdd */
-        User user = UserManager.getIstance().getUtenti().get(userToAdd);
+        User user = UserManager.getInstance().getUtenti().get(userToAdd);
         /* Se l'utente da aggiungere non esiste */
         if (user != null) {
             /* Se l'utente non e' gia' membro del progetto */
@@ -315,8 +333,8 @@ public class Project implements Serializable {
                 /* Aggiunge il progetto alla lista dei progetti a cui l'utente appartiene */
                 user.getList_prj().add(this);
                 /* Aggiorna il file dei membri del progetto presente su disco */
-                userFile.setUtenti(members);
-                mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
+                info.setUtenti(members);
+                mapper.writeValue(Paths.get("./projects/" + nameProject + "/info.json").toFile(), info);
             } else {
                 throw new Exception("The user is already member of the project");
             }
@@ -371,25 +389,24 @@ public class Project implements Serializable {
     /**
      * Nella fase iniziale di inizializzazione delle strutture dati in memoria,
      * questa funzione viene usata per aggiungere un utente al progetto
-     * @param mbrs File in cui sono contenuti gli utenti gia' membri del progetto
      */
-    public void addMembers(UserFile mbrs) {
-        members.addAll(mbrs.getUtenti());
+    public void addMembers() {
+        members.addAll(info.getUtenti());
     }
 
-    public InetAddress getAddress_udp() {
-        return address_udp;
+    public InetAddress getAddressUdp() {
+        return addressUdp;
     }
 
-    public void setAddress_udp(InetAddress address_udp) {
-        this.address_udp = address_udp;
+    public void setAddressUdp(InetAddress addressUdp) {
+        this.addressUdp = addressUdp;
     }
 
-    public void setPort_udp(int port_udp) {
-        this.port_udp = port_udp;
+    public void setPortUdp(int portUdp) {
+        this.portUdp = portUdp;
     }
 
-    public int getPort_udp() {
-        return port_udp;
+    public int getPortUdp() {
+        return portUdp;
     }
 }

@@ -1,11 +1,14 @@
 package WORTH.Persistence;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.List;
 
-public class UserFile implements Serializable {
+public class ProjectUtils implements Serializable {
     /* Lista dei nomi degli utenti */
     private List<String> utenti;
+    /* Indirizzo IP associato al progetto */
+    private InetAddress ipAddress;
 
     /**
      * Restituisce la lista dei nomi degli utenti
@@ -22,4 +25,21 @@ public class UserFile implements Serializable {
     public void setUtenti(List<String> utenti) {
         this.utenti = utenti;
     }
+
+    /**
+     *
+     * @return
+     */
+    public InetAddress getIpAddress() {
+        return ipAddress;
+    }
+
+    /**
+     *
+     * @param ipAddress
+     */
+    public void setIpAddress(InetAddress ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
 }

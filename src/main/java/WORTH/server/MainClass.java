@@ -53,7 +53,9 @@ public class MainClass {
                 String name = file_corr.getName();
                 /* Controlla se il progetto corrente e' una directory */
                 if (file_corr.isDirectory()) {
+                    /* Crea un nuovo progetto in memoria */
                     Project project = new Project(name);
+                    /* Lo inserisce nella struttura in memoria del server */
                     Project prj = projects.putIfAbsent(name, project);
                     if(prj == null){
                         System.out.println("A new project was added");

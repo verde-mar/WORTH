@@ -4,7 +4,6 @@ import WORTH.Persistence.RegisteredFile;
 import WORTH.shared.rmi.NotifyInterface;
 import WORTH.shared.rmi.RemoteInterface;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class UserManager implements RemoteInterface {
     /* Mapper necessario all'interazione con il file JSON */
     private final ObjectMapper mapper;
     /* File contenente gli utenti registrati */
-    private final File utentiRegistrati_ondisk;
+    private final File registeredOnDisk;
     /* File JSON per gli utenti registrati al servizio */
     private RegisteredFile registeredFile;
     /* Lista dei client registrati al servizio di notifica */
@@ -35,27 +34,27 @@ public class UserManager implements RemoteInterface {
      */
     private UserManager() throws Exception {
         mapper = new ObjectMapper();
-        utentiRegistrati_ondisk = new File("./" + "UsersOnDisk.json");
+        registeredOnDisk = new File("./" + "registeredUsers.json");
         registeredFile = new RegisteredFile();
         clients = new ArrayList<>();
 
         /* Se il file degli utenti registrati esiste gia'*/
-        if(utentiRegistrati_ondisk.exists()){
+        if(registeredOnDisk.exists()){
             /* Legge il valore dal disco */
-            registeredFile = mapper.readValue(utentiRegistrati_ondisk, RegisteredFile.class);
+            registeredFile = mapper.readValue(registeredOnDisk, RegisteredFile.class);
             /* E aggiorna la struttura in memoria */
             utentiRegistrati = registeredFile.getUtentiRegistrati();
         }
         /* Se, invece, il file non esiste */
         else {
             /* Viene creato */
-            boolean created = utentiRegistrati_ondisk.createNewFile();
+            boolean created = registeredOnDisk.createNewFile();
             /* Se viene creato con successo, anche la struttura in memoria viene inizializzata */
             if(created)
                 utentiRegistrati = new HashMap<>();
             /* Se invece la creazione fallisce, viene lanciata una eccezione */
             else
-                throw new Exception("The creating of the confiuration file for users failed");
+                throw new Exception("The creating of the configuration file for users failed");
         }
 
     }
@@ -65,7 +64,7 @@ public class UserManager implements RemoteInterface {
      * @return UserManager Istanza della classe
      * @throws Exception Nel caso non sia possibile creare il file di configurazione per gli utenti
      */
-    public static synchronized UserManager getIstance() throws Exception {
+    public static synchronized UserManager getInstance() throws Exception {
         if (instance == null)
             instance = new UserManager();
         return instance;
@@ -88,7 +87,7 @@ public class UserManager implements RemoteInterface {
                     user.setOnline();
                     /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
                     registeredFile.setUtentiRegistrati(utentiRegistrati);
-                    mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+                    mapper.writeValue(registeredOnDisk, registeredFile);
                     update();
                 }
                 /* Se, invece, la password non e' corretta */
@@ -120,7 +119,7 @@ public class UserManager implements RemoteInterface {
                 user.setOffline();
                 /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
                 registeredFile.setUtentiRegistrati(utentiRegistrati);
-                mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+                mapper.writeValue(registeredOnDisk, registeredFile);
                 update();
             }
             /* Se, invece, l'utente e' offline */
@@ -141,7 +140,7 @@ public class UserManager implements RemoteInterface {
      */
     public User getUtente(String nickutente) throws IOException {
         //registeredFile.setUtentiRegistrati(utentiRegistrati);
-        //mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+        //mapper.writeValue(registeredOnDisk, registeredFile);
         return utentiRegistrati.get(nickutente);
     }
 
@@ -151,7 +150,7 @@ public class UserManager implements RemoteInterface {
      */
     public HashMap<String, User> getUtenti() throws IOException {
         //registeredFile.setUtentiRegistrati(utentiRegistrati);
-        //mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+        //mapper.writeValue(registeredOnDisk, registeredFile);
         return utentiRegistrati;
     }
 
@@ -167,7 +166,7 @@ public class UserManager implements RemoteInterface {
         if(verify == null) {
             /* Aggiorna i file su disco e gli altri utenti di questa nuova registrazione */
             registeredFile.setUtentiRegistrati(utentiRegistrati);
-            mapper.writeValue(utentiRegistrati_ondisk, registeredFile);
+            mapper.writeValue(registeredOnDisk, registeredFile);
             update();
         }
         /* Se, invece, esisteva gia' */

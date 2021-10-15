@@ -90,7 +90,6 @@ public class MainClient {
         } else if(tokens.get(0).equals("read_chat") && login) {
             String projectName = tokens.get(1);
             worthClient.readChat(projectName);
-            //todo: devo settare la risposta in toString() per read chat e send chat
         } else if(tokens.get(0).equals("send_chat_msg") && login) {
             String projectName = tokens.get(1);
             String msg = tokens.get(2);
