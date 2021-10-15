@@ -75,9 +75,11 @@ public class Handler implements Callable<Response>  {
         try{
             parser();
             switch(task_request.getRequest()) {
-                /* Effettua il login */
+                /* Effettua il login e invia al client la lista dei progetti di cui fa parte */
                 case login : {
                     userManager.login(task_request.getNickUtente(), task_request.getPassword());
+                    User user = userManager.getUtente(task_request.getNickUtente());
+                    task_response.setProjects(user.getList_prj());
                     break;
                 }
                 /* Effettua il logout */
@@ -86,10 +88,9 @@ public class Handler implements Callable<Response>  {
                     break;
                 }
 
-                /* Restituisce la lista dei progetti di un determinato utente */
+                /* Restituisce la lista dei progetti di cui fa parte l'utente che ha richiesto l'operazione */
                 case listProjects : {
                     User user = userManager.getUtente(task_request.getNickUtente());
-                    System.out.println(user.getList_prj());
                     task_response.setProjects(user.getList_prj());
                     break;
                 }
@@ -103,6 +104,8 @@ public class Handler implements Callable<Response>  {
                 /* Crea il progetto */
                 case createProject : {
                     worker.createProject(task_request.getProjectName(), task_request.getNickUtente());
+                    User user = userManager.getUtente(task_request.getNickUtente());
+                    task_response.setProjects(user.getList_prj()); //todo: piu' elegante mettere un solo progetto
                     break;
                 }
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */

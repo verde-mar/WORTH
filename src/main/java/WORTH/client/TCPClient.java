@@ -13,10 +13,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * Classe che implementa l'invio e la ricezione di richieste e risposte, rispettivamente
  */
-public class TCPClient implements Client {
+public class TCPClient implements AutoCloseable{
     /* Socket necessaria pe rla connessione tcp */
-    SocketChannel client;
-    ObjectMapper mapper;
+    private final SocketChannel client;
+    private final ObjectMapper mapper;
 
     /**
      * Costruttore della classe
@@ -26,15 +26,6 @@ public class TCPClient implements Client {
     public TCPClient(SocketAddress address) throws IOException {
         client = SocketChannel.open(address);
         mapper = new ObjectMapper();
-    }
-
-    /**
-     * Restituisce l'indirizzo locale
-     * @return Object Indirizzo locale
-     * @throws IOException Eccezione nel caso di errore nella connessione
-     */
-    public Object getLocalAddress() throws IOException {
-        return client.getLocalAddress();
     }
 
     /**
@@ -49,7 +40,6 @@ public class TCPClient implements Client {
      * Invia una richiesta al server
      * @param request Richiesta da inviare al server
      */
-    @Override
     public void send(Request request) throws IOException {
         byte[] arrayRequest = mapper.writeValueAsBytes(request);
         ByteBuffer requestByteBuffer = ByteBuffer.allocate(Integer.BYTES + arrayRequest.length);
@@ -65,7 +55,6 @@ public class TCPClient implements Client {
      * @return Response La risposta del server
      * @throws IOException Nel caso di un errore nella comunicazione
      */
-    @Override
     public Response receive() throws IOException {
         ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
         while(lengthBuffer.hasRemaining())

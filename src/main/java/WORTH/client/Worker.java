@@ -6,7 +6,13 @@ import WORTH.shared.worthProtocol.Response;
 
 
 public class Worker {
+    /**
+     * La funzione stampa a video i parametri della risposta necessari all'utente per capire se questa e' avvenuta con successo o no;
+     * e, nel caso positivo, i dati che aveva richiesto.
+     * @param response Risposta dal server
+     */
     public static void toString(Response response) {
+        /* Se il server e' riuscito ad eseguire la richiesta */
         if(response.getDone()){
             System.out.println("< success: " + response.getRequest().name());
             /* In base alla richiesta, restituisce il parametro richiesto */
@@ -21,13 +27,13 @@ public class Worker {
                         System.out.println("< toDo: \n" + "cardName: " + card.getNameCard() + "\ncardDescription: " + card.getDescription() + "\ncardCurrentList: " + card.getCurrentList());
                     }
                     for(Card card : response.getProject().getInProgress()) {
-                        System.out.println("< inProgress: " + card.getNameCard() + card.getDescription() + card.getCurrentList());
+                        System.out.println("< inProgress: \n" + card.getNameCard() + "\ncardDescription: " + card.getDescription() + "\ncardCurrentList: " + card.getCurrentList());
                     }
                     for(Card card : response.getProject().getToBeRevised()) {
-                        System.out.println("< toBeRevised: " + card.getNameCard() + card.getDescription() + card.getCurrentList());
+                        System.out.println("< toBeRevised: \n" + card.getNameCard() +"\ncardDescription: " +  card.getDescription() + "\ncardCurrentList: " + card.getCurrentList());
                     }
                     for(Card card : response.getProject().getDone()) {
-                        System.out.println("< done: " + card.getNameCard() + card.getDescription() + card.getCurrentList());
+                        System.out.println("< done: \n" + card.getNameCard() + "\ncardDescription: " + card.getDescription() + "\ncardCurrentList: " + card.getCurrentList());
                     }
                     break;
                 }
@@ -45,10 +51,16 @@ public class Worker {
                     break;
                 }
             }
-        } else if(!response.getDone() && response.getExplanation()!=null) {
+        }
+        /* Se c'e' stato qualche fallimento */
+        else if(!response.getDone() && response.getExplanation()!=null) {
+            /* Stampa a video la causa del fallimento */
             System.err.println("< " + response.getExplanation());
-        } else {
-            System.out.println("< success: register");
+        }
+        /* Questo caso si riferisce ad operazioni fatti in UDP o in richiste RMI.
+        Per cui, se si arriva a questo punto, e' previsto che sia andato tutto bene */
+        else {
+            System.out.println("< success");
         }
     }
 }

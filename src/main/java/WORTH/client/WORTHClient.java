@@ -1,20 +1,26 @@
 package WORTH.client;
 
+import WORTH.server.Project;
 import WORTH.shared.worthProtocol.Request;
 import WORTH.shared.worthProtocol.Response;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Vector;
 
 
 public class WORTHClient implements AutoCloseable {
     private final TCPClient tcpClient;
+    private final UDPClient udpClient;
 
     /**
      * Costruttore della classe
      * @param tcpClient Oggetto che si occupa dell'interazione TCP con il server
      */
-    public WORTHClient(TCPClient tcpClient) {
+    public WORTHClient(TCPClient tcpClient, UDPClient udpClient) {
         this.tcpClient = tcpClient;
+        this.udpClient = udpClient;
     }
 
     /**
@@ -247,5 +253,43 @@ public class WORTHClient implements AutoCloseable {
         tcpClient.send(getCH);
 
         return tcpClient.receive();
+    }
+
+
+    /**
+     * Legge dalla chat i messaggi precedentemente inviati dagli utenti
+     * @param projectName Nome del progetto a cui appartiene la chat
+     */
+    public void readChat(String projectName) {
+        /* Preleva i messaggi */
+        Vector<String> msgs = udpClient.getMessages(projectName);
+        /* Scorre i messaggi, man mano che vengono letti, vengono anche eliminati */
+        for(int i = 0; i< msgs.size(); i++){
+            String msg = msgs.remove(i);
+            System.out.println("< " + msg);
+        }
+    }
+
+    /**
+     * Invia un messaggio nella chat del progetto
+     * @param projectName Nome del progetto
+     * @param message Messaggio da inviare
+     * @throws IOException Nel caso di un errore I/O
+     */
+    public void sendMsg(String projectName, String message) throws IOException {
+        InetAddress address = udpClient.getAddress(projectName);
+        udpClient.send(message, address, 8082);
+    }
+
+    /**
+     * Per ogni progetto di cui l'utente fa parte, vengono memorizzati l'indirizzo IP e la porta di destinazione
+     * @param projects Lista dei progetti di cui l'utente fa parte
+     * @throws IOException Nel caso di un errore I/O
+     */
+    public void setIPAddresses(List<Project> projects) throws IOException {
+        for(Project project: projects){
+            ProjectChat communicator = udpClient.getChat().putIfAbsent(project.getNameProject(), new ProjectChat());
+            if(communicator==null) udpClient.set(project.getAddress_udp(), project.getNameProject());
+        }
     }
 }

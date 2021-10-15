@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +32,10 @@ public class Project implements Serializable {
     @JsonIgnore /* File contenente informazioni */
     private UserFile userFile;
     @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
+    private InetAddress address_udp;
+    private int port_udp;
+    AddressGenerator addressGenerator;
 
 
     /**
@@ -51,13 +56,16 @@ public class Project implements Serializable {
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
         userFile = new UserFile();
-
+        addressGenerator = AddressGenerator.getInstance();
         /* Crea la directory associata al progetto */
         project = new File("./projects/" + nameProject);
         mapper = new ObjectMapper();
         if(!project.exists()) {
             boolean mkdir_bool = project.mkdir();
             userFile.setUtenti(members);
+            address_udp = addressGenerator.lookForAddress();
+            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + address_udp);
+            port_udp = 8082;
             mapper.writeValue(Paths.get("./projects/" + nameProject + "/members.json").toFile(), userFile);
         } else {
             File members = new File("./projects/" + nameProject + "/members.json");
@@ -72,6 +80,8 @@ public class Project implements Serializable {
                     addCard(curr_f.getName().substring(0, endIndex), cardFile.getDescription(), cardFile.getHistory(), cardFile.getCurrentList());
                 }
             }
+            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + address_udp);
+
         }
     }
 
@@ -137,7 +147,6 @@ public class Project implements Serializable {
         /* Cancella il progetto dalla struttura dati locale */
         boolean remove_prj = false;
         if(getTo_Do().size() == 0 && getInProgress().size() == 0 && getToBeRevised().size() == 0 && getDone().size()!=0) {
-            System.out.println("CONTROLLO DI CANCELLA IL PROGETTO");
             remove_prj = projects.remove(projectName, projects.get(projectName));
             UserManager userManager = UserManager.getIstance();
             for(String nameUser : members) {
@@ -146,6 +155,7 @@ public class Project implements Serializable {
             }
         }
         if(remove_prj) {
+            addressGenerator.setFalse(address_udp);
             /* Cancella il progetto dal disco */
             boolean eliminate = project.delete();
             if (!eliminate) {
@@ -215,8 +225,6 @@ public class Project implements Serializable {
      * @param card Carta da spostare
      */
     public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws Exception {
-        /* Cancella la lista corrente per aggiornarla */
-        card.eraseCurrentList();
         Collator myCollator = Collator.getInstance();
         /* In base alla lista di partenza, si effettua il movimento della carta, altrimenti viene lanciata una eccezione */
         if ("to_Do".equals(listaDiPart)) {
@@ -225,6 +233,8 @@ public class Project implements Serializable {
                 card.addHistory("removed from to_Do; ");
                 inProgress.add(card);
                 card.addHistory("added to inProgress; ");
+                /* Cancella la lista corrente per aggiornarla */
+                card.eraseCurrentList();
                 card.addCurrentList("inProgress");
             } else throw new Exception("Moving not allowed.");
         } else if ("inProgress".equals(listaDiPart)) {
@@ -233,12 +243,16 @@ public class Project implements Serializable {
                 card.addHistory("removed from inProgress; ");
                 done.add(card);
                 card.addHistory("added to done; ");
+                /* Cancella la lista corrente per aggiornarla */
+                card.eraseCurrentList();
                 card.addCurrentList("done");
             } else if (myCollator.compare(listadiDest, "toBeRevised") == 0 && !toBeRevised.contains(card)) {
                 inProgress.remove(card);
                 card.addHistory("removed from inProgress; ");
                 toBeRevised.add(card);
                 card.addHistory("added to toBeRevised; ");
+                /* Cancella la lista corrente per aggiornarla */
+                card.eraseCurrentList();
                 card.addCurrentList("toBeRevised");
             } else throw new Exception("Moving not allowed.");
         } else if ("toBeRevised".equals(listaDiPart)) {
@@ -247,12 +261,16 @@ public class Project implements Serializable {
                 card.addHistory("removed from toBeRevised; ");
                 done.add(card);
                 card.addHistory("added to done; ");
+                /* Cancella la lista corrente per aggiornarla */
+                card.eraseCurrentList();
                 card.addCurrentList("done");
             } else if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
                 toBeRevised.remove(card);
                 card.addHistory("removed from toBeRevised; ");
                 inProgress.add(card);
                 card.addHistory("added to inProress; ");
+                /* Cancella la lista corrente per aggiornarla */
+                card.eraseCurrentList();
                 card.addCurrentList("inProgress");
             } else throw new Exception("Moving not allowed.");
         } else {
@@ -357,5 +375,21 @@ public class Project implements Serializable {
      */
     public void addMembers(UserFile mbrs) {
         members.addAll(mbrs.getUtenti());
+    }
+
+    public InetAddress getAddress_udp() {
+        return address_udp;
+    }
+
+    public void setAddress_udp(InetAddress address_udp) {
+        this.address_udp = address_udp;
+    }
+
+    public void setPort_udp(int port_udp) {
+        this.port_udp = port_udp;
+    }
+
+    public int getPort_udp() {
+        return port_udp;
     }
 }

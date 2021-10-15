@@ -2,13 +2,15 @@ package WORTH.shared.worthProtocol;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.util.List;
+
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
     public enum RequestType{
         login,
         logout,
-        listUsers,
-        listOnlineUsers,
+        readChat,
+        sendChatMsg,
         listProjects,
         createProject,
         addMember,
@@ -31,7 +33,8 @@ public class Request {
     private Request.RequestType request;
     private String listaPartenza;
     private String listaDestinazione;
-
+    private String message;
+    private List<String> readMessages;
     /**
      * Restituisce la richiesta effettuata
      * @return String la richiesta effettuata
@@ -106,6 +109,14 @@ public class Request {
      */
     public String getPassword() {
         return password;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public List<String> getReadMessages() {
+        return readMessages;
     }
 
 

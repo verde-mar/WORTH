@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
+    /* Classe che si occupa delle registrazioni e dei login */
     UserManager userManager;
 
     /**
@@ -33,7 +34,7 @@ public class Worker {
                 project.addCardProject(cardname, descr, projectName);
             }
             else {
-                throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+                throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
             }
         } else throw new Exception("That project doesn't exist.");
     }
@@ -54,7 +55,7 @@ public class Worker {
                     /* Aggiunge userToAdd al progetto */
                     project.addPeople(userToAdd);
                 } else {
-                    throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+                    throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
                 }
             } else throw new Exception("That project doesn't exist.");
     }
@@ -76,7 +77,7 @@ public class Worker {
                 /* Se la trova, restituisce la card cercata */
                 return project.showCardProject(cardname);
             }
-            else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+            else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -103,7 +104,7 @@ public class Worker {
                 } else {
                     throw new Exception("This card doesn't exist");
                 }
-            } else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+            } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -124,7 +125,7 @@ public class Worker {
                 Card card = project.showCardProject(cardname);
                 return project.getHistory(card);
             }
-            else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+            else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 
@@ -141,7 +142,7 @@ public class Worker {
             /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
             if (project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
                 project.cancelProject(projectName, projects);
-            } else throw new Exception("You are not allowed. u are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+            } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception("That project doesn't exist.");
     }
 

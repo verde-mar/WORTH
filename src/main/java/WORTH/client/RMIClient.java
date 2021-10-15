@@ -9,16 +9,17 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteObject;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 
-public class RMIClient {
+public class RMIClient extends RemoteObject implements NotifyInterface {
     /* Oggetto remoto RMI */
     private final RemoteInterface rmiClient;
     /* Oggetto remoto per l'interazione RMI Callback */
     private NotifyInterface stub;
-    /* Lista degli utenti registrati */
-    private List<User> users;
+    private Collection<User> users;
 
     /**
      * Costruttore della classe
@@ -26,7 +27,7 @@ public class RMIClient {
      * @throws RemoteException Errore nella comunicazione
      * @throws NotBoundException Errore nel caso di un accesso al registro errato
      */
-    public RMIClient(String hostname) throws RemoteException, NotBoundException {
+    public RMIClient(String hostname) throws Exception {
         Registry registry = LocateRegistry.getRegistry(hostname, 8081);
         rmiClient = (RemoteInterface) registry.lookup("RegistrationService");
     }
@@ -37,7 +38,7 @@ public class RMIClient {
      * @param password Password del client
      * @throws RemoteException Nel caso di un errore nella comunicaizone
      */
-    public void register(String username, String password) throws IOException {
+    public void register(String username, String password) throws Exception {
         rmiClient.register(username, password);
     }
 
@@ -46,9 +47,9 @@ public class RMIClient {
      * @throws Exception Nel caso di un errore generico
      */
     public void registerForCallback() throws Exception {
-        NotifyInterface notify = new NotifyImpl();
-        stub = (NotifyInterface) UnicastRemoteObject.exportObject(notify, 0);
-        users = rmiClient.registerForCallback(stub);
+        stub = (NotifyInterface) UnicastRemoteObject.exportObject(this, 0);
+        users = (rmiClient.registerForCallback(stub)).values();
+        System.out.println(users);
     }
 
     /**
@@ -60,21 +61,33 @@ public class RMIClient {
     }
 
     /**
-     * Stampa i campi specificati in toString()
+     * Restituisce la lista degli utenti registrati al servizio
+     * @param users Lista degli utenti
+     * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
-    public void listUsers() {
+    @Override
+    public void setUsers(HashMap<String, User> users) throws RemoteException {
+        this.users = users.values();
+    }
+
+    /**
+     * Stampa la lista degli utenti online
+     * @throws RemoteException Nel caso di un errore nella comunicazione tramite RMI
+     */
+    public void listOnlineUsers() throws RemoteException {
         for(User user : users){
-            System.out.println(user.toString());
+            if(user.isOnline())
+                System.out.println("user: " + user.getName());
         }
     }
 
     /**
-     * Stampa il nome degli utenti online
+     * Stampa la lista degli utenti registrati al servizio e il loro stato
+     * @throws RemoteException Nel caso di un errore nella comunicazione tramite RMI
      */
-    public void listOnlineUsers() {
+    public void listUsers() throws RemoteException {
         for(User user : users){
-            if(user.isOnline())
-                System.out.println("user: " + user.getName());
+            System.out.println(user.toString());
         }
     }
 }

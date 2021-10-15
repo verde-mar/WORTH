@@ -6,13 +6,13 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 //todo: se uno scrittore sta scrivendo e un lettore vuole leggere, il lettore rischia di leggere le informazioni vecchie. E' un problema?
+//todo: indentazione dei file json
 public class MainClass {
     public static void main(String[] args) throws Exception {
         ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
         set(projects);
         try (SocketServices server = new SocketServices(8080, projects)) {
             server.start();
-
         } catch (Exception e) {
             System.err.println("Error in start operation");
             e.printStackTrace();

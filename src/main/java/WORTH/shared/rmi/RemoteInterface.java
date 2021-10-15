@@ -5,18 +5,13 @@ import WORTH.server.User;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.HashMap;
 
 public interface RemoteInterface extends Remote {
 
-    void register(String nickUtente, String password) throws IOException;
+    void register(String nickUtente, String password) throws Exception;
 
-    /**
-     * Registrazione per la callback
-     * @param clientInterface
-     * @return
-     */
-    List<User> registerForCallback(NotifyInterface clientInterface) throws Exception;
+    HashMap<String, User> registerForCallback(NotifyInterface clientInterface) throws Exception;
 
     /**
      * Cancella la registrazione per la callback
