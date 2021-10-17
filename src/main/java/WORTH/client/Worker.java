@@ -57,10 +57,5 @@ public class Worker {
             /* Stampa a video la causa del fallimento */
             System.err.println("< " + response.getExplanation());
         }
-        /* Questo caso si riferisce ad operazioni fatti in UDP o in richiste RMI.
-        Per cui, se si arriva a questo punto, e' previsto che sia andato tutto bene */
-        else {
-            System.out.println("< success");
-        }
     }
 }

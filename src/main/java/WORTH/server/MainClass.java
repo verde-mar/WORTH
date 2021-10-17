@@ -1,21 +1,18 @@
 package WORTH.server;
 
-
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 //todo: se uno scrittore sta scrivendo e un lettore vuole leggere, il lettore rischia di leggere le informazioni vecchie. E' un problema?
-//todo: indentazione dei file json
 public class MainClass {
     public static void main(String[] args) throws Exception {
         ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
         set(projects);
-        try (SocketServices server = new SocketServices(8080, projects)) {
+        try (SocketServices server = new SocketServices(8080, projects, args[0])) {
             server.start();
         } catch (Exception e) {
             System.err.println("Error in start operation");
-            e.printStackTrace();
         }
     }
 
@@ -32,9 +29,9 @@ public class MainClass {
             /* La directory viene creata */
             boolean worth_dir = direct.mkdir();
             if(!worth_dir)
-                throw new Exception("Couldnt create the directory 'projects'");
+                throw new Exception("I can't create the directory 'projects'");
         } else {
-            setProject(direct, projects);
+            setProjects(direct, projects);
         }
     }
 
@@ -44,7 +41,7 @@ public class MainClass {
      * @param projects Struttura in memoria che conterra' i progetti nel server
      * @throws Exception Nel caso in cui non possa essere creato un nuovo progetto in memoria
      */
-    private static void setProject(File direct, ConcurrentHashMap<String, Project> projects) throws Exception {
+    private static void setProjects(File direct, ConcurrentHashMap<String, Project> projects) throws Exception {
         if (direct.isDirectory()) {
             File[] fil = Objects.requireNonNull(direct).listFiles();
             assert fil != null;
@@ -56,12 +53,7 @@ public class MainClass {
                     /* Crea un nuovo progetto in memoria */
                     Project project = new Project(name);
                     /* Lo inserisce nella struttura in memoria del server */
-                    Project prj = projects.putIfAbsent(name, project);
-                    if(prj == null){
-                        System.out.println("A new project was added");
-                    } else {
-                        System.out.println("The project was already there");
-                    }
+                    projects.putIfAbsent(name, project);
                 }
             }
         }

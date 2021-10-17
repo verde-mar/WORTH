@@ -6,11 +6,10 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
+    /* Tipo di richiesta possibili */
     public enum RequestType{
         login,
         logout,
-        readChat,
-        sendChatMsg,
         listProjects,
         createProject,
         addMember,
@@ -23,18 +22,25 @@ public class Request {
         cancelProject,
     }
 
-    /* Parametri necessari per la richiesta */
+    /* Nome del progetto corrente */
     private String projectName;
+    /* Nome della card corrente */
     private String cardName;
+    /* Nickname dell'utente corrente */
     private String nickUtente;
+    /* Nickname dell'utente da aggiungere */
     private String nickToAdd;
+    /* Password corrente */
     private String password;
+    /* Descrizione della card corrente */
     private String description;
+    /* Richiesta corrente */
     private Request.RequestType request;
+    /* Lista di partenza della card corrente */
     private String listaPartenza;
+    /* Lista di destinazione della card corrente */
     private String listaDestinazione;
-    private String message;
-    private List<String> readMessages;
+
     /**
      * Restituisce la richiesta effettuata
      * @return String la richiesta effettuata
@@ -42,8 +48,13 @@ public class Request {
     public Request.RequestType getRequest() {
         return request;
     }
-    public void setRequest(RequestType login) {
-        request = login;
+
+    /**
+     * Inizializza la richiesta da effettuare
+     * @param type Tipo di richiesta
+     */
+    public void setRequest(RequestType type) {
+        request = type;
     }
 
     /**
@@ -55,6 +66,14 @@ public class Request {
     }
 
     /**
+     * Inizializza il campo relativo al nome dell'utente da aggiungere
+     * @param nickToAdd Nickname dell'utente da aggiungere
+     */
+    public void setNickToAdd(String nickToAdd) {
+        this.nickToAdd = nickToAdd;
+    }
+
+    /**
      * Restituisce il nome del progetto
      * @return String il nome del progetto
      */
@@ -62,21 +81,44 @@ public class Request {
         return projectName;
     }
 
+    /**
+     * Inizializza il nome del progetto corrente
+     * @param projectName Nome del progetto corrente
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
     /**
-     * Restituisce il nome della card
-     * @return String il nome della card
+     * Restituisce il nome della card corrente
+     * @return String il nome della card corrente
      */
     public String getCardName(){
         return cardName;
     }
 
     /**
-     * Restituisce il nickname dell'utente
-     * @return String il nickname dell'utente
+     * Inizializza il nome della card corrente
+     * @param cardName Nome della card corrente
+     */
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    /**
+     * Restituisce il nickname dell'utente corrente
+     * @return String il nickname dell'utente corrente
      */
     public String getNickUtente(){
         return nickUtente;
+    }
+
+    /**
+     * Inizializza il nickname dell'utente corrente
+     * @param nickUtente Nickname dell'utente corrente
+     */
+    public void setNickUtente(String nickUtente) {
+        this.nickUtente = nickUtente;
     }
 
     /**
@@ -88,11 +130,27 @@ public class Request {
     }
 
     /**
+     * Inizializza la descrizione della card corrente
+     * @param description Descrizione della card corrente
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Restituisce la lista di partenza per spostare una card
      * @return String la lista di partenza necessaria a spostare una card
      */
     public String getListaPartenza(){
         return listaPartenza;
+    }
+
+    /**
+     * Inizializza la lista di partenza per spostare una card
+     * @param listaPartenza Lista di partenza
+     */
+    public void setListaPartenza(String listaPartenza) {
+        this.listaPartenza = listaPartenza;
     }
 
     /**
@@ -104,51 +162,26 @@ public class Request {
     }
 
     /**
-     * Restituisce la password dell'utente che ha richiesto di effettuare il login
+     * Inizializza la lista di destinazione per spostare una card
+     * @param listaDestinazione Lista di destinazione
+     */
+    public void setListaDestinazione(String listaDestinazione) {
+        this.listaDestinazione = listaDestinazione;
+    }
+
+    /**
+     * Restituisce la password dell'utente
      * @return String Password dell'utente
      */
     public String getPassword() {
         return password;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<String> getReadMessages() {
-        return readMessages;
-    }
-
-
+    /**
+     * Inizializza la password dell'utente
+     * @param password Password dell'utente
+     */
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCardName(String cardName) {
-        this.cardName = cardName;
-    }
-
-    public void setListaDestinazione(String listaDestinazione) {
-        this.listaDestinazione = listaDestinazione;
-    }
-
-    public void setListaPartenza(String listaPartenza) {
-        this.listaPartenza = listaPartenza;
-    }
-
-    public void setNickToAdd(String nickToAdd) {
-        this.nickToAdd = nickToAdd;
-    }
-
-    public void setNickUtente(String nickUtente) {
-        this.nickUtente = nickUtente;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
     }
 }

@@ -48,7 +48,7 @@ public class UDPClient extends Thread implements AutoCloseable {
      * Invia un messaggio nella chat del progetto
      * @param message Messaggio da inviare
      * @param address Indirizzo IP a cui mandare il messaggio
-     * @param destination_port Porta di destinazione //todo: ma se imposto sempre 8082 questo parametro non ci deve essere. Ma va bene che imposti sempre 8082?
+     * @param destination_port Porta di destinazione
      * @throws IOException Nel caso di un errore I/O
      */
     public void send(String message, InetAddress address, int destination_port) throws IOException {
@@ -76,14 +76,14 @@ public class UDPClient extends Thread implements AutoCloseable {
      * Restituisce i messaggi contenuti nel buffer, e che non erano ancora stati letti dall'utente
      * @param projectName Nome del progetto la cui chat e' utilizzata in questo momento
      * @return Vector<String> Il vettore dei messaggi ancora da leggere
+     * @throws Exception Nel caso in cui il progetto non esista
      */
-    public Vector<String> getMessages(String projectName){
-        try {
-            return chat.get(projectName).getMessages();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public Vector<String> getMessages(String projectName) throws Exception {
+        ProjectChat project = chat.get(projectName);
+        if(project!=null)
+            return project.getMessages();
+        else
+            throw new Exception(projectName + " does not exist");
 
     }
 
@@ -103,9 +103,14 @@ public class UDPClient extends Thread implements AutoCloseable {
      * Restituisce l'indirizzo IP associato al progetto
      * @param projectName Nome del progetto
      * @return InetAddress Indirizzo IP del progetto
+     * @throws Exception Nel caso in cui il progetto non esista
      */
-    public InetAddress getAddress(String projectName){
-        return chat.get(projectName).getAddress();
+    public InetAddress getAddress(String projectName) throws Exception {
+        ProjectChat projectChat = chat.get(projectName);
+        if(projectChat!=null)
+            return projectChat.getAddress();
+        else
+            throw new Exception(projectName + " does not exist");
     }
 
     /**

@@ -1,4 +1,4 @@
-package WORTH.Persistence;
+package WORTH.persistence;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -27,16 +27,16 @@ public class ProjectUtils implements Serializable {
     }
 
     /**
-     *
-     * @return
+     * Restituisce l'indirizzo IP del progetto
+     * @return InetAddress Indirizzo IP del progetto
      */
     public InetAddress getIpAddress() {
         return ipAddress;
     }
 
     /**
-     *
-     * @param ipAddress
+     * Inizializza l'indirizzo IP del progetto
+     * @param ipAddress Indirizzo IP
      */
     public void setIpAddress(InetAddress ipAddress) {
         this.ipAddress = ipAddress;

@@ -1,7 +1,7 @@
 package WORTH.server;
 
-import WORTH.Persistence.CardFile;
-import WORTH.Persistence.ProjectUtils;
+import WORTH.persistence.CardFile;
+import WORTH.persistence.ProjectUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.text.Collator;
 
+//todo: indentazione dei file json
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;
@@ -34,14 +35,11 @@ public class Project implements Serializable {
     private ObjectMapper mapper;
     /* Indirizzo IP per la comunicazione UDP */
     private InetAddress addressUdp;
-    /* Porta del server per la comunicazione UDP */ //todo: mi serve se tanto voglio sempre usare la porta 8082?
-    private int portUdp;
-    @JsonIgnore
+    @JsonIgnore /* Composizione della classe AddressGenerator. La classe contiene metodi per determinare l'indirizzo IP da associare al progetto */
     private AddressGenerator addressGenerator;
 
-
     /**
-     * Costruttore vuoto della classe necessario a Jackson
+     * Costruttore vuoto della classe necessario per la serializzazione/deserializzazione del file JSON
      */
     public Project(){}
 
@@ -58,6 +56,7 @@ public class Project implements Serializable {
         done = Collections.synchronizedList(new LinkedList<>());
         members = Collections.synchronizedList(new LinkedList<>());
 
+        /* Ottiene l'istanza di AddressGenerator */
         addressGenerator = AddressGenerator.getInstance();
 
         /* Crea la directory associata al progetto */
@@ -67,25 +66,30 @@ public class Project implements Serializable {
             /* Crea la directory */
             boolean mkdir_bool = project.mkdir();
 
-            /* Inizializza e crea il file contenente i membri del progetto */
+            /* Inizializza e crea il file contenente i membri del progetto e l'indirizzo IP associato al progetto */
             info = new ProjectUtils();
+            System.out.println("PRIMA DELLA SET UTENTI IN NEW PROJECT");
             info.setUtenti(members);
+            System.out.println("DOPO LA SET UTENTI IN NEW PROJECT");
 
             /* Assegna all'attributo addressUdp un indirizzo IP */
-            addressUdp = addressGenerator.lookForAddress(nameProject);
+            try {
+                addressUdp = addressGenerator.lookForAddress(nameProject);
+            } catch(Exception e) {
+                System.out.println("STO CERCANDO UN NUOVO INDIRIZZO, SUBITO DOPO LA LOOKFORADDRESS: " + addressUdp);
+                e.printStackTrace();
+            }
             info.setIpAddress(addressUdp);
-            System.out.println("addressUDP SE IL PROGETTO NON ESISTE: " + addressUdp);
+            System.out.println(addressUdp + "IN CREATING A NEW PROJECT");
 
-            /* Scrive i dati su disco */
+            /* Scrive i dati di cui sopra su disco */
             mapper.writeValue(Paths.get("./projects/" + nameProject + "/info.json").toFile(), info);
         } else {
-            /* Legge da disco tutti i membri del progetto, indirizzo IP  e li carica in memoria */
+            /* Legge da disco i membri del progetto e l'indirizzo IP, caricandoli poi in memoria */
             File informations = new File("./projects/" + nameProject + "/info.json");
             info = mapper.readValue(informations, ProjectUtils.class);
             addMembers();
             addressUdp = info.getIpAddress();
-
-            System.out.println("addressUDP SE IL PROGETTO ESISTE GIA': " + addressUdp);
 
             /* Scorre tutte le card presenti su disco e le carica in memoria */
             File[] filesName = project.listFiles();
@@ -97,10 +101,7 @@ public class Project implements Serializable {
                     addCard(curr_f.getName().substring(0, endIndex), cardFile.getDescription(), cardFile.getHistory(), cardFile.getCurrentList());
                 }
             }
-            System.out.println("SONO NEL COSTRUTTORE DI PROJECT, E STO SETTANDO L'INDIRIZZO MULTICAST: " + addressUdp);
         }
-        //todo: devo capire cosa farmene di questa porta
-        portUdp = 8082;
     }
 
     /**
@@ -402,11 +403,4 @@ public class Project implements Serializable {
         this.addressUdp = addressUdp;
     }
 
-    public void setPortUdp(int portUdp) {
-        this.portUdp = portUdp;
-    }
-
-    public int getPortUdp() {
-        return portUdp;
-    }
 }

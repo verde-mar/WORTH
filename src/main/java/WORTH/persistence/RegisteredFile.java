@@ -1,11 +1,11 @@
-package WORTH.Persistence;
+package WORTH.persistence;
 
 import WORTH.server.User;
 
 import java.util.HashMap;
 
 public class RegisteredFile {
-    /* Struttura in memoria che si riferisce agli utenti registrati al servizio */
+    /* Struttura in memoria che si riferisce agli utenti registrati a WORTH */
     private HashMap<String, User> utentiRegistrati;
 
     public RegisteredFile(){}

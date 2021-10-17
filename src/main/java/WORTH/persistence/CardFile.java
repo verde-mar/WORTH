@@ -1,4 +1,4 @@
-package WORTH.Persistence;
+package WORTH.persistence;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class CardFile {
     private String currentList;
 
     /**
-     * Inizializza la variabile this.currentList
+     * Inizializza la variabile currentList
      * @param currentList Parametro con cui inizializzare this.concurrentList
      */
     public void setCurrentList(String currentList) {
@@ -21,7 +21,7 @@ public class CardFile {
     }
 
     /**
-     * Inizializza la variabile this.description
+     * Inizializza la variabile description
      * @param description Parametro con cui inizializzare this.description
      */
     public void setDescription(String description) {
@@ -29,7 +29,7 @@ public class CardFile {
     }
 
     /**
-     * Inizializza la variabile this.nameCard
+     * Inizializza la variabile nameCard
      * @param nameCard Parametro con cui inizializzare this.nameCard
      */
     public void setNameCard(String nameCard){
@@ -37,7 +37,7 @@ public class CardFile {
     }
 
     /**
-     * Inizializza la list this.history
+     * Inizializza la history
      * @param history Parametro con cui inizializzare this.history
      */
     public void setHistory(List<String> history){

@@ -11,7 +11,9 @@ import java.util.Vector;
 
 
 public class WORTHClient implements AutoCloseable {
+    /* Istanza della classe TCPClient contenente i metodi per l'interazione TCP con il server */
     private final TCPClient tcpClient;
+    /* Thread che si occupa dell'interazione connectionless con il server */
     private final UDPClient udpClient;
 
     /**
@@ -104,7 +106,7 @@ public class WORTHClient implements AutoCloseable {
      * @return Response La risposta del server
      * @throws IOException Nel caso di un errore I/O
      */
-    public Response addCard(String nickUtente, String projectName, String cardName, String description) throws IOException {
+    public Response addCard(String nickUtente, String projectName, String cardName, String description) throws IOException { //todo: non ci deve essere per forza la description
         Request addCard = new Request();
         addCard.setNickUtente(nickUtente);
         addCard.setProjectName(projectName);
@@ -260,23 +262,21 @@ public class WORTHClient implements AutoCloseable {
      * Legge dalla chat i messaggi precedentemente inviati dagli utenti
      * @param projectName Nome del progetto a cui appartiene la chat
      */
-    public void readChat(String projectName) {
-        /* Preleva i messaggi */
-        Vector<String> msgs = udpClient.getMessages(projectName);
+    public void readChat(String projectName) throws Exception {
         /* Scorre i messaggi, man mano che vengono letti, vengono anche eliminati */
-        for(int i = 0; i< msgs.size(); i++){
-            String msg = msgs.remove(i);
+        for (String msg : udpClient.getMessages(projectName)) {
             System.out.println("< " + msg);
         }
+        udpClient.getMessages(projectName).removeAllElements();
     }
 
     /**
      * Invia un messaggio nella chat del progetto
      * @param projectName Nome del progetto
      * @param message Messaggio da inviare
-     * @throws IOException Nel caso di un errore I/O
+     * @throws Exception Nel caso di un errore I/O oppure il progetto di cui si cerca l'indirizzo IP non esista
      */
-    public void sendMsg(String projectName, String message) throws IOException {
+    public void sendMsg(String projectName, String message) throws Exception {
         InetAddress address = udpClient.getAddress(projectName);
         udpClient.send(message, address, 8082);
     }

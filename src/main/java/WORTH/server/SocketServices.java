@@ -45,7 +45,7 @@ public class SocketServices implements AutoCloseable{
      * @param projects Progetti iniziali gia' presenti sul server
      * @throws IOException Nel caso in cui ci sia un errore di tipo I/O
      */
-    public SocketServices(int portNumber, ConcurrentHashMap<String, Project> projects) throws IOException {
+    public SocketServices(int portNumber, ConcurrentHashMap<String, Project> projects, String nameServer) throws IOException {
         /* Inizializzazione del threadpool */
         threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
@@ -55,7 +55,7 @@ public class SocketServices implements AutoCloseable{
         /* Crea il welcoming socket */
         channel = ServerSocketChannel.open();
         channel.configureBlocking(false);
-        channel.bind(new InetSocketAddress("localhost", portNumber));
+        channel.bind(new InetSocketAddress(nameServer, portNumber));
 
         /* Registra il channel */
         channel.register(selector, SelectionKey.OP_ACCEPT);
@@ -67,8 +67,9 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * La funzione associa ad ogni richiesta di un WORTH.client un thread del threadPool
-     * @param buffer contenente la richiesta in JSON
-     * @return Future<WORTH.server.Message> un thread del threadpool
+     * @param buffer Contenente la richiesta in JSON
+     * @return Future<WORTH.server.Message> Un thread del threadpool
+     * @throws Exception Nel caso in cui la creazione dell'Handler non vada a buon fine
      */
     private Future<Response> elaborateRequest(ByteBuffer buffer) throws Exception {
         return threadPool.submit(new Handler(buffer, projects));
@@ -76,8 +77,8 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * La funzione fa girare il selector finche' il thread main non viene interrotto
-     * @throws IOException se avviene un errore nell'I/O
-     * @throws InterruptedException se avviene un errore nella lettura del messaggio in readMessage(key)
+     * @throws Exception Nel caso in cui ci siano errori relativi all'esecuzione delle richieste del client,
+     *                  oppure ic siano errori I/O, o nella lettura/scrittura dei messaggi dal/al client
      */
     public void start() throws Exception {
         System.out.printf("TCP Server started on local address %s\n", channel.getLocalAddress());
@@ -114,8 +115,8 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Registra quel WORTH.client per operazioni in lettura
-     * @param key chiave associata al channel
-     * @throws IOException se avviene un errore nell'I/O
+     * @param key Chiave associata al channel
+     * @throws IOException Nel caso in cui ci sia un errore nell'I/O
      */
     private void registerClient(SelectionKey key) throws IOException {
         ServerSocketChannel server = (ServerSocketChannel) key.channel();
@@ -131,9 +132,9 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Legge il messaggio inviato dal WORTH.client
-     * @param key chiave associata al
-     * @throws IOException se avviene un errore nell'I/O
-     * @throws InterruptedException se il thread viene interrotto durante la sleep()
+     * @param key Chiave associata al
+     * @throws IOException Se avviene un errore nell'I/O
+     * @throws InterruptedException Se il thread viene interrotto durante la sleep()
      */
     private void readMessage(SelectionKey key) throws Exception {
         /* Contiene i dati */
@@ -239,8 +240,8 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * Effettua la close() della classe
-     * @throws IOException Nel caso di un errore IO
+     * Effettua la close() del selector e del channel
+     * @throws IOException Nel caso di un errore I/O
      */
     @Override
     public void close() throws IOException {
@@ -251,7 +252,7 @@ public class SocketServices implements AutoCloseable{
     /**
      * Inizializzazione degli oggetti necessari al servizio RMI
      * @param portNumber Numero di porta necessaria all'esportazione degli oggetti
-     * @throws Exception Nel cas
+     * @throws Exception Nel caso in cui l'inizializzazione non vada a buon fine
      */
     public void registerRMIService(int portNumber) throws Exception {
         RemoteInterface server = UserManager.getInstance();

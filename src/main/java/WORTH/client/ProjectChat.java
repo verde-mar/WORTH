@@ -9,6 +9,7 @@ public class ProjectChat {
     /* Vettore dei messaggi da leggere */
     private final Vector<String> messages;
 
+
     /**
      * Costruttore della classe
      */
@@ -47,4 +48,5 @@ public class ProjectChat {
     public InetAddress getAddress() {
         return address;
     }
+
 }

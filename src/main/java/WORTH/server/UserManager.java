@@ -1,16 +1,16 @@
 package WORTH.server;
 
-import WORTH.Persistence.RegisteredFile;
-import WORTH.shared.rmi.NotifyInterface;
+import WORTH.persistence.RegisteredFile;
+import WORTH.shared.rmi.NotifyUsersInterface;
 import WORTH.shared.rmi.RemoteInterface;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -26,7 +26,7 @@ public class UserManager implements RemoteInterface {
     /* File JSON per gli utenti registrati al servizio */
     private RegisteredFile registeredFile;
     /* Lista dei client registrati al servizio di notifica */
-    private final List<NotifyInterface> clients;
+    private final List<NotifyUsersInterface> clients;
 
     /**
      * Costruttore della classe
@@ -34,6 +34,7 @@ public class UserManager implements RemoteInterface {
      */
     private UserManager() throws Exception {
         mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         registeredOnDisk = new File("./" + "registeredUsers.json");
         registeredFile = new RegisteredFile();
         clients = new ArrayList<>();
@@ -109,6 +110,7 @@ public class UserManager implements RemoteInterface {
     /**
      * Effettua il logout dell'utente
      * @param nickName Nickname dell'utente
+     * @throws Exception Nel caso in cui il logout non vada a buon fine
      */
     public void logout(String nickName) throws Exception {
         /* Se l'utente e' registrato */
@@ -136,21 +138,25 @@ public class UserManager implements RemoteInterface {
     /**
      * Restituisce l'utente con il nickname nickutente
      * @param nickutente Nickname dell'utente cercato
-     * @return String Restituisce l'utente con il nickname nickutente
+     * @return User Restituisce l'utente con il nickname nickutente
+     * @throws IOException Nel caso di un errore nella scrittura su file
      */
     public User getUtente(String nickutente) throws IOException {
-        //registeredFile.setUtentiRegistrati(utentiRegistrati);
-        //mapper.writeValue(registeredOnDisk, registeredFile);
+        registeredFile.setUtentiRegistrati(utentiRegistrati);
+        mapper.writeValue(registeredOnDisk, registeredFile);
         return utentiRegistrati.get(nickutente);
     }
 
     /**
      * Restituisce la struttura dati contenente gli utenti registrati
-     * @return HashMap<String, User> insieme degli utenti registrati
+     * @return HashMap<String, User> Insieme degli utenti registrati
+     * @throws IOException Nel caso di un errore nella scrittura su file
      */
     public HashMap<String, User> getUtenti() throws IOException {
-        //registeredFile.setUtentiRegistrati(utentiRegistrati);
-        //mapper.writeValue(registeredOnDisk, registeredFile);
+        /* Aggiorna la struttura dati da restituire  */
+        registeredFile.setUtentiRegistrati(utentiRegistrati);
+        mapper.writeValue(registeredOnDisk, registeredFile);
+
         return utentiRegistrati;
     }
 
@@ -176,13 +182,13 @@ public class UserManager implements RemoteInterface {
     }
 
     /**
-     * //todo
-     * @param clientInterface
-     * @return
-     * @throws Exception
+     * Registra un utente al servizio di notifica RMICallback
+     * @param clientInterface Oggetto di tipo NotifyInterface rappresentante un client che si iscrive al servizio di notifica RMICallback
+     * @return HashMap<String, User> Insieme degli utenti registrati a WORTH
+     * @throws Exception Nel caso in cui l'operazione non vada a buon fine
      */
     @Override
-    public synchronized HashMap<String, User> registerForCallback(NotifyInterface clientInterface) throws Exception {
+    public synchronized HashMap<String, User> UsersCallback(NotifyUsersInterface clientInterface) throws Exception {
         if (!clients.contains(clientInterface)) {
             clients.add(clientInterface);
             System.out.println("New client registered." );
@@ -191,12 +197,12 @@ public class UserManager implements RemoteInterface {
     }
 
     /**
-     * //todo
-     * @param clientInterface
-     * @throws RemoteException
+     * Elimina un cerco utente dal servizio di notifica RMICallback
+     * @param clientInterface Oggetto di tipo NotifyInterface rappresentante un client che si iscrive al servizio di notifica RMICallback
+     * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
     @Override
-    public synchronized void unregisterForCallback(NotifyInterface clientInterface) throws RemoteException {
+    public synchronized void UserUncallback(NotifyUsersInterface clientInterface) throws RemoteException {
         if(clients.remove(clientInterface))
             System.out.println("Client unregistered");
         else
@@ -204,15 +210,12 @@ public class UserManager implements RemoteInterface {
     }
 
     /**
-     * //todo
-     * @throws RemoteException
+     * La funzione notifica a tutti i client iscritti quando ci sono degli aggiornamenti, e quali sono
+     * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
     public synchronized void update() throws RemoteException {
-        Iterator<NotifyInterface> i = clients.iterator();;
-        while(i.hasNext()){
-            NotifyInterface client = i.next();
+        for (NotifyUsersInterface client : clients) {
             client.setUsers(utentiRegistrati);
-            System.out.println("client in update : " + client);
         }
     }
 

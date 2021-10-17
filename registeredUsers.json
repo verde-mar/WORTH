@@ -1,1 +1,72 @@
-{"utentiRegistrati":{"utente1":{"name":"utente1","password":"utente1","list_prj":[{"nameProject":"casa","to_Do":[],"inProgress":[],"toBeRevised":[],"done":[],"members":["utente1"],"addressUdp":"239.46.123.44","portUdp":8082},{"nameProject":"nano","to_Do":[],"inProgress":[],"toBeRevised":[],"done":[],"members":["utente1"],"addressUdp":"239.51.122.180","portUdp":8082}],"online":true}}}
+{
+  "utentiRegistrati" : {
+    "utente1" : {
+      "name" : "utente1",
+      "password" : "utente1",
+      "list_prj" : [ {
+        "nameProject" : "casa",
+        "to_Do" : [ {
+          "nameCard" : "card1",
+          "description" : "\"casa\"",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        }, {
+          "nameCard" : "card2",
+          "description" : "\"singing\"",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        }, {
+          "nameCard" : "card4",
+          "description" : null,
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        }, {
+          "nameCard" : "card5",
+          "description" : "\"io sono card5\"",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        } ],
+        "inProgress" : [ ],
+        "toBeRevised" : [ ],
+        "done" : [ ],
+        "members" : [ "utente1" ],
+        "addressUdp" : "239.0.46.123"
+      } ],
+      "online" : false
+    },
+    "utente2" : {
+      "name" : "utente2",
+      "password" : "utente2",
+      "list_prj" : [ {
+        "nameProject" : "casa",
+        "to_Do" : [ {
+          "nameCard" : "card2",
+          "description" : "\"singing\"",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        }, {
+          "nameCard" : "card1",
+          "description" : "\"casa\"",
+          "history" : [ "added to to_Do; " ],
+          "currentList" : "to_Do"
+        } ],
+        "inProgress" : [ {
+          "nameCard" : "card5",
+          "description" : "\"io sono card5\"",
+          "history" : [ "added to to_Do; ", "removed from to_Do; ", "added to inProgress; " ],
+          "currentList" : "inProgress"
+        }, {
+          "nameCard" : "card4",
+          "description" : null,
+          "history" : [ "added to to_Do; ", "removed from to_Do; ", "added to inProgress; " ],
+          "currentList" : "inProgress"
+        } ],
+        "toBeRevised" : [ ],
+        "done" : [ ],
+        "members" : [ "utente1", "utente2" ],
+        "addressUdp" : "239.0.46.123"
+      } ],
+      "online" : false
+    }
+  }
+}

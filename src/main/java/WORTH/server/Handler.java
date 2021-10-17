@@ -29,24 +29,26 @@ public class Handler implements Callable<Response>  {
     /* Composizione della classe UserManager. La classe contiene metodi ausiliari per la classe corrente */
     private final UserManager userManager;
 
-
-
+    /**
+     * Costruttore dela classe
+     * @param buffer Buffer contenente la richiesta del client
+     * @param projects Insieme dei progetti gia' presenti in memoria
+     * @throws Exception Nel caso in cui la creazione dell'istanza di userManager o di una di Worker non vada a buon fine
+     */
     public Handler(ByteBuffer buffer, ConcurrentHashMap<String, Project> projects) throws Exception {
         this.buffer = buffer;
-        /* Oggetto che rappresenta l'insieme dei  progetti nel server */
         this.userManager = UserManager.getInstance();
         objectMapper = new ObjectMapper();
         task_response = new Response();
         worker = new Worker(projects);
-
     }
 
     /**
      * Effettua il parsing della richiesta
-     * @throws IOException se ci sono errori nell' I/O
+     * @throws IOException Nel caso in cui ci siano errori nella lettura dal file
      */
     private void parser() throws IOException {
-        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo WORTH.server.Message */
+        /* Viene decodificata e letta la richiesta. Poi dalla deserializzazione viene creato un oggetto di tipo Request */
         String buffer_toString = StandardCharsets.UTF_8.decode(buffer).toString();
         task_request = objectMapper.readValue(buffer_toString, Request.class);
     }
@@ -75,6 +77,7 @@ public class Handler implements Callable<Response>  {
         try{
             parser();
             switch(task_request.getRequest()) {
+
                 /* Effettua il login e invia al client la lista dei progetti di cui fa parte */
                 case login : {
                     userManager.login(task_request.getNickUtente(), task_request.getPassword());
@@ -82,6 +85,7 @@ public class Handler implements Callable<Response>  {
                     task_response.setProjects(user.getList_prj());
                     break;
                 }
+
                 /* Effettua il logout */
                 case logout : {
                     userManager.logout(task_request.getNickUtente());
@@ -101,13 +105,13 @@ public class Handler implements Callable<Response>  {
                     break;
                 }
 
-                /* Crea il progetto */
+                /* Crea il progetto, e lo restituisce al client che ne ha richiesto la creazione */
                 case createProject : {
-                    worker.createProject(task_request.getProjectName(), task_request.getNickUtente());
-                    User user = userManager.getUtente(task_request.getNickUtente());
-                    task_response.setProjects(user.getList_prj()); //todo: piu' elegante mettere un solo progetto
+                    Project project = worker.createProject(task_request.getProjectName(), task_request.getNickUtente());
+                    task_response.setProject(project);
                     break;
                 }
+
                 /* Restituisce tutte le card appartenenti ad un progetto specificato nella richiesta */
                 case showCards : {
                     Project project = worker.showCards(task_request.getProjectName(), task_request.getNickUtente());
@@ -121,6 +125,7 @@ public class Handler implements Callable<Response>  {
                     task_response.setCard(card);
                     break;
                 }
+
                 /* Restituisce i membri di un progetto */
                 case showMembers : {
                     List<String> members = worker.showMembers(task_request.getNickUtente(), task_request.getProjectName());
@@ -160,7 +165,7 @@ public class Handler implements Callable<Response>  {
             /* Definizione della risposta base: indica che l'operazione e' fallita */
             response(false, e.getLocalizedMessage());
         }
-
+        /* Risposta da inviare al client */
         return task_response;
     }
 }

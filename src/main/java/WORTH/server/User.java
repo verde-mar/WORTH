@@ -15,7 +15,7 @@ public class User implements Serializable {
     private boolean online;
 
     /**
-     * Costruttore necessario a Jackson
+     * Costruttore necessario a Jackson per la serializzazione/deserializzazione della classe
      */
     public User(){}
 
@@ -40,22 +40,22 @@ public class User implements Serializable {
     }
 
     /**
-     * Assegna al valore online true
+     * Mette l'utente corrente online
      */
     public void setOnline() {
         online = true;
     }
 
     /**
-     * Restituisce online
-     * @return boolean L'attributo online
+     * Restituisce un valore booleano che indica se l'utente e' online o no
+     * @return boolean Se l'utente e' online o no
      */
     public boolean isOnline() {
         return online;
     }
 
     /**
-     * Assegna al valore online false
+     * Mette l'utente corrente offline
      */
     public void setOffline() {
         online = false;
@@ -70,7 +70,7 @@ public class User implements Serializable {
     }
 
     /**
-     * Restituisce la lista dei progetti a cui appartiene la lista
+     * Restituisce la lista dei progetti a cui appartiene l'utente
      * @return List<String> Lista dei progetti
      */
     public List<Project> getList_prj() {
@@ -78,7 +78,7 @@ public class User implements Serializable {
     }
 
     /**
-     * Restituisce solo alcuni campi, sovrascrivendo toString()
+     * Restituisce solo alcuni campi di User, sovrascrivendo toString()
      * @return String Stringa contenente alcuni campi dello user
      */
     @Override

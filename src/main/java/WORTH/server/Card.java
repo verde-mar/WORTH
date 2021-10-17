@@ -1,6 +1,8 @@
 package WORTH.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,40 +19,41 @@ public class Card implements Serializable {
     private List<String> history;
     /* Lista corrente a cui appartiene la card */
     private String currentList;
-    /* Oggetto necessario per creare un file all'interno della directory del progetto */
+    @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
     ObjectMapper card_mapper;
 
     /**
-     * Costruttore necessario a Jackson
+     * Costruttore necessario a serializzare/deserializzare il file JSON
      */
     public Card(){}
 
     /**
      * Costruttore della classe
-     * @param nameCard nome della card
+     * @param nameCard Nome della card
      */
     public Card(String nameCard){
         this.nameCard = nameCard;
         history = new LinkedList<>();
         card_mapper = new ObjectMapper();
+        card_mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     /**
      * Restituisce il nome della card
-     * @return String il nome della card
+     * @return String Nome della card
      */
     public String getNameCard(){
         return nameCard;
     }
 
     /**
-     * Setta la variabile che indica la lista corrente in cui si trova la card
-     * @param list Nome della lista corrente a cui appartiene la lista
+     * Inizializza la variabile che indica la lista corrente in cui si trova la card
+     * @param list Nome della lista corrente a cui appartiene la card
      */
     public void addCurrentList(String list){ currentList = list; }
 
     /**
-     * Funzione necessaria a Jackson per utilizzare il campo currentList
+     * Funzione necessaria a Jackson per per serializzare/deserializzare il campo currentList
      * @return String La lista corrente
      */
     public String getCurrentList(){ return currentList; }
@@ -88,16 +91,16 @@ public class Card implements Serializable {
     }
 
     /**
-     * Scrive la card corrente nella directory definita da projectName
+     * Scrive la card corrente su disco
      * @param projectName Nome del progetto
-     * @throws IOException Se vi e' un errore nell'IO
+     * @throws IOException Se vi e' un errore nella scrittura sul file
      */
     public synchronized void writeOnDisk(String projectName) throws IOException {
         card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 
     /**
-     * Funzione necessaria a Jackson per utilizzare il valore description
+     * Funzione necessaria a Jackson per serializzare/deserializzare il valore description
      * @return String La descrizione della card
      */
     public String getDescription() {
