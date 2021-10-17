@@ -1,5 +1,7 @@
 package WORTH.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +15,8 @@ public class User implements Serializable {
     private LinkedList<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
+    @JsonIgnore /* ID per la serializzazione/deserializzazione della classe */
+    private static final long serialVersionUID = -2301496499581089147L;
 
     /**
      * Costruttore necessario a Jackson per la serializzazione/deserializzazione della classe

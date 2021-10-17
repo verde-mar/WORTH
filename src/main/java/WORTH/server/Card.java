@@ -21,6 +21,8 @@ public class Card implements Serializable {
     private String currentList;
     @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
     ObjectMapper card_mapper;
+    @JsonIgnore /* ID per la serializzazione/deserializzazione della classe */
+    private static final long serialVersionUID = -4242944971815086218L;
 
     /**
      * Costruttore necessario a serializzare/deserializzare il file JSON
@@ -95,7 +97,7 @@ public class Card implements Serializable {
      * @param projectName Nome del progetto
      * @throws IOException Se vi e' un errore nella scrittura sul file
      */
-    public synchronized void writeOnDisk(String projectName) throws IOException {
+    public void writeOnDisk(String projectName) throws IOException {
         card_mapper.writeValue(Paths.get("./projects/" + projectName + "/" + nameCard + ".json").toFile(), this);
     }
 

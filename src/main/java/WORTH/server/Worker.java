@@ -3,7 +3,7 @@ package WORTH.server;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-//todo: potrebbe essere piu' elegante se specifico le eccezioni
+
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
@@ -97,14 +97,8 @@ public class Worker {
         if (project != null) {
             /* Se chi ha richiesto l'operazione e' membro del progetto e se e' online */
             if (project.isMember(userName) && userManager.getUtente(userName).isOnline()) {
-                Card card = project.showCardProject(cardname);
-                /* Se la card esiste */
-                if(card != null) {
-                    /* Trasferisce la card da listaPartenza a listaDestinazione */
-                    project.moveCard(listaPartenza, listaDestinazione, card);
-                } else {
-                    throw new Exception("This card doesn't exist");
-                }
+                /* Trasferisce la card da listaPartenza a listaDestinazione */
+                project.moveCard(listaPartenza, listaDestinazione, cardname);
             } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
         } else throw new Exception(projectName + " doesn't exist");
     }

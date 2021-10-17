@@ -20,6 +20,9 @@ public class Request {
         moveCard,
         getCardHistory,
         cancelProject,
+        register,
+        listUsers,
+        listOnlineUsers
     }
 
     /* Nome del progetto corrente */

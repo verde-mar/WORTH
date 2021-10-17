@@ -1,6 +1,7 @@
 package WORTH.client;
 
 import WORTH.server.Project;
+import WORTH.shared.worthProtocol.Request;
 import WORTH.shared.worthProtocol.Response;
 
 import java.net.InetSocketAddress;
@@ -9,10 +10,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//todo: non mi da' errore se metto argomenti piu' nella lettura da System.in, va bene? no, ma devo preocucparmene?
-//todo: setto automaticamente la porta 8082 per le cose udp
-//todo: quando studi bene RMI modifica pure i commenti
-//todo: manca la risposta ok per operazioni di rmi e udp
+//todo: setto automaticamente la porta 8082 per le cose udp ---> va bene, scrivilo nella relazione
+//todo: quando studi bene RMI modifica pure i commenti --------> va bene, scrivilo nella relazione
 public class MainClient {
     /* Variabile che indica se e' stato fatto il login */
     private static boolean login = false;
@@ -35,11 +34,19 @@ public class MainClient {
             if (!login) {
                 nickUtente = tokens.get(1);
                 String password = tokens.get(2);
-
+                /* Se il numero di parametri eccede quello necessario */
+                if(tokens.size()>3)
+                    throw new Exception("Too many parameters");
                 response = worthClient.login(nickUtente, password);
                 if (response.getDone()) {
                     login = true;
-                    rmiClient.registerForCallback();
+                    try {
+                        rmiClient.registerForCallback();
+                        response.setSuccess();
+                        response.setRequest(Request.RequestType.login);
+                    } catch (Exception e){
+                        response.setFailure(e.getMessage());
+                    }
                     worthClient.setIPAddresses(response.getProjects());
                 }
             } else
@@ -48,10 +55,22 @@ public class MainClient {
         } else if ("register".equals(tokens.get(0))) {
             nickUtente = tokens.get(1);
             String password = tokens.get(2);
-            rmiClient.register(nickUtente, password);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>3)
+                throw new Exception("Too many parameters");
+            try {
+                rmiClient.register(nickUtente, password);
+                response.setSuccess();
+                response.setRequest(Request.RequestType.register);
+            } catch (Exception e){
+                response.setFailure(e.getMessage());
+            }
 
         } else if (tokens.get(0).equals("create_project") && login) {
             String projectName = tokens.get(1);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>2)
+                throw new Exception("Too many parameters");
             response = worthClient.createProject(projectName, nickUtente);
             if(response.getDone()) {
                 List<Project> projects = new LinkedList<>();
@@ -63,10 +82,11 @@ public class MainClient {
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
             String description = null;
+            /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()==4)
                 description = tokens.get(3);
             else if (tokens.size() >= 5) {
-                throw new Exception("Description must be between \"\" ");
+                throw new Exception("Description must be between \"\", or you used too many parameters");
             }
             response = worthClient.addCard(nickUtente, projectName, cardName, description);
 
@@ -76,7 +96,9 @@ public class MainClient {
             String cardName = tokens.get(2);
             String fromList = tokens.get(3);
             String toList = tokens.get(4);
-
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>5)
+                throw new Exception("Too many parameters");
             response = worthClient.moveCard(nickUtente, projectName, cardName, fromList, toList);
             String message = nickUtente + " ha spostato " + cardName + " da " + fromList + " a " + toList + "," + projectName;
             if(response.getDone()) worthClient.sendMsg(projectName, message);
@@ -84,64 +106,118 @@ public class MainClient {
         } else if (tokens.get(0).equals("show_cards") && login) {
 
             String projectName = tokens.get(1);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>2)
+                throw new Exception("Too many parameters");
             response = worthClient.showCards(nickUtente, projectName);
 
         } else if (tokens.get(0).equals("show_card") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>3)
+                throw new Exception("Too many parameters");
             response = worthClient.showCard(nickUtente, projectName, cardName);
 
         } else if (tokens.get(0).equals("cancel_project") && login) {
 
             String projectName = tokens.get(1);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>2)
+                throw new Exception("Too many parameters");
             response = worthClient.cancelProject(projectName, nickUtente);
 
         } else if (tokens.get(0).equals("add_member") && login) {
 
             String projectName = tokens.get(1);
             String nickToAdd = tokens.get(2);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>3)
+                throw new Exception("Too many parameters");
             response = worthClient.addMember(nickUtente, projectName, nickToAdd);
 
         } else if (tokens.get(0).equals("show_members") && login) {
 
             String projectName = tokens.get(1);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>2)
+                throw new Exception("Too many parameters");
             response = worthClient.showMembers(nickUtente, projectName);
 
         } else if (tokens.get(0).equals("get_card_history") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>3)
+                throw new Exception("Too many parameters");
             response = worthClient.getCardHistory(nickUtente, projectName, cardName);
 
         } else if ("list_users".equals(tokens.get(0))) {
 
-            rmiClient.listUsers();
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>1)
+                throw new Exception("Too many parameters");
+            try {
+                rmiClient.listUsers();
+                response.setSuccess();
+                response.setRequest(Request.RequestType.listUsers);
+            }catch(Exception e){
+                response.setFailure(e.getMessage());
+            }
 
         } else if ("list_online_users".equals(tokens.get(0))) {
 
-            rmiClient.listOnlineUsers();
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>1)
+                throw new Exception("Too many parameters");
+            try {
+                rmiClient.listOnlineUsers();
+                response.setSuccess();
+                response.setRequest(Request.RequestType.listOnlineUsers);
+            }catch(Exception e){
+                response.setFailure(e.getMessage());
+            }
 
         } else if (tokens.get(0).equals("list_projects") && login) {
 
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>1)
+                throw new Exception("Too many parameters");
             response = worthClient.listProjects(nickUtente);
             worthClient.setIPAddresses(response.getProjects());
 
         } else if (tokens.get(0).equals("logout") && login) {
 
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>1)
+                throw new Exception("Too many parameters");
             response = worthClient.logout(nickUtente);
-            rmiClient.unregisterForCallback();
-            Thread.currentThread().interrupt();
+            try {
+                rmiClient.unregisterForCallback();
+                response.setSuccess();
+                response.setRequest(Request.RequestType.logout);
+                Thread.currentThread().interrupt();
+            } catch(Exception e){
+                response.setFailure(e.getMessage());
+            }
 
         } else if(tokens.get(0).equals("read_chat") && login) {
 
             String projectName = tokens.get(1);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>2)
+                throw new Exception("Too many parameters");
             worthClient.readChat(projectName);
 
         } else if(tokens.get(0).equals("send_chat_msg") && login) {
 
             String projectName = tokens.get(1);
             String msg = tokens.get(2);
+            /* Se il numero di parametri eccede quello necessario */
+            if(tokens.size()>3)
+                throw new Exception("Too many parameters");
             String message = nickUtente + " ha scritto: " + msg + "," + projectName;
             worthClient.sendMsg(projectName, message);
 
@@ -152,6 +228,7 @@ public class MainClient {
                     "list_online_users\nlist_projects\ncreate_project nameProject\nadd_card nameProject cardName cardDescription\n" +
                     "get_card_history nameProject cardName\nshow_members nameProject\nadd_member nameProject userNameToAdd\n" +
                     "show_card nameProject cardName\ncancel_project nameProject\nmove_card nameProject cardName DepartureList ArrivalList");
+            System.out.println("[NOTE]: IF YOU'LL USE MORE PARAMETERS THAN THE ONES INCLUDED ABOVE AN EXCEPTION WILL BE THROWN");
 
         } else {
             System.err.println("Are you sure this method exists? Or did the login fail? Try again");

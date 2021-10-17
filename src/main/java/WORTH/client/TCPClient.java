@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class TCPClient implements AutoCloseable{
     /* Socket necessaria pe rla connessione tcp */
     private final SocketChannel client;
+    /* Mapper per serializzazione/deserializzazione del file JSON */
     private final ObjectMapper mapper;
 
     /**

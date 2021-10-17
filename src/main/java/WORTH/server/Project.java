@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.text.Collator;
 
-//todo: indentazione dei file json
+//todo: il massimo che puoi fare e' rendere Vector le strutture synchronized
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;
@@ -37,6 +37,8 @@ public class Project implements Serializable {
     private InetAddress addressUdp;
     @JsonIgnore /* Composizione della classe AddressGenerator. La classe contiene metodi per determinare l'indirizzo IP da associare al progetto */
     private AddressGenerator addressGenerator;
+    @JsonIgnore/* ID per la serializzazione/deserializzazione della classe */
+    private static final long serialVersionUID = 6125601553614499595L;
 
     /**
      * Costruttore vuoto della classe necessario per la serializzazione/deserializzazione del file JSON
@@ -50,11 +52,11 @@ public class Project implements Serializable {
     public Project(String nameProject) throws Exception {
         /* Inizializza gli attributi */
         this.nameProject = nameProject;
-        to_Do = Collections.synchronizedList(new LinkedList<>());
-        inProgress = Collections.synchronizedList(new LinkedList<>());
-        toBeRevised = Collections.synchronizedList(new LinkedList<>());
-        done = Collections.synchronizedList(new LinkedList<>());
-        members = Collections.synchronizedList(new LinkedList<>());
+        to_Do = new ArrayList<>();
+        inProgress = new ArrayList<>();
+        toBeRevised = new ArrayList<>();
+        done = new ArrayList<>();
+        members = new ArrayList<>();
 
         /* Ottiene l'istanza di AddressGenerator */
         addressGenerator = AddressGenerator.getInstance();
@@ -68,19 +70,15 @@ public class Project implements Serializable {
 
             /* Inizializza e crea il file contenente i membri del progetto e l'indirizzo IP associato al progetto */
             info = new ProjectUtils();
-            System.out.println("PRIMA DELLA SET UTENTI IN NEW PROJECT");
             info.setUtenti(members);
-            System.out.println("DOPO LA SET UTENTI IN NEW PROJECT");
 
             /* Assegna all'attributo addressUdp un indirizzo IP */
             try {
                 addressUdp = addressGenerator.lookForAddress(nameProject);
             } catch(Exception e) {
-                System.out.println("STO CERCANDO UN NUOVO INDIRIZZO, SUBITO DOPO LA LOOKFORADDRESS: " + addressUdp);
                 e.printStackTrace();
             }
             info.setIpAddress(addressUdp);
-            System.out.println(addressUdp + "IN CREATING A NEW PROJECT");
 
             /* Scrive i dati di cui sopra su disco */
             mapper.writeValue(Paths.get("./projects/" + nameProject + "/info.json").toFile(), info);
@@ -176,17 +174,15 @@ public class Project implements Serializable {
         if(remove_prj) {
             addressGenerator.resetAddress(addressUdp);
             /* Cancella il progetto dal disco */
-            boolean eliminate = project.delete();
-            if (!eliminate) {
-                File[] files = project.listFiles();
-                assert files != null;
-                for(File file : files){
-                    boolean file_eliminate = file.delete();
-                    if(!file_eliminate) throw new Exception("Cannot eliminate the files in " + projectName);
-                }
-                eliminate = project.delete();
-                if(eliminate) System.out.println(nameProject + " was eliminated");
+            File[] files = project.listFiles();
+            assert files != null;
+            for(File file : files){
+                boolean file_eliminate = file.delete();
+                if(!file_eliminate) throw new Exception("Cannot eliminate the files in " + projectName);
             }
+            boolean eliminate = project.delete();
+            if(eliminate) System.out.println(nameProject + " was eliminated");
+
 
         } else {
             throw new Exception("The project cannot be removed");
@@ -198,7 +194,7 @@ public class Project implements Serializable {
      * @param cardname Nome della card
      * @return WORTH.server.Card Restituisce la card di nome cardName
      */
-    public Card showCardProject(String cardname) {
+    public synchronized Card showCardProject(String cardname) {
         Card card = showCardList(to_Do, cardname);
         if (card == null) {
             card = showCardList(inProgress, cardname);
@@ -221,7 +217,6 @@ public class Project implements Serializable {
      */
     public synchronized Card showCardList(List<Card> lista, String cardName){
         for (Card value : lista) {
-            System.out.println(value.getNameCard());
             if (value.getNameCard().equals(cardName)) {
                 return value;
             }
@@ -241,62 +236,69 @@ public class Project implements Serializable {
      * Muove la card dalla lista del progetto listaDiPartenza alla lista del progetto listaDiDestinazione
      * @param listaDiPart Nome della lista in cui si trova attualmente la card
      * @param listadiDest Nome della lista in cui si trovera' la card
-     * @param card Carta da spostare
+     * @param cardname Nome della card da spostare
+     * @throws Exception Nel caso in cui la richiesta di spostamento non vada a buon fine
      */
-    public synchronized void moveCard(String listaDiPart, String listadiDest, Card card) throws Exception {
-        Collator myCollator = Collator.getInstance();
-        /* In base alla lista di partenza, si effettua il movimento della carta, altrimenti viene lanciata una eccezione */
-        if ("to_Do".equals(listaDiPart)) {
-            if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
-                to_Do.remove(card);
-                card.addHistory("removed from to_Do; ");
-                inProgress.add(card);
-                card.addHistory("added to inProgress; ");
-                /* Cancella la lista corrente per aggiornarla */
-                card.eraseCurrentList();
-                card.addCurrentList("inProgress");
-            } else throw new Exception("Moving not allowed.");
-        } else if ("inProgress".equals(listaDiPart)) {
-            if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
-                inProgress.remove(card);
-                card.addHistory("removed from inProgress; ");
-                done.add(card);
-                card.addHistory("added to done; ");
-                /* Cancella la lista corrente per aggiornarla */
-                card.eraseCurrentList();
-                card.addCurrentList("done");
-            } else if (myCollator.compare(listadiDest, "toBeRevised") == 0 && !toBeRevised.contains(card)) {
-                inProgress.remove(card);
-                card.addHistory("removed from inProgress; ");
-                toBeRevised.add(card);
-                card.addHistory("added to toBeRevised; ");
-                /* Cancella la lista corrente per aggiornarla */
-                card.eraseCurrentList();
-                card.addCurrentList("toBeRevised");
-            } else throw new Exception("Moving not allowed.");
-        } else if ("toBeRevised".equals(listaDiPart)) {
-            if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
-                toBeRevised.remove(card);
-                card.addHistory("removed from toBeRevised; ");
-                done.add(card);
-                card.addHistory("added to done; ");
-                /* Cancella la lista corrente per aggiornarla */
-                card.eraseCurrentList();
-                card.addCurrentList("done");
-            } else if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
-                toBeRevised.remove(card);
-                card.addHistory("removed from toBeRevised; ");
-                inProgress.add(card);
-                card.addHistory("added to inProress; ");
-                /* Cancella la lista corrente per aggiornarla */
-                card.eraseCurrentList();
-                card.addCurrentList("inProgress");
-            } else throw new Exception("Moving not allowed.");
+    public synchronized void moveCard(String listaDiPart, String listadiDest, String cardname) throws Exception {
+        Card card = showCardProject(cardname);
+        /* Se la card esiste */
+        if(card != null) {
+            Collator myCollator = Collator.getInstance();
+            /* In base alla lista di partenza, si effettua il movimento della carta, altrimenti viene lanciata una eccezione */
+            if ("to_Do".equals(listaDiPart)) {
+                if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
+                    to_Do.remove(card);
+                    card.addHistory("removed from to_Do; ");
+                    inProgress.add(card);
+                    card.addHistory("added to inProgress; ");
+                    /* Cancella la lista corrente per aggiornarla */
+                    card.eraseCurrentList();
+                    card.addCurrentList("inProgress");
+                } else throw new Exception("Moving not allowed.");
+            } else if ("inProgress".equals(listaDiPart)) {
+                if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
+                    inProgress.remove(card);
+                    card.addHistory("removed from inProgress; ");
+                    done.add(card);
+                    card.addHistory("added to done; ");
+                    /* Cancella la lista corrente per aggiornarla */
+                    card.eraseCurrentList();
+                    card.addCurrentList("done");
+                } else if (myCollator.compare(listadiDest, "toBeRevised") == 0 && !toBeRevised.contains(card)) {
+                    inProgress.remove(card);
+                    card.addHistory("removed from inProgress; ");
+                    toBeRevised.add(card);
+                    card.addHistory("added to toBeRevised; ");
+                    /* Cancella la lista corrente per aggiornarla */
+                    card.eraseCurrentList();
+                    card.addCurrentList("toBeRevised");
+                } else throw new Exception("Moving not allowed.");
+            } else if ("toBeRevised".equals(listaDiPart)) {
+                if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
+                    toBeRevised.remove(card);
+                    card.addHistory("removed from toBeRevised; ");
+                    done.add(card);
+                    card.addHistory("added to done; ");
+                    /* Cancella la lista corrente per aggiornarla */
+                    card.eraseCurrentList();
+                    card.addCurrentList("done");
+                } else if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
+                    toBeRevised.remove(card);
+                    card.addHistory("removed from toBeRevised; ");
+                    inProgress.add(card);
+                    card.addHistory("added to inProress; ");
+                    /* Cancella la lista corrente per aggiornarla */
+                    card.eraseCurrentList();
+                    card.addCurrentList("inProgress");
+                } else throw new Exception("Moving not allowed.");
+            } else {
+                throw new Exception(listaDiPart + " is not a valid entry");
+            }
+            /* Viene aggiornato il file su disco */
+            card.writeOnDisk(nameProject);
         } else {
-            throw new Exception(listaDiPart + " is not a valid entry");
+            throw new Exception("This card doesn't exist");
         }
-        /* Viene aggiornato il file su disco */
-        card.writeOnDisk(nameProject);
     }
 
     /**
@@ -395,12 +397,12 @@ public class Project implements Serializable {
         members.addAll(info.getUtenti());
     }
 
+    /**
+     * Restituisce l'indirizzo IP del progetto
+     * @return InetAddress Indirizzo IP del progetto
+     */
     public InetAddress getAddressUdp() {
         return addressUdp;
-    }
-
-    public void setAddressUdp(InetAddress addressUdp) {
-        this.addressUdp = addressUdp;
     }
 
 }

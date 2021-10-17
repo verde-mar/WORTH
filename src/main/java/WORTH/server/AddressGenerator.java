@@ -23,6 +23,8 @@ public class AddressGenerator implements Serializable {
     private final ObjectMapper mapper;
     /* File contenente gli indirizzi IP liberi */
     private final File ipsOnDisk;
+    @JsonIgnore/* ID per la serializzazione/deserializzazione della classe */
+    private static final long serialVersionUID = -1545255945990735659L;
 
     /**
      * Costruttore privato della classe, chiamato da getInstance()
@@ -51,7 +53,7 @@ public class AddressGenerator implements Serializable {
                 indirizziLiberi = ipFile.getIndirizziLiberi();
             } catch (Exception e){
                 /* Il file e' vuoto */
-                System.out.println("No used ips available yet");
+                System.out.println("[UDP] No used ips available yet");
             }
         }
     }

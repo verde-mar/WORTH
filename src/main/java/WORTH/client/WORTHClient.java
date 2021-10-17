@@ -7,7 +7,6 @@ import WORTH.shared.worthProtocol.Response;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Vector;
 
 
 public class WORTHClient implements AutoCloseable {
@@ -261,12 +260,15 @@ public class WORTHClient implements AutoCloseable {
     /**
      * Legge dalla chat i messaggi precedentemente inviati dagli utenti
      * @param projectName Nome del progetto a cui appartiene la chat
+     * @throws Exception Nel caso di un errore I/O, oil progetto di cui si cerca l'indirizzo IP non esista, oppure la size del buffer dei messaggi e' 0
      */
     public void readChat(String projectName) throws Exception {
         /* Scorre i messaggi, man mano che vengono letti, vengono anche eliminati */
         for (String msg : udpClient.getMessages(projectName)) {
             System.out.println("< " + msg);
         }
+        if(udpClient.getMessages(projectName).size()==0)
+            System.out.println("No unread messages");
         udpClient.getMessages(projectName).removeAllElements();
     }
 

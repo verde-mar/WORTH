@@ -36,7 +36,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
      * Registra un utente nel registro
      * @param username Nome del client che si vuole registrare
      * @param password Password del client
-     * @throws RemoteException Nel caso di un errore nella comunicaizone
+     * @throws RemoteException Nel caso di un errore nella comunicazione
      */
     public void register(String username, String password) throws Exception {
         rmiClient.register(username, password);
@@ -44,7 +44,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
 
     /**
      * Registra l'utente al servizio di notifica del server
-     * @throws Exception Nel caso di un errore generico
+     * @throws Exception Nel caso di un errore nella registrazione al servizio di notifica
      */
     public void registerForCallback() throws Exception {
         stubUsers = (NotifyUsersInterface) UnicastRemoteObject.exportObject(this, 0);
@@ -53,7 +53,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
 
     /**
      * De-registra l'utente al servizio di notifica del server
-     * @throws RemoteException Nel caso di un errore nella comunicaizone
+     * @throws RemoteException Nel caso di un errore nella comunicazione
      */
     public void unregisterForCallback() throws RemoteException {
         rmiClient.UserUncallback(stubUsers);
