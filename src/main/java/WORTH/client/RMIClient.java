@@ -11,7 +11,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RemoteObject;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     /* Istanza della classe che implementa NotifyUsersInterfaccia, necessaria al servizio di notifica RMICallback*/
@@ -65,7 +65,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
      * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
     @Override
-    public void setUsers(HashMap<String, User> users) throws RemoteException {
+    public void setUsers(ConcurrentHashMap<String, User> users) throws RemoteException {
         this.users = users.values();
     }
 

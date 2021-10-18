@@ -22,7 +22,8 @@ public class Request {
         cancelProject,
         register,
         listUsers,
-        listOnlineUsers
+        listOnlineUsers,
+        sendChatMsg;
     }
 
     /* Nome del progetto corrente */

@@ -2,11 +2,11 @@ package WORTH.persistence;
 
 import WORTH.server.User;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RegisteredFile {
     /* Struttura in memoria che si riferisce agli utenti registrati a WORTH */
-    private HashMap<String, User> utentiRegistrati;
+    private ConcurrentHashMap<String, User> utentiRegistrati;
 
     public RegisteredFile(){}
 
@@ -14,7 +14,7 @@ public class RegisteredFile {
      * Restituisce gli utenti registrati
      * @return HashMap<String, User> Struttura degli utenti registrati
      */
-    public HashMap<String, User> getUtentiRegistrati() {
+    public ConcurrentHashMap<String, User> getUtentiRegistrati() {
         return utentiRegistrati;
     }
 
@@ -22,7 +22,7 @@ public class RegisteredFile {
      * Inizializza la struttura contenente gli utenti registrati
      * @param utenti_registrati Struttura dati contenente gli utenti registrati
      */
-    public void setUtentiRegistrati(HashMap<String, User> utenti_registrati) {
+    public void setUtentiRegistrati(ConcurrentHashMap<String, User> utenti_registrati) {
         this.utentiRegistrati = utenti_registrati;
     }
 

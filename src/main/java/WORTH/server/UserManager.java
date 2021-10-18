@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
+//todo: chiama tutti i file JSON classi di appoggio per serializzazione/deser
 
 public class UserManager implements RemoteInterface {
     /* HashMap degli utenti registrati al servizio */
-    private final HashMap<String, User> utentiRegistrati;
+    private final ConcurrentHashMap<String, User> utentiRegistrati;
     /* Unica istanza di AccountService che può essere presente nel sistema */
     private static UserManager instance;
     /* Mapper necessario all'interazione con il file JSON */
@@ -52,7 +53,7 @@ public class UserManager implements RemoteInterface {
             boolean created = registeredOnDisk.createNewFile();
             /* Se viene creato con successo, anche la struttura in memoria viene inizializzata */
             if(created)
-                utentiRegistrati = new HashMap<>();
+                utentiRegistrati = new ConcurrentHashMap<>();
             /* Se invece la creazione fallisce, viene lanciata una eccezione */
             else
                 throw new Exception("The creating of the configuration file for users failed");
@@ -77,7 +78,7 @@ public class UserManager implements RemoteInterface {
      * @param password Password dell'utente
      * @throws Exception Nel caso in cui il login non vada a buon fine
      */
-    public void login(String nickName, String password) throws Exception {
+    public synchronized void login(String nickName, String password) throws Exception {
         /* Se l'utente e' registrato */
         if(utentiRegistrati.containsKey(nickName)){
             User user = utentiRegistrati.get(nickName);
@@ -112,7 +113,7 @@ public class UserManager implements RemoteInterface {
      * @param nickName Nickname dell'utente
      * @throws Exception Nel caso in cui il logout non vada a buon fine
      */
-    public void logout(String nickName) throws Exception {
+    public synchronized void logout(String nickName) throws Exception {
         /* Se l'utente e' registrato */
         if(utentiRegistrati.containsKey(nickName)) {
             User user = utentiRegistrati.get(nickName);
@@ -141,7 +142,7 @@ public class UserManager implements RemoteInterface {
      * @return User Restituisce l'utente con il nickname nickutente
      * @throws IOException Nel caso di un errore nella scrittura su file
      */
-    public User getUtente(String nickutente) throws IOException {
+    public synchronized User getUtente(String nickutente) throws IOException {
         registeredFile.setUtentiRegistrati(utentiRegistrati);
         mapper.writeValue(registeredOnDisk, registeredFile);
         return utentiRegistrati.get(nickutente);
@@ -152,7 +153,7 @@ public class UserManager implements RemoteInterface {
      * @return HashMap<String, User> Insieme degli utenti registrati
      * @throws IOException Nel caso di un errore nella scrittura su file
      */
-    public HashMap<String, User> getUtenti() throws IOException {
+    public synchronized ConcurrentHashMap<String, User> getUtenti() throws IOException {
         /* Aggiorna la struttura dati da restituire  */
         registeredFile.setUtentiRegistrati(utentiRegistrati);
         mapper.writeValue(registeredOnDisk, registeredFile);
@@ -166,7 +167,7 @@ public class UserManager implements RemoteInterface {
      * @param password Password dell'utente
      * @throws IOException Nel caso di un errore nella scrittura su file
      */
-    public void register(String nickUtente, String password) throws Exception {
+    public synchronized void register(String nickUtente, String password) throws Exception {
         User verify = utentiRegistrati.putIfAbsent(nickUtente, new User(nickUtente, password));
         /* Se l'utente non esisteva gia' */
         if(verify == null) {
@@ -188,7 +189,7 @@ public class UserManager implements RemoteInterface {
      * @throws Exception Nel caso in cui l'operazione non vada a buon fine
      */
     @Override
-    public synchronized HashMap<String, User> UsersCallback(NotifyUsersInterface clientInterface) throws Exception {
+    public synchronized ConcurrentHashMap<String, User> UsersCallback(NotifyUsersInterface clientInterface) throws Exception {
         if (!clients.contains(clientInterface)) {
             clients.add(clientInterface);
             System.out.println("New client registered." );

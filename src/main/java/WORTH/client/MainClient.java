@@ -66,7 +66,7 @@ public class MainClient {
                 response.setFailure(e.getMessage());
             }
 
-        } else if (tokens.get(0).equals("create_project") && login) {
+        } else if (tokens.get(0).equals("createProject") && login) {
             String projectName = tokens.get(1);
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>2)
@@ -77,7 +77,7 @@ public class MainClient {
                 projects.add(response.getProject());
                 worthClient.setIPAddresses(projects);
             }
-        } else if (tokens.get(0).equals("add_card") && login) {
+        } else if (tokens.get(0).equals("addCard") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
@@ -90,7 +90,7 @@ public class MainClient {
             }
             response = worthClient.addCard(nickUtente, projectName, cardName, description);
 
-        } else if (tokens.get(0).equals("move_card") && login) {
+        } else if (tokens.get(0).equals("moveCard") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
@@ -100,10 +100,10 @@ public class MainClient {
             if(tokens.size()>5)
                 throw new Exception("Too many parameters");
             response = worthClient.moveCard(nickUtente, projectName, cardName, fromList, toList);
-            String message = nickUtente + " ha spostato " + cardName + " da " + fromList + " a " + toList + "," + projectName;
+            String message = nickUtente + " ha spostato " + cardName + " da " + fromList + " a " + toList + "\n" + projectName;
             if(response.getDone()) worthClient.sendMsg(projectName, message);
 
-        } else if (tokens.get(0).equals("show_cards") && login) {
+        } else if (tokens.get(0).equals("showCards") && login) {
 
             String projectName = tokens.get(1);
             /* Se il numero di parametri eccede quello necessario */
@@ -111,7 +111,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.showCards(nickUtente, projectName);
 
-        } else if (tokens.get(0).equals("show_card") && login) {
+        } else if (tokens.get(0).equals("showCard") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
@@ -120,7 +120,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.showCard(nickUtente, projectName, cardName);
 
-        } else if (tokens.get(0).equals("cancel_project") && login) {
+        } else if (tokens.get(0).equals("cancelProject") && login) {
 
             String projectName = tokens.get(1);
             /* Se il numero di parametri eccede quello necessario */
@@ -128,7 +128,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.cancelProject(projectName, nickUtente);
 
-        } else if (tokens.get(0).equals("add_member") && login) {
+        } else if (tokens.get(0).equals("addMember") && login) {
 
             String projectName = tokens.get(1);
             String nickToAdd = tokens.get(2);
@@ -137,7 +137,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.addMember(nickUtente, projectName, nickToAdd);
 
-        } else if (tokens.get(0).equals("show_members") && login) {
+        } else if (tokens.get(0).equals("showMembers") && login) {
 
             String projectName = tokens.get(1);
             /* Se il numero di parametri eccede quello necessario */
@@ -145,7 +145,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.showMembers(nickUtente, projectName);
 
-        } else if (tokens.get(0).equals("get_card_history") && login) {
+        } else if (tokens.get(0).equals("getCardHistory") && login) {
 
             String projectName = tokens.get(1);
             String cardName = tokens.get(2);
@@ -154,7 +154,7 @@ public class MainClient {
                 throw new Exception("Too many parameters");
             response = worthClient.getCardHistory(nickUtente, projectName, cardName);
 
-        } else if ("list_users".equals(tokens.get(0))) {
+        } else if ("listUsers".equals(tokens.get(0))) {
 
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>1)
@@ -167,7 +167,7 @@ public class MainClient {
                 response.setFailure(e.getMessage());
             }
 
-        } else if ("list_online_users".equals(tokens.get(0))) {
+        } else if ("listOnlineOsers".equals(tokens.get(0))) {
 
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>1)
@@ -180,13 +180,14 @@ public class MainClient {
                 response.setFailure(e.getMessage());
             }
 
-        } else if (tokens.get(0).equals("list_projects") && login) {
+        } else if (tokens.get(0).equals("listProjects") && login) {
 
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>1)
                 throw new Exception("Too many parameters");
             response = worthClient.listProjects(nickUtente);
-            worthClient.setIPAddresses(response.getProjects());
+            if(response.getDone())
+                worthClient.setIPAddresses(response.getProjects());
 
         } else if (tokens.get(0).equals("logout") && login) {
 
@@ -203,31 +204,40 @@ public class MainClient {
                 response.setFailure(e.getMessage());
             }
 
-        } else if(tokens.get(0).equals("read_chat") && login) {
+        } else if(tokens.get(0).equals("readChat") && login) {
 
             String projectName = tokens.get(1);
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>2)
                 throw new Exception("Too many parameters");
-            worthClient.readChat(projectName);
+            try {
+                worthClient.readChat(projectName);
+            } catch(Exception e){
+                response.setFailure(e.getMessage());
+            }
 
-        } else if(tokens.get(0).equals("send_chat_msg") && login) {
+        } else if(tokens.get(0).equals("sendChatMsg") && login) {
 
             String projectName = tokens.get(1);
             String msg = tokens.get(2);
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>3)
                 throw new Exception("Too many parameters");
-            String message = nickUtente + " ha scritto: " + msg + "," + projectName;
-            worthClient.sendMsg(projectName, message);
-
+            String message = nickUtente + " ha scritto: " + msg + "\n" + projectName;
+            try {
+                worthClient.sendMsg(projectName, message);
+                response.setSuccess();
+                response.setRequest(Request.RequestType.sendChatMsg);
+            } catch (Exception e){
+                response.setFailure(e.getMessage());
+            }
         } else if(tokens.get(0).equals("help")){
 
             System.out.println("You asked for help. Here's the syntax:\ncommand param1 ..." +
-                    "\nregister userName password\nlogin userName password\nlogout\nlist_users\n" +
-                    "list_online_users\nlist_projects\ncreate_project nameProject\nadd_card nameProject cardName cardDescription\n" +
-                    "get_card_history nameProject cardName\nshow_members nameProject\nadd_member nameProject userNameToAdd\n" +
-                    "show_card nameProject cardName\ncancel_project nameProject\nmove_card nameProject cardName DepartureList ArrivalList");
+                    "\nregister userName password\nlogin userName password\nlogout\nlistUsers\n" +
+                    "listOnlineUsers\nlistProjects\ncreateProject nameProject\naddCard nameProject cardName cardDescription\n" +
+                    "\naddCard nameProject cardName \"\"\n" + "getCardHistory nameProject cardName\nshowMembers nameProject\naddMember nameProject userNameToAdd\n" +
+                    "showCard nameProject cardName\ncancelProject nameProject\nmoveCard nameProject cardName DepartureList ArrivalList\nsendChatMsg projectName msg\nreadChat projectName");
             System.out.println("[NOTE]: IF YOU'LL USE MORE PARAMETERS THAN THE ONES INCLUDED ABOVE AN EXCEPTION WILL BE THROWN");
 
         } else {

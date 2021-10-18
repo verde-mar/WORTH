@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.text.Collator;
 
-//todo: il massimo che puoi fare e' rendere Vector le strutture synchronized
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;

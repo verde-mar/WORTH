@@ -132,9 +132,8 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Legge il messaggio inviato dal WORTH.client
-     * @param key Chiave associata al
-     * @throws IOException Se avviene un errore nell'I/O
-     * @throws InterruptedException Se il thread viene interrotto durante la sleep()
+     * @param key Chiave associata all'active socket corrente
+     * @throws Exception Nel caso in cui non possa essere portata a termine la lettura del messaggio
      */
     private void readMessage(SelectionKey key) throws Exception {
         /* Contiene i dati */
@@ -143,7 +142,7 @@ public class SocketServices implements AutoCloseable{
         /* Active socket associato al WORTH.client */
         SocketChannel client_read = (SocketChannel) key.channel();
 
-        /*Legge i dati */
+        /* Legge i dati */
         int bytesRead = client_read.read(buffer);
         System.out.printf("Read %d bytes from %s\n", bytesRead, client_read.getRemoteAddress());
 

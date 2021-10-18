@@ -33,7 +33,7 @@ public class UDPClient extends Thread implements AutoCloseable {
                 /* Riceve un messaggio dalla chat */
                 String message = receive();
                 /* Separa il messaggio dal nome del progetto di cui fa parte la chat, dal messaggio effettivo */
-                int endIndex = message.indexOf(",");
+                int endIndex = message.indexOf("\n");
                 String text = message.substring(0, endIndex);
                 String nameProject = message.substring(endIndex+1);
                 /* Aggiunge il messaggio nel buffer contenente i messaggio inviati dai membri del progetto */
