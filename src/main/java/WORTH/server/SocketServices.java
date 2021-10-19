@@ -17,8 +17,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
-import static java.lang.Thread.sleep;
-
 /**
  * SocketServices e' la classe del server che tramite un selettore
  * gestisce le nuove connessioni TCP, e le comunicazioni tramite RMI
@@ -175,9 +173,6 @@ public class SocketServices implements AutoCloseable{
         }
         /* Altrimenti se e' stato letto il messaggio */
         else {
-            /* Dorme per 200 ms, per distanziare le submit */
-            sleep(200);
-
             /* Elabora la richiesta */
             Future<Response> future = elaborateRequest(buffer);
 

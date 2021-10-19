@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * todo
+ * Interfaccia contenente gli header dei metodi di registrazione a WORTH e al servizio di notifica Callback
  */
 public interface RemoteInterface extends Remote {
 

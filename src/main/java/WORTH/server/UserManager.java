@@ -91,7 +91,7 @@ public class UserManager implements RemoteInterface {
                     /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
                     registeredFile.setUtentiRegistrati(utentiRegistrati);
                     mapper.writeValue(registeredOnDisk, registeredFile);
-                    update();
+                    updateOnline(user);
                 }
                 /* Se, invece, la password non e' corretta */
                 else {
@@ -124,7 +124,7 @@ public class UserManager implements RemoteInterface {
                 /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
                 registeredFile.setUtentiRegistrati(utentiRegistrati);
                 mapper.writeValue(registeredOnDisk, registeredFile);
-                update();
+                updateOffline(user);
             }
             /* Se, invece, l'utente e' offline */
             else {
@@ -175,7 +175,7 @@ public class UserManager implements RemoteInterface {
             /* Aggiorna i file su disco e gli altri utenti di questa nuova registrazione */
             registeredFile.setUtentiRegistrati(utentiRegistrati);
             mapper.writeValue(registeredOnDisk, registeredFile);
-            update();
+            updateAll();
         }
         /* Se, invece, esisteva gia' */
         else {
@@ -212,12 +212,34 @@ public class UserManager implements RemoteInterface {
     }
 
     /**
-     * La funzione notifica a tutti i client iscritti quando ci sono degli aggiornamenti, e quali sono
+     * La funzione notifica a tutti i client iscritti quando ci sono dei nuovi iscritti
      * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
-    public synchronized void update() throws RemoteException {
+    public synchronized void updateAll() throws RemoteException {
         for (NotifyUsersInterface client : clients) {
             client.setUsers(utentiRegistrati);
+        }
+    }
+
+    /**
+     * La funzione notifica a tutti i client iscritti quando un utente diventa online
+     * @param user Utente corrente
+     * @throws RemoteException Nel caso di un errore nella comunicazione RMI
+     */
+    public synchronized void updateOnline(User user) throws RemoteException {
+        for (NotifyUsersInterface client : clients) {
+            client.setOnline(user);
+        }
+    }
+
+    /**
+     * La funzione notifica a tutti i client iscritti quando un utente diventa offline
+     * @param user Utente corrente
+     * @throws RemoteException Nel caso di un errore nella comunicazione RMI
+     */
+    public synchronized void updateOffline(User user) throws RemoteException {
+        for (NotifyUsersInterface client : clients) {
+            client.setOffline(user);
         }
     }
 
