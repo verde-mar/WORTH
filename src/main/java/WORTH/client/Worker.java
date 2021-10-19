@@ -4,7 +4,9 @@ import WORTH.server.Card;
 import WORTH.server.Project;
 import WORTH.shared.worthProtocol.Response;
 
-
+/**
+ * La classe stampa la risposta inviata dal Server in maniera intuitiva
+ */
 public class Worker {
     /**
      * La funzione stampa a video i parametri della risposta necessari all'utente per capire se questa e' avvenuta con successo o no;

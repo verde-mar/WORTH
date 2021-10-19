@@ -12,12 +12,15 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * Classe che si occupa di gestire gli indirizzi IP da assegnare ai progetti
+ */
 public class AddressGenerator implements Serializable {
     /* Lista degli indirizzi in uso */
     private List<InetAddress> indirizziLiberi;
     @JsonIgnore /* Istanza di AddressGenerator */
     private static AddressGenerator instance;
-    /* File JSON per gli indirizzi IP liberi */
+    /* Istanza della classe ausiliaria per serializzazione/deserializzazione su disco degli indirizzi IP liberi */
     private IPFile ipFile;
     @JsonIgnore /* Necessario per la serializzazione/deserializzazione JSON */
     private final ObjectMapper mapper;
@@ -110,7 +113,7 @@ public class AddressGenerator implements Serializable {
      * @throws UnknownHostException Nel caso di un errore nel determinare l'indirizzo IP
      */
     public InetAddress newAddress(String projectName) throws UnknownHostException {
-        int index = (projectName.hashCode()) / 256; //todo: diviso 256 perche' le doppie aumentano esponenzialmente il valore di index
+        int index = (projectName.hashCode()) / 256;
         return InetAddress.getByName("239." + Math.abs(((index / 256) / 256)) + "." + Math.abs(((index / 256) % 256)) + "." + Math.abs(index % 256));
     }
 }

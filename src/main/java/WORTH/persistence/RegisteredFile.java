@@ -4,6 +4,9 @@ import WORTH.server.User;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Classe ausiliaria per scrivere su disco gli utenti registrati su WORTH
+ */
 public class RegisteredFile {
     /* Struttura in memoria che si riferisce agli utenti registrati a WORTH */
     private ConcurrentHashMap<String, User> utentiRegistrati;

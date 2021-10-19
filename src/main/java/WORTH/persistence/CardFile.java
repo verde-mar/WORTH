@@ -2,6 +2,9 @@ package WORTH.persistence;
 
 import java.util.List;
 
+/**
+ * Classe ausiliaria per scrivere su disco le card di un progetto
+ */
 public class CardFile {
     /* Nome univoco della card */
     private String nameCard;
@@ -13,7 +16,7 @@ public class CardFile {
     private String currentList;
 
     /**
-     * Inizializza la variabile currentList
+     * Inizializza currentList
      * @param currentList Parametro con cui inizializzare this.concurrentList
      */
     public void setCurrentList(String currentList) {
@@ -21,7 +24,7 @@ public class CardFile {
     }
 
     /**
-     * Inizializza la variabile description
+     * Inizializza description
      * @param description Parametro con cui inizializzare this.description
      */
     public void setDescription(String description) {
@@ -29,7 +32,7 @@ public class CardFile {
     }
 
     /**
-     * Inizializza la variabile nameCard
+     * Inizializza nameCard
      * @param nameCard Parametro con cui inizializzare this.nameCard
      */
     public void setNameCard(String nameCard){

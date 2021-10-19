@@ -13,6 +13,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.text.Collator;
 
+/**
+ * Oggetto rappresentate un progetto all'interno di WORTH
+ */
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;
@@ -26,9 +29,9 @@ public class Project implements Serializable {
     private List<Card> done;
     /* Lista di membri del progetto */
     private List<String> members;
-    @JsonIgnore /* Il progetto corrente */
+    @JsonIgnore /* Il progetto corrente su disco */
     private File project;
-    @JsonIgnore /* File contenente informazioni */
+    @JsonIgnore  /* Istanza della classe ausiliaria per serializzazione/deserializzazione su disco del progetto corrente */
     private ProjectUtils info;
     @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
     private ObjectMapper mapper;

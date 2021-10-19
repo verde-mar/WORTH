@@ -3,6 +3,9 @@ package WORTH.client;
 import java.net.InetAddress;
 import java.util.Vector;
 
+/**
+ *
+ */
 public class ProjectChat {
     /* Indirizzo IP da associare al progetto */
     private InetAddress address;

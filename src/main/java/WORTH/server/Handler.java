@@ -12,8 +12,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * WORTH.server.Handler e' la classe che si occupa di distinguere il messaggio
- * e di eseguire la computazione
+ * WORTH.server.Handler e' la classe che si occupa di effettuare il parsing parsing della richiesta in formato Request,
+ * di eseguirne la computazione e restituire al Main il risultato, in formato Response
  */
 public class Handler implements Callable<Response>  {
     /* Buffer contenente i dati letti */

@@ -10,6 +10,9 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Oggetto rappresentante una card all'interno di un progetto
+ */
 public class Card implements Serializable {
     /* Nome univoco della card */
     private String nameCard;

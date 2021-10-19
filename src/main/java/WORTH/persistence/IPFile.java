@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * Classe ausiliaria per scrivere su disco gli indirizzi IP liberi
+ */
 public class IPFile implements Serializable {
     /* Lista contenente tutti gli indirizzi liberi */
     private List<InetAddress> indirizziLiberi;

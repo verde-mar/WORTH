@@ -3,11 +3,13 @@ package WORTH.server;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * Classe ausiliaria ad Handler, che chiama i metodi presenti nella specifica
+ */
 public class Worker {
     /* Insieme totale dei progetti sul WORTH.server */
     ConcurrentHashMap<String,Project> projects;
-    /* Classe che si occupa delle registrazioni e dei login */
+    /* Istanza della classe che si occupa delle registrazioni e dei login */
     UserManager userManager;
 
     /**
@@ -179,7 +181,7 @@ public class Worker {
                 project.addPeople(nickUtente);
                 return project;
             } else throw new Exception("The project was already there");
-        } else throw new Exception("You are not allowed. There are two possibilities: 1 - you are not logged in; 2 - you are not member of this project;");
+        } else throw new Exception("You are offline");
     }
 
     /**

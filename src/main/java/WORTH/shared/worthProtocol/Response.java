@@ -6,9 +6,13 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.List;
 
+/**
+ * Oggetto rappresentante una risposta dal server al client
+ */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
     /* Richieste possibili */
+    //todo: verifica se non servono davvero a niente
     public enum RequestType{
         login,
         logout,

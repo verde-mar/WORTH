@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Oggetto rappresentante un utente all'interno di WORTH
+ */
 public class User implements Serializable {
     /* Nome dell'utente */
     private String name;

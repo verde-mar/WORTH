@@ -10,8 +10,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//todo: setto automaticamente la porta 8082 per le cose udp ---> va bene, scrivilo nella relazione
-//todo: quando studi bene RMI modifica pure i commenti --------> va bene, scrivilo nella relazione
 public class MainClient {
     /* Variabile che indica se e' stato fatto il login */
     private static boolean login = false;
@@ -21,8 +19,8 @@ public class MainClient {
     /**
      * La funzione effettua il parsing della riga di comando, e in base a quanto scritto manda le richieste al server
      * @param tokens Lista dei token presi da riga di comando
-     * @param worthClient Istanza della classe che si occupa di creare le richieste e di inviarle todo: e' corretto dire comunicazione RMI?
-     * @param rmiClient Istanza della classe che si occupa della comunicazione RMI con il server
+     * @param worthClient Istanza della classe che si occupa di creare le richieste e di inviarle
+     * @param rmiClient Istanza della classe che si occupa della comunicazione tramite RMI con il server
      * @return Response Restituisce la risposta del server
      * @throws Exception Nel caso in cui la richiesta non possa essere eseguita
      */

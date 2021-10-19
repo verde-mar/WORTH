@@ -8,6 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ *
+ */
 public class UDPClient extends Thread implements AutoCloseable {
     /* Socket multicast */
     private final MulticastSocket multicastSocket;
@@ -114,8 +117,8 @@ public class UDPClient extends Thread implements AutoCloseable {
     }
 
     /**
-     * Restituisce la struttura contenente il riferimento al nome del progetto e agli indirizzo IP e buffer di messaggi associati
-     * @return HashMap<String, ProjectChat> La struttura contenente il riferimento al nome del progetto e agli indirizzo IP e buffer di messaggi associati
+     * Restituisce la struttura contenente il riferimento al nome del progetto, agli indirizzo IP e al buffer di messaggi associati
+     * @return HashMap<String, ProjectChat> La struttura contenente il riferimento al nome del progetto, agli indirizzo IP e al buffer di messaggi associati
      */
     public HashMap<String, ProjectChat> getChat() {
         return chat;

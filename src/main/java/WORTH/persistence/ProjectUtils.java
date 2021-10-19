@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * Classe ausiliaria per scrivere su disco i nomi dei membri e l'indirizzo IP associati ad un progetto
+ */
 public class ProjectUtils implements Serializable {
     /* Lista dei nomi degli utenti */
     private List<String> utenti;

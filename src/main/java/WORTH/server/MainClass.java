@@ -4,11 +4,6 @@ import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-//todo: se uno scrittore sta scrivendo e un lettore vuole leggere, il lettore rischia di leggere le informazioni vecchie. E' un problema?
-//todo: potrebbe essere piu' elegante se specifico le eccezioni -------> scrivilo nella relazione
-//todo: sono state utilizzate strutture dati non synchronized visto che i metodi erano tutti synchronized, allora avrebbe eccessivamente sequenzializzato l'utilizzo della risorsa
-//todo: se un progetto viene rimosso nel mentre che ci son oi controlli per fare una operazione come addCard, siccome e' una concurrenthashmap, quella addCard verra' poi fatta, ma sara' una oeprazione a vuoto
-//todo: non ho ben capito prche' ci voglia synchronized nei metodi per callback
 
 public class MainClass {
     public static void main(String[] args) throws Exception {
@@ -22,7 +17,7 @@ public class MainClass {
     }
 
     /**
-     * Se non esiste gia', crea la directory 'projects' dove saranno memorizzatu tutti i progetti.
+     * Se non esiste gia', crea la directory 'projects' dove saranno memorizzati tutti i progetti.
      * Poi chiama una funzione ausiliaria per inizializzare i progetti in memoria
      * @param projects Struttura dati in memoria contenente i progetti degli utenti
      * @throws Exception Nel caso in cui non possa essere creata la directory dei progetti 'projects'

@@ -21,7 +21,7 @@ import static java.lang.Thread.sleep;
 
 /**
  * SocketServices e' la classe del server che tramite un selettore
- * gestisce le nuove connessioni TCP
+ * gestisce le nuove connessioni TCP, e le comunicazioni tramite RMI
  */
 public class SocketServices implements AutoCloseable{
     /* Selettore che legge i socket */

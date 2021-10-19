@@ -2,8 +2,10 @@ package WORTH.shared.worthProtocol;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
-import java.util.List;
 
+/**
+ * Oggetto rappresentante una richiesta dal client al server
+ */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Request {
     /* Tipo di richiesta possibili */
@@ -23,7 +25,7 @@ public class Request {
         register,
         listUsers,
         listOnlineUsers,
-        sendChatMsg;
+        sendChatMsg
     }
 
     /* Nome del progetto corrente */

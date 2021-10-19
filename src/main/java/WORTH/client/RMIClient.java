@@ -4,7 +4,6 @@ import WORTH.server.User;
 import WORTH.shared.rmi.NotifyUsersInterface;
 import WORTH.shared.rmi.RemoteInterface;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -13,6 +12,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Classe che si occupa di interagire con il server tramite RMI e RMICallback //todo: va bene?
+ */
 public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     /* Istanza della classe che implementa NotifyUsersInterfaccia, necessaria al servizio di notifica RMICallback*/
     private final RemoteInterface rmiClient;
@@ -23,9 +25,8 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
 
     /**
      * Costruttore della classe
-     * @param hostname Nome del server
-     * @throws RemoteException Errore nella comunicazione
-     * @throws NotBoundException Errore nel caso di un accesso al registro errato
+     * @param hostname Hostname del server
+     * @throws Exception Nel caso in cui non possa essere creato il registry per esportare l'oggetto remoto todo:va bene?
      */
     public RMIClient(String hostname) throws Exception {
         Registry registryUsers = LocateRegistry.getRegistry(hostname, 8081);
@@ -33,7 +34,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     }
 
     /**
-     * Registra un utente nel registro
+     * Registra un utente su WORTH
      * @param username Nome del client che si vuole registrare
      * @param password Password del client
      * @throws RemoteException Nel caso di un errore nella comunicazione
@@ -43,7 +44,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     }
 
     /**
-     * Registra l'utente al servizio di notifica del server
+     * Registra l'utente al servizio di notifica RMICallback
      * @throws Exception Nel caso di un errore nella registrazione al servizio di notifica
      */
     public void registerForCallback() throws Exception {
@@ -52,7 +53,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     }
 
     /**
-     * De-registra l'utente al servizio di notifica del server
+     * De-registra l'utente al servizio di notifica RMICallback
      * @throws RemoteException Nel caso di un errore nella comunicazione
      */
     public void unregisterForCallback() throws RemoteException {
@@ -60,7 +61,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     }
 
     /**
-     * Restituisce la lista degli utenti registrati al servizio
+     * Restituisce la lista degli utenti registrati su WORTH
      * @param users Lista degli utenti
      * @throws RemoteException Nel caso di un errore nella comunicazione RMI
      */
@@ -71,10 +72,9 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
 
 
     /**
-     * Stampa la lista degli utenti online
-     * @throws RemoteException Nel caso di un errore nella comunicazione tramite RMI
+     * Stampa la lista degli utenti registrati su WORTH online
      */
-    public void listOnlineUsers() throws RemoteException {
+    public void listOnlineUsers() {
         for(User user : users){
             if(user.isOnline())
                 System.out.println("user: " + user.getName());
@@ -82,10 +82,9 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     }
 
     /**
-     * Stampa la lista degli utenti registrati al servizio e il loro stato
-     * @throws RemoteException Nel caso di un errore nella comunicazione tramite RMI
+     * Stampa la lista degli utenti registrati su WORTH e il loro stato
      */
-    public void listUsers() throws RemoteException {
+    public void listUsers() {
         for(User user : users){
             System.out.println(user.toString());
         }

@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-//todo: chiama tutti i file JSON classi di appoggio per serializzazione/deser
-
+/**
+ * Classe rappresentante il gestore degli utenti e del loro rispettivo stato
+ */
 public class UserManager implements RemoteInterface {
     /* HashMap degli utenti registrati al servizio */
     private final ConcurrentHashMap<String, User> utentiRegistrati;
@@ -24,7 +25,7 @@ public class UserManager implements RemoteInterface {
     private final ObjectMapper mapper;
     /* File contenente gli utenti registrati */
     private final File registeredOnDisk;
-    /* File JSON per gli utenti registrati al servizio */
+    /* Istanza della classe ausiliaria per serializzazione/deserializzazione su disco degli utenti registrati su WORTH */
     private RegisteredFile registeredFile;
     /* Lista dei client registrati al servizio di notifica */
     private final List<NotifyUsersInterface> clients;

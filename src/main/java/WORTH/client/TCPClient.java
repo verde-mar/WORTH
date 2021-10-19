@@ -11,12 +11,12 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Classe che implementa l'invio e la ricezione di richieste e risposte, rispettivamente
+ * Classe che implementa l'invio e la ricezione di richieste e risposte
  */
 public class TCPClient implements AutoCloseable{
-    /* Socket necessaria pe rla connessione tcp */
+    /* Socket necessaria per la connessione tcp */
     private final SocketChannel client;
-    /* Mapper per serializzazione/deserializzazione del file JSON */
+    /* Mapper per serializzazione/deserializzazione in JSON */
     private final ObjectMapper mapper;
 
     /**
@@ -30,7 +30,7 @@ public class TCPClient implements AutoCloseable{
     }
 
     /**
-     * Il client si chiude
+     * Chiude il client
      * @throws IOException Eccezione nel caso di errore nella connessione
      */
     public void close() throws IOException {
@@ -40,6 +40,7 @@ public class TCPClient implements AutoCloseable{
     /**
      * Invia una richiesta al server
      * @param request Richiesta da inviare al server
+     * @throws IOException Nel caso in cui ci sia un errore I/O
      */
     public void send(Request request) throws IOException {
         byte[] arrayRequest = mapper.writeValueAsBytes(request);
@@ -54,7 +55,7 @@ public class TCPClient implements AutoCloseable{
     /**
      * Riceve la risposta dal server
      * @return Response La risposta del server
-     * @throws IOException Nel caso di un errore nella comunicazione
+     * @throws IOException Nel caso in cui ci sia un errore I/O
      */
     public Response receive() throws IOException {
         ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
