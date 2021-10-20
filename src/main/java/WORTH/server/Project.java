@@ -102,6 +102,8 @@ public class Project implements Serializable {
                 }
             }
         }
+        UserManager userManager = UserManager.getInstance();
+        userManager.updateRegisteredFile();
     }
 
     /**
@@ -154,6 +156,8 @@ public class Project implements Serializable {
 
             /* Memorizza la card su disco */
             card.writeOnDisk(projectName);
+            UserManager userManager = UserManager.getInstance();
+            userManager.updateRegisteredFile();
         } else throw new Exception("The card was already there.");
     }
 
@@ -161,6 +165,7 @@ public class Project implements Serializable {
      * Cancella un progetto
      * @param projectName Nome del progetto
      * @param projects Insieme totale dei progetti
+     * @throws Exception Nel caso la richiesta non possa essere portata a termine
      */
     public synchronized void cancelProject(String projectName, ConcurrentHashMap<String, Project> projects) throws Exception {
         /* Cancella il progetto dalla struttura dati locale */
@@ -172,9 +177,9 @@ public class Project implements Serializable {
                 User user = userManager.getUtente(nameUser);
                 user.getList_prj().remove(this);
             }
+            userManager.updateRegisteredFile();
         }
         if(remove_prj) {
-            addressGenerator.resetAddress(addressUdp);
             /* Cancella il progetto dal disco */
             File[] files = project.listFiles();
             assert files != null;
@@ -183,9 +188,10 @@ public class Project implements Serializable {
                 if(!file_eliminate) throw new Exception("Cannot eliminate the files in " + projectName);
             }
             boolean eliminate = project.delete();
-            if(eliminate) System.out.println(nameProject + " was eliminated");
-
-
+            if(eliminate) {
+                System.out.println(nameProject + " was eliminated");
+                addressGenerator.resetAddress(addressUdp);
+            }
         } else {
             throw new Exception("The project cannot be removed");
         }
@@ -256,6 +262,8 @@ public class Project implements Serializable {
                     /* Cancella la lista corrente per aggiornarla */
                     card.eraseCurrentList();
                     card.addCurrentList("inProgress");
+                    /* Viene aggiornato il file su disco */
+                    card.writeOnDisk(nameProject);
                 } else throw new Exception("Moving not allowed.");
             } else if ("inProgress".equals(listaDiPart)) {
                 if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
@@ -266,6 +274,8 @@ public class Project implements Serializable {
                     /* Cancella la lista corrente per aggiornarla */
                     card.eraseCurrentList();
                     card.addCurrentList("done");
+                    /* Viene aggiornato il file su disco */
+                    card.writeOnDisk(nameProject);
                 } else if (myCollator.compare(listadiDest, "toBeRevised") == 0 && !toBeRevised.contains(card)) {
                     inProgress.remove(card);
                     card.addHistory("removed from inProgress; ");
@@ -274,6 +284,8 @@ public class Project implements Serializable {
                     /* Cancella la lista corrente per aggiornarla */
                     card.eraseCurrentList();
                     card.addCurrentList("toBeRevised");
+                    /* Viene aggiornato il file su disco */
+                    card.writeOnDisk(nameProject);
                 } else throw new Exception("Moving not allowed.");
             } else if ("toBeRevised".equals(listaDiPart)) {
                 if (myCollator.compare(listadiDest, "done") == 0 && !done.contains(card)) {
@@ -284,6 +296,8 @@ public class Project implements Serializable {
                     /* Cancella la lista corrente per aggiornarla */
                     card.eraseCurrentList();
                     card.addCurrentList("done");
+                    /* Viene aggiornato il file su disco */
+                    card.writeOnDisk(nameProject);
                 } else if (myCollator.compare(listadiDest, "inProgress") == 0 && !inProgress.contains(card)) {
                     toBeRevised.remove(card);
                     card.addHistory("removed from toBeRevised; ");
@@ -292,12 +306,14 @@ public class Project implements Serializable {
                     /* Cancella la lista corrente per aggiornarla */
                     card.eraseCurrentList();
                     card.addCurrentList("inProgress");
+                    /* Viene aggiornato il file su disco */
+                    card.writeOnDisk(nameProject);
                 } else throw new Exception("Moving not allowed.");
             } else {
                 throw new Exception(listaDiPart + " is not a valid entry");
             }
-            /* Viene aggiornato il file su disco */
-            card.writeOnDisk(nameProject);
+            UserManager userManager = UserManager.getInstance();
+            userManager.updateRegisteredFile();
         } else {
             throw new Exception("This card doesn't exist");
         }
@@ -328,7 +344,8 @@ public class Project implements Serializable {
      */
     public synchronized void addPeople(String userToAdd) throws Exception {
         /* Cerca l'utente il cui nickname e' userToAdd */
-        User user = UserManager.getInstance().getUtenti().get(userToAdd);
+        UserManager userManager = UserManager.getInstance();
+        User user = userManager.getUtenti().get(userToAdd);
         /* Se l'utente da aggiungere non esiste */
         if (user != null) {
             /* Se l'utente non e' gia' membro del progetto */
@@ -343,6 +360,7 @@ public class Project implements Serializable {
             } else {
                 throw new Exception("The user is already member of the project");
             }
+            userManager.updateRegisteredFile();
         } else {
             throw new Exception("The user isn't registered");
         }

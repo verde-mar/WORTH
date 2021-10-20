@@ -86,7 +86,7 @@ public class UDPClient extends Thread implements AutoCloseable {
         if(project!=null)
             return project.getMessages();
         else
-            throw new Exception(projectName + " does not exist");
+            throw new Exception("You don't know the IP address of " + projectName + " yet. You have to use 'listProjects' first.\nIf this doesn't work,then " + projectName + "doesn't exist");
 
     }
 
@@ -113,7 +113,7 @@ public class UDPClient extends Thread implements AutoCloseable {
         if(projectChat!=null)
             return projectChat.getAddress();
         else
-            throw new Exception(projectName + " does not exist");
+            throw new Exception("You tried to move a card in " + projectName + ". But you don't know the IP address yet. You have to use 'listProjects' first.\nIf this doesn't work,then " + projectName + "doesn't exist");
     }
 
     /**

@@ -278,6 +278,8 @@ public class MainClient {
                 } catch (Exception e){
                     if(e.getMessage().contains("Index"))
                         System.err.println("You forgot some parameters");
+                    else if(e.getMessage().contains("Indirizzo"))
+                        System.err.println("L'indirizzo e' gia' in uso. Prova a creare un progetto di nome diverso, aggiungendogli un carattere a tua scelta");
                     else
                         System.err.println("Something went wrong: " + e.getMessage());
                 }

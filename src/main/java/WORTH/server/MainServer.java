@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class MainClass {
+public class MainServer {
     public static void main(String[] args) throws Exception {
         ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
         set(projects);

@@ -89,8 +89,7 @@ public class UserManager implements RemoteInterface {
                 if(user.getPassword().equals(password)){
                     user.setOnline();
                     /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
-                    registeredFile.setUtentiRegistrati(utentiRegistrati);
-                    mapper.writeValue(registeredOnDisk, registeredFile);
+                    updateRegisteredFile();
                     updateOnline(user);
                 }
                 /* Se, invece, la password non e' corretta */
@@ -122,8 +121,7 @@ public class UserManager implements RemoteInterface {
             if (user.isOnline()) {
                 user.setOffline();
                 /* Aggiorna il file su disco e anche gli altri utenti del suo cambiamento di stato */
-                registeredFile.setUtentiRegistrati(utentiRegistrati);
-                mapper.writeValue(registeredOnDisk, registeredFile);
+                updateRegisteredFile();
                 updateOffline(user);
             }
             /* Se, invece, l'utente e' offline */
@@ -144,8 +142,7 @@ public class UserManager implements RemoteInterface {
      * @throws IOException Nel caso di un errore nella scrittura su file
      */
     public synchronized User getUtente(String nickutente) throws IOException {
-        registeredFile.setUtentiRegistrati(utentiRegistrati);
-        mapper.writeValue(registeredOnDisk, registeredFile);
+        updateRegisteredFile();
         return utentiRegistrati.get(nickutente);
     }
 
@@ -156,8 +153,7 @@ public class UserManager implements RemoteInterface {
      */
     public synchronized ConcurrentHashMap<String, User> getUtenti() throws IOException {
         /* Aggiorna la struttura dati da restituire  */
-        registeredFile.setUtentiRegistrati(utentiRegistrati);
-        mapper.writeValue(registeredOnDisk, registeredFile);
+        updateRegisteredFile();
 
         return utentiRegistrati;
     }
@@ -173,8 +169,7 @@ public class UserManager implements RemoteInterface {
         /* Se l'utente non esisteva gia' */
         if(verify == null) {
             /* Aggiorna i file su disco e gli altri utenti di questa nuova registrazione */
-            registeredFile.setUtentiRegistrati(utentiRegistrati);
-            mapper.writeValue(registeredOnDisk, registeredFile);
+            updateRegisteredFile();
             updateAll();
         }
         /* Se, invece, esisteva gia' */
@@ -243,4 +238,12 @@ public class UserManager implements RemoteInterface {
         }
     }
 
+    /**
+     * Funzione che aggiorna il file di formato JSON su disco
+     * @throws IOException Nel caso di un errore nella scrittura su disco
+     */
+    public synchronized void updateRegisteredFile() throws IOException {
+        registeredFile.setUtentiRegistrati(utentiRegistrati);
+        mapper.writeValue(registeredOnDisk, registeredFile);
+    }
 }

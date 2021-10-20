@@ -3,8 +3,7 @@ package WORTH.server;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Vector;
 
 /**
  * Oggetto rappresentante un utente all'interno di WORTH
@@ -15,7 +14,7 @@ public class User implements Serializable {
     /* Password dell'utente */
     private String password;
     /* Lista dei progetti a cui appartiene */
-    private LinkedList<Project> list_prj;
+    private Vector<Project> list_prj;
     /* Flag che indica se l'utente e' online */
     private boolean online;
     @JsonIgnore /* ID per la serializzazione/deserializzazione della classe */
@@ -33,7 +32,7 @@ public class User implements Serializable {
      */
     public User(String name, String password){
         this.password = password;
-        list_prj = new LinkedList<>();
+        list_prj = new Vector<>();
         online = false;
         this.name = name;
     }
@@ -78,9 +77,9 @@ public class User implements Serializable {
 
     /**
      * Restituisce la lista dei progetti a cui appartiene l'utente
-     * @return List<String> Lista dei progetti
+     * @return Vector<String> Vettore dei progetti
      */
-    public List<Project> getList_prj() {
+    public Vector<Project> getList_prj() {
         return list_prj;
     }
 

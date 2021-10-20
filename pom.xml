@@ -43,7 +43,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>WORTH.server.MainClass</mainClass>
+                            <mainClass>WORTH.server.MainServer</mainClass>
                         </configuration>
                     </execution>
                 </executions>
