@@ -13,20 +13,7 @@ import java.util.List;
 public class Response {
     /* Richieste possibili */
     //todo: verifica se non servono davvero a niente
-    public enum RequestType{
-        login,
-        logout,
-        listProjects,
-        createProject,
-        addMember,
-        showMembers,
-        showCards,
-        showCard,
-        addCard,
-        moveCard,
-        getCardHistory,
-        cancelProject,
-    }
+
     /* Stringa contenente, in caso di fallimento, la spiegazione per cui la richiesta non e' andata a buon fine, altrimenti, conterra' solo 'success' */
     private String explanation;
     /* Booleano che indica se la richiesta e' andata a buon fine o no */

@@ -1,0 +1,30 @@
+{
+  "utentiRegistrati" : {
+    "utente3" : {
+      "name" : "utente3",
+      "password" : "utente3",
+      "list_prj" : [ ],
+      "online" : false
+    },
+    "utente1" : {
+      "name" : "utente1",
+      "password" : "utente1",
+      "list_prj" : [ {
+        "nameProject" : "tato",
+        "to_Do" : [ ],
+        "inProgress" : [ ],
+        "toBeRevised" : [ ],
+        "done" : [ ],
+        "members" : [ "utente1" ],
+        "addressUdp" : "239.0.54.53"
+      } ],
+      "online" : false
+    },
+    "utente2" : {
+      "name" : "utente2",
+      "password" : "utente2",
+      "list_prj" : [ ],
+      "online" : false
+    }
+  }
+}

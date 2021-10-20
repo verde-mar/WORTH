@@ -165,7 +165,7 @@ public class MainClient {
                 response.setFailure(e.getMessage());
             }
 
-        } else if ("listOnlineOsers".equals(tokens.get(0))) {
+        } else if ("listOnlineUsers".equals(tokens.get(0))) {
 
             /* Se il numero di parametri eccede quello necessario */
             if(tokens.size()>1)
@@ -232,14 +232,15 @@ public class MainClient {
         } else if(tokens.get(0).equals("help")){
 
             System.out.println("You asked for help. Here's the syntax:\ncommand param1 ..." +
-                    "\nregister userName password\nlogin userName password\nlogout\nlistUsers\n" +
-                    "listOnlineUsers\nlistProjects\ncreateProject nameProject\naddCard nameProject cardName cardDescription\n" +
-                    "\naddCard nameProject cardName \"\"\n" + "getCardHistory nameProject cardName\nshowMembers nameProject\naddMember nameProject userNameToAdd\n" +
-                    "showCard nameProject cardName\ncancelProject nameProject\nmoveCard nameProject cardName DepartureList ArrivalList\nsendChatMsg projectName msg\nreadChat projectName");
-            System.out.println("[NOTE]: IF YOU'LL USE MORE PARAMETERS THAN THE ONES INCLUDED ABOVE AN EXCEPTION WILL BE THROWN");
+                    "\nregister userName password\nlogin userName password\nlogout\nlistUsers" +
+                    "\nlistOnlineUsers\nlistProjects\ncreateProject nameProject\naddCard nameProject cardName cardDescription" +
+                    "\naddCard nameProject cardName \"\"\n" + "getCardHistory nameProject cardName\nshowMembers nameProject" +
+                    "\naddMember nameProject userNameToAdd\nshowCard nameProject cardName\ncancelProject nameProject" +
+                    "\nmoveCard nameProject cardName DepartureList ArrivalList\nsendChatMsg projectName msg\nreadChat projectName");
+            System.out.println("[NOTE]: IF YOU'LL USE MORE PARAMETERS THAN THE ONES INCLUDED ABOVE, AN EXCEPTION WILL BE THROWN");
 
         } else {
-            System.err.println("Are you sure this method exists? Or did the login fail? Try again");
+            System.err.println("Are you sure this method exists (try using 'help')? Or did the login fail? Try again");
             response = null;
         }
         return response;
