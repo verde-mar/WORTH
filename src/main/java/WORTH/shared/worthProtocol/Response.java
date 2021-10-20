@@ -11,9 +11,6 @@ import java.util.List;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Response {
-    /* Richieste possibili */
-    //todo: verifica se non servono davvero a niente
-
     /* Stringa contenente, in caso di fallimento, la spiegazione per cui la richiesta non e' andata a buon fine, altrimenti, conterra' solo 'success' */
     private String explanation;
     /* Booleano che indica se la richiesta e' andata a buon fine o no */
