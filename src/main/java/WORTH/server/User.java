@@ -12,7 +12,7 @@ public class User implements Serializable {
     /* Nome dell'utente */
     private String name;
     /* Password dell'utente */
-    private String password;
+    private transient String password;
     /* Lista dei progetti a cui appartiene */
     private Vector<Project> list_prj;
     /* Flag che indica se l'utente e' online */

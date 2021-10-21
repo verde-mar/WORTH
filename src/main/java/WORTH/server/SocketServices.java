@@ -64,9 +64,9 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * La funzione associa ad ogni richiesta di un WORTH.client un thread del threadPool
+     * La funzione associa ad ogni richiesta di un client un thread del threadPool
      * @param buffer Contenente la richiesta in JSON
-     * @return Future<WORTH.server.Message> Un thread del threadpool
+     * @return Future<Response> Un thread del threadpool
      * @throws Exception Nel caso in cui la creazione dell'Handler non vada a buon fine
      */
     private Future<Response> elaborateRequest(ByteBuffer buffer) throws Exception {
@@ -94,7 +94,7 @@ public class SocketServices implements AutoCloseable{
                 if(!key.isValid()){
                     return;
                 }
-                /* Registrazione del WORTH.client */
+                /* Registrazione del client */
                 if(key.isAcceptable()){
                     registerClient(key);
                 }
@@ -112,7 +112,7 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * Registra quel WORTH.client per operazioni in lettura
+     * Registra quel client per operazioni in lettura
      * @param key Chiave associata al channel
      * @throws IOException Nel caso in cui ci sia un errore nell'I/O
      */
@@ -129,7 +129,7 @@ public class SocketServices implements AutoCloseable{
     }
 
     /**
-     * Legge il messaggio inviato dal WORTH.client
+     * Legge il messaggio inviato dal client
      * @param key Chiave associata all'active socket corrente
      * @throws Exception Nel caso in cui non possa essere portata a termine la lettura del messaggio
      */
@@ -137,14 +137,14 @@ public class SocketServices implements AutoCloseable{
         /* Contiene i dati */
         ByteBuffer buffer = (ByteBuffer) key.attachment();
 
-        /* Active socket associato al WORTH.client */
+        /* Active socket associato al client */
         SocketChannel client_read = (SocketChannel) key.channel();
 
         /* Legge i dati */
         int bytesRead = client_read.read(buffer);
         System.out.printf("Read %d bytes from %s\n", bytesRead, client_read.getRemoteAddress());
 
-        /* Il WORTH.client ha terminato */
+        /* Il client ha terminato */
         if (bytesRead == -1) {
             /* Cancella la chiave dal selettore e chiude la connessione */
             key.cancel();
@@ -186,7 +186,7 @@ public class SocketServices implements AutoCloseable{
 
     /**
      * Attende che il messaggio sia pronto e poi lo scrive a blocchi
-     * @param key Chiave che rappresenta il WORTH.client pronto per la scrittura
+     * @param key Chiave che rappresenta il client pronto per la scrittura
      * @throws IOException Se c'è un problema a scrivere il messaggio
      * @throws ExecutionException Se c'e' stato un errore nella computazione
      * @throws InterruptedException Se il thread e' stato interrotto
@@ -197,15 +197,15 @@ public class SocketServices implements AutoCloseable{
         Future<Response> future = (Future<Response>) key.attachment();
         if (!future.isDone())
             return;
-        /* Active socket associato al WORTH.client */
+        /* Active socket associato al client */
         SocketChannel client = (SocketChannel) key.channel();
 
-        /* Si fa restituire la risposta in formato WORTH.server.Message, e crea il file JSON da inviare al WORTH.client */
+        /* Si fa restituire la risposta in formato Future<Response>, e crea il file JSON da inviare al client */
         Response response_t = future.get();
         byte[] byteResponse = mapper.writeValueAsBytes(response_t);
         ByteBuffer response = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Invia la size della risposta al WORTH.client */
+        /* Invia la size della risposta al client */
         response.putInt(byteResponse.length);
         response.flip();
         client.write(response);
@@ -228,7 +228,7 @@ public class SocketServices implements AutoCloseable{
         /* Buffer necessario a leggere la dimensione del messaggio */
         ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
 
-        /* Altrimenti registra di nuovo il WORTH.client per la lettura */
+        /* Altrimenti registra di nuovo il client per la lettura */
         SelectionKey wr_key = client.register(selector, SelectionKey.OP_READ);
         wr_key.attach(lengthBuffer);
     }

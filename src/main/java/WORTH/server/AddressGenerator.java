@@ -20,7 +20,7 @@ public class AddressGenerator implements Serializable {
     private List<InetAddress> indirizziLiberi;
     @JsonIgnore /* Istanza di AddressGenerator */
     private static AddressGenerator instance;
-    /* Istanza della classe ausiliaria per serializzazione/deserializzazione su disco degli indirizzi IP liberi */
+    @JsonIgnore/* Istanza della classe ausiliaria per serializzazione/deserializzazione su disco degli indirizzi IP liberi */
     private IPFile ipFile;
     @JsonIgnore /* Necessario per la serializzazione/deserializzazione JSON */
     private final ObjectMapper mapper;

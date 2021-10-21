@@ -23,7 +23,7 @@ public class Card implements Serializable {
     /* Lista corrente a cui appartiene la card */
     private String currentList;
     @JsonIgnore /* Mapper necessario alla serializzazione/deserializzazione del file JSON */
-    ObjectMapper card_mapper;
+    private ObjectMapper card_mapper;
     @JsonIgnore /* ID per la serializzazione/deserializzazione della classe */
     private static final long serialVersionUID = -4242944971815086218L;
 
