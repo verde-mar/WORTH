@@ -24,7 +24,7 @@ public class AddressGenerator implements Serializable {
     private IPFile ipFile;
     @JsonIgnore /* Necessario per la serializzazione/deserializzazione JSON */
     private final ObjectMapper mapper;
-    /* File contenente gli indirizzi IP liberi */
+    @JsonIgnore/* File contenente gli indirizzi IP liberi */
     private final File ipsOnDisk;
     @JsonIgnore/* ID per la serializzazione/deserializzazione della classe */
     private static final long serialVersionUID = -1545255945990735659L;

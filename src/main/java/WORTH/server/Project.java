@@ -39,7 +39,7 @@ public class Project implements Serializable {
     private InetAddress addressUdp;
     @JsonIgnore /* Composizione della classe AddressGenerator. La classe contiene metodi per determinare l'indirizzo IP da associare al progetto */
     private AddressGenerator addressGenerator;
-    @JsonIgnore/* ID per la serializzazione/deserializzazione della classe */
+    @JsonIgnore /* ID per la serializzazione/deserializzazione della classe */
     private static final long serialVersionUID = 6125601553614499595L;
 
     /**
