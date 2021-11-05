@@ -54,6 +54,7 @@ public class Worker {
                 }
             }
         }
+
         /* Se c'e' stato qualche fallimento */
         else if(!response.getDone() && response.getExplanation()!=null) {
             /* Stampa a video la causa del fallimento */

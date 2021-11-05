@@ -43,6 +43,7 @@ public class Card implements Serializable {
         card_mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
+
     /**
      * Restituisce il nome della card
      * @return String Nome della card

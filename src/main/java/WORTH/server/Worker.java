@@ -42,6 +42,7 @@ public class Worker {
         } else throw new Exception(projectName + " doesn't exist");
     }
 
+
     /**
      * Aggiunge un utente ad un progetto
      * @param projectName Nome del progetto

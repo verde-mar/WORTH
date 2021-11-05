@@ -55,6 +55,7 @@ public class Request {
         return request;
     }
 
+
     /**
      * Inizializza la richiesta da effettuare
      * @param type Tipo di richiesta

@@ -25,6 +25,7 @@ public class User implements Serializable {
      */
     public User(){}
 
+    
     /**
      * Costruttore della classe
      * @param name Nome dell'utente

@@ -304,6 +304,7 @@ public class WORTHClient implements AutoCloseable {
         udpClient.send(message, address, 8082);
     }
 
+
     /**
      * Per ogni progetto di cui l'utente fa parte, vengono memorizzati l'indirizzo IP e la porta di destinazione
      * @param projects Lista dei progetti di cui l'utente fa parte

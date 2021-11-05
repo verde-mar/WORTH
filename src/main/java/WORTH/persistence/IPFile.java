@@ -11,6 +11,7 @@ public class IPFile implements Serializable {
     /* Lista contenente tutti gli indirizzi liberi */
     private List<InetAddress> indirizziLiberi;
 
+
     /**
      * Costruttore della classe
      */

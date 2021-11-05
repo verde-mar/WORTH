@@ -20,6 +20,7 @@ public class ProjectChat {
         messages = new Vector<>();
     }
 
+
     /**
      * Inizializza l'indirizzo IP a cui associare il buffer di messaggi
      * @param address Indirizzo IP associato al progetto

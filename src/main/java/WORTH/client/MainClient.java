@@ -6,7 +6,10 @@ import WORTH.shared.worthProtocol.Response;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +48,7 @@ public class MainClient {
                     } catch (Exception e){
                         response.setFailure(e.getMessage());
                     }
+
                     worthClient.setIPAddresses(response.getProjects());
                 }
             } else

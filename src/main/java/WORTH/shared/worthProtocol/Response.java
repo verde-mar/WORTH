@@ -36,6 +36,7 @@ public class Response {
         this.request = request;
     }
 
+
     /**
      * Restituisce la richiesta effettuata
      * @return Request.RequestType Richiesta effettuata

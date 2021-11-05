@@ -26,6 +26,7 @@ public interface NotifyUsersInterface extends Remote {
      */
     void setOnline(User user) throws RemoteException;
 
+
     /**
      * Funzione usata per aggiornare lo stato di un utente ad online, tramite RMICallback
      * @param user Utente corrente

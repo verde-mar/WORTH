@@ -227,6 +227,7 @@ public class UserManager implements RemoteInterface {
         }
     }
 
+
     /**
      * La funzione notifica a tutti i client iscritti quando un utente diventa offline
      * @param user Utente corrente

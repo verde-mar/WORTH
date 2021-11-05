@@ -11,6 +11,7 @@ public class RegisteredFile {
     /* Struttura in memoria che si riferisce agli utenti registrati a WORTH */
     private ConcurrentHashMap<String, User> utentiRegistrati;
 
+
     public RegisteredFile(){}
 
     /**

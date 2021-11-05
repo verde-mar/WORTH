@@ -15,6 +15,7 @@ public class CardFile {
     /* Lista corrente a cui appartiene la card */
     private String currentList;
 
+
     /**
      * Inizializza currentList
      * @param currentList Parametro con cui inizializzare this.concurrentList

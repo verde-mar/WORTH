@@ -28,6 +28,7 @@ public interface RemoteInterface extends Remote {
      */
     ConcurrentHashMap<String, User> UsersCallback(NotifyUsersInterface clientInterface) throws Exception;
 
+
     /**
      * Elimina un utente dal servizio di notifica RMICallback
      * @param clientInterface Oggetto di tipo NotifyInterface rappresentante un client che si iscrive al servizio di notifica RMICallback

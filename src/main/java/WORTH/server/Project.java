@@ -9,13 +9,15 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.text.Collator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Oggetto rappresentate un progetto all'interno di WORTH
  */
+
 public class Project implements Serializable {
     /* Nome del progetto, univoco */
     private String nameProject;

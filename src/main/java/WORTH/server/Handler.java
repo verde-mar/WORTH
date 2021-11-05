@@ -145,6 +145,7 @@ public class Handler implements Callable<Response>  {
                     break;
                 }
 
+
                 /* Restituisce l'history della card specificata nella richiesta */
                 case getCardHistory : {
                     List<String> history = worker.getCardHistory(task_request.getProjectName(), task_request.getCardName(), task_request.getNickUtente());

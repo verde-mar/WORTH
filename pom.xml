@@ -33,6 +33,7 @@
                         <goals>
                             <goal>java</goal>
                         </goals>
+
                         <configuration>
                             <mainClass>WORTH.client.MainClient</mainClass>
                         </configuration>

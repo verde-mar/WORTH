@@ -23,6 +23,7 @@ public class RMIClient extends RemoteObject implements NotifyUsersInterface {
     /* Lista degli utenti registrati a WORTH */
     private ConcurrentHashMap<String, User> users;
 
+
     /**
      * Costruttore della classe
      * @param hostname Hostname del server

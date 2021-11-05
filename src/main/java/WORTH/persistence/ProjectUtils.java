@@ -13,6 +13,7 @@ public class ProjectUtils implements Serializable {
     /* Indirizzo IP associato al progetto */
     private InetAddress ipAddress;
 
+
     /**
      * Restituisce la lista dei nomi degli utenti
      * @return List<String> Lista dei nomi degli utenti
