@@ -111,7 +111,7 @@ public class UserManager implements RemoteInterface {
     /**
      * Effettua il logout dell'utente
      * @param nickName Nickname dell'utente
-     * @throws Exception Nel caso in cui il logout non vada a buon fine
+     * @throws Exception Nel caso in cui il logout non vada a buon fineNotifyUsersInterface
      */
     public synchronized void logout(String nickName) throws Exception {
         /* Se l'utente e' registrato */
